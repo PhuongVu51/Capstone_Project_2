@@ -1,12 +1,8 @@
 <?php
 // Đường dẫn: backend/connection/process_allocation.php
-session_start();
+require_once '../includes/auth.php';
+require_role(['Production_Manager'], '../../frontend/login.php');
 require_once 'db_connect.php';
-
-if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'Production_Manager') {
-    header("Location: ../../frontend/login.php");
-    exit();
-}
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $batch_id = trim($_POST['batch_id']);

@@ -1,14 +1,7 @@
 <?php
 // Đường dẫn: frontend/dashboard_production.php
-session_start();
-
-// Kiểm tra quyền truy cập (Bắt buộc phải là Production_Manager)
-if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'Production_Manager') {
-    header("Location: login.php");
-    exit();
-}
-
-// Kết nối Database
+require_once '../backend/includes/auth.php';
+require_role(['Production_Manager', 'Director'], 'login.php');
 require_once '../backend/connection/db_connect.php';
 
 try {

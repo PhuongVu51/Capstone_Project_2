@@ -1,9 +1,6 @@
 <?php
-session_start();
-if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'Warehouse_Staff') {
-    header("Location: login.php");
-    exit();
-}
+require_once '../backend/includes/auth.php';
+require_role(['Warehouse_Staff', 'Production_Manager', 'Director'], 'login.php');
 require_once '../backend/connection/db_connect.php';
 
 try {

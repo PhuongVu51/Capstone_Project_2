@@ -1,13 +1,7 @@
 <?php
 // Đường dẫn: frontend/dashboard_qc.php
-session_start();
-
-// Kiểm tra quyền (Chỉ cho phép QC)
-if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'QC') {
-    header("Location: login.php");
-    exit();
-}
-
+require_once '../backend/includes/auth.php';
+require_role(['QC', 'Production_Manager', 'Director'], 'login.php');
 require_once '../backend/connection/db_connect.php';
 
 try {
