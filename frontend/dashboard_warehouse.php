@@ -1,9 +1,6 @@
 <?php
-session_start();
-if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'Warehouse_Staff') {
-    header("Location: login.php");
-    exit();
-}
+require_once '../backend/includes/auth.php';
+require_role(['Warehouse_Staff', 'Production_Manager', 'Director'], 'login.php');
 require_once '../backend/connection/db_connect.php';
 
 try {
@@ -68,7 +65,9 @@ try {
             <a href="#" class="flex items-center gap-3 px-4 py-3 text-gray-400 hover:text-white rounded-md transition-colors">Reports</a>
         </nav>
         <div class="p-4 border-t border-[#1f2937]">
-            <a href="logout.php" class="flex items-center gap-3 px-4 py-2 text-gray-400 hover:text-red-400 transition-colors">Logout</a>
+            <a href="../backend/connection/logout.php" class="flex items-center gap-3 px-4 py-2 text-gray-400 hover:text-red-400 transition-colors">
+                Logout
+            </a>
         </div>
     </aside>
 

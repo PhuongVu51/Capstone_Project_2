@@ -1,13 +1,7 @@
 <?php
 // Đường dẫn: frontend/dashboard_qc.php
-session_start();
-
-// Kiểm tra quyền (Chỉ cho phép QC)
-if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'QC') {
-    header("Location: login.php");
-    exit();
-}
-
+require_once '../backend/includes/auth.php';
+require_role(['QC', 'Production_Manager', 'Director'], 'login.php');
 require_once '../backend/connection/db_connect.php';
 
 try {
@@ -99,7 +93,7 @@ try {
             <a href="#" class="flex items-center gap-3 px-4 py-3 text-gray-400 hover:text-white rounded-md transition">Inspections</a>
         </nav>
         <div class="p-4 border-t border-[#1f2937]">
-            <a href="logout.php" class="text-gray-400 hover:text-red-400">Logout</a>
+            <a href="../backend/connection/logout.php" class="text-gray-400 hover:text-red-400">Logout</a>
         </div>
     </aside>
 
