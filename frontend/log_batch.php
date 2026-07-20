@@ -5,7 +5,6 @@ require_once '../backend/connection/db_connect.php';
 
 try {
     $products = $pdo->query("SELECT PRD_product_id, PRD_product_name FROM PRODUCTS")->fetchAll();
-    $suppliers = $pdo->query("SELECT SUP_supplier_id, SUP_supplier_name FROM SUPPLIERS")->fetchAll();
     $shifts = $pdo->query("SELECT SHF_shift_id, SHF_shift_date, SHF_shift_type FROM SHIFTS WHERE SHF_status = 'Open'")->fetchAll();
     $zones = $pdo->query("SELECT STZ_zone_id, STZ_zone_name FROM STORAGE_ZONES")->fetchAll();
 } catch (PDOException $e) {
@@ -50,20 +49,17 @@ try {
             <div class="grid grid-cols-2 gap-4">
                 <div>
                     <label class="block text-sm font-medium text-gray-400 mb-1">Product *</label>
-                    <select name="product_id" required class="w-full bg-[#04121a] border border-[#1f2937] text-white rounded p-2 focus:border-[#10b981] focus:outline-none">
+                    <select id="product-select" name="product_id" required class="w-full bg-[#04121a] border border-[#1f2937] text-white rounded p-2 focus:border-[#10b981] focus:outline-none">
                         <option value="">Select Product...</option>
                         <?php foreach($products as $p): ?>
-                            <option value="<?= $p['PRD_product_id'] ?>"><?= htmlspecialchars($p['PRD_product_name']) ?></option>
+                            <option value="<?= intval($p['PRD_product_id']) ?>"><?= '[' . intval($p['PRD_product_id']) . '] ' . htmlspecialchars($p['PRD_product_name']) ?></option>
                         <?php endforeach; ?>
                     </select>
                 </div>
                 <div>
                     <label class="block text-sm font-medium text-gray-400 mb-1">Supplier</label>
-                    <select name="supplier_id" class="w-full bg-[#04121a] border border-[#1f2937] text-white rounded p-2 focus:border-[#10b981] focus:outline-none">
+                    <select id="supplier-select" name="supplier_id" class="w-full bg-[#04121a] border border-[#1f2937] text-white rounded p-2 focus:border-[#10b981] focus:outline-none">
                         <option value="">Select Supplier...</option>
-                        <?php foreach($suppliers as $s): ?>
-                            <option value="<?= $s['SUP_supplier_id'] ?>"><?= htmlspecialchars($s['SUP_supplier_name']) ?></option>
-                        <?php endforeach; ?>
                     </select>
                 </div>
             </div>
@@ -111,5 +107,62 @@ try {
             </div>
         </form>
     </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            var productSelect = document.getElementById('product-select');
+            var supplierSelect = document.getElementById('supplier-select');
+
+            function setSupplierOptions(suppliers) {
+                supplierSelect.innerHTML = '<option value="">Select Supplier...</option>';
+                if (!Array.isArray(suppliers) || suppliers.length === 0) {
+                    return;
+                }
+                suppliers.forEach(function(supplier) {
+                    var option = document.createElement('option');
+                    option.value = supplier.SUP_supplier_id;
+                    option.textContent = supplier.SUP_supplier_name;
+                    supplierSelect.appendChild(option);
+                });
+            }
+
+            function fetchSuppliers(productId) {
+                supplierSelect.innerHTML = '<option value="">Loading suppliers...</option>';
+                if (!productId) {
+                    setSupplierOptions([]);
+                    return;
+                }
+
+                fetch('../backend/controllers/StockController.php?action=fetch_suppliers&product_id=' + encodeURIComponent(productId), {
+                    headers: {
+                        'Accept': 'application/json'
+                    }
+                })
+                .then(function(response) {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    return response.json();
+                })
+                .then(function(data) {
+                    if (data.error) {
+                        throw new Error(data.error);
+                    }
+                    setSupplierOptions(data);
+                })
+                .catch(function(error) {
+                    console.error('Error fetching suppliers:', error);
+                    supplierSelect.innerHTML = '<option value="">Select Supplier...</option>';
+                });
+            }
+
+            productSelect.addEventListener('change', function() {
+                fetchSuppliers(this.value);
+            });
+
+            // initial reset to make sure no suppliers are shown until a product is selected
+            supplierSelect.innerHTML = '<option value="">Select Supplier...</option>';
+        });
+    </script>
 </body>
 </html>

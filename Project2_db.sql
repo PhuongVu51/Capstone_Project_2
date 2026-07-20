@@ -45,6 +45,14 @@ CREATE TABLE STORAGE_ZONES (
     STZ_current_humidity_pct DECIMAL(5,2)
 ) ENGINE=InnoDB;
 
+CREATE TABLE PRODUCT_SUPPLIERS (
+    PSP_product_id INT NOT NULL,
+    PSP_supplier_id INT NOT NULL,
+    PRIMARY KEY (PSP_product_id, PSP_supplier_id),
+    FOREIGN KEY (PSP_product_id) REFERENCES PRODUCTS(PRD_product_id) ON DELETE CASCADE ON UPDATE CASCADE,
+    FOREIGN KEY (PSP_supplier_id) REFERENCES SUPPLIERS(SUP_supplier_id) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB;
+
 -- ==============================================================================
 -- 2. TẠO BẢNG CỐT LÕI 
 -- ==============================================================================

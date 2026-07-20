@@ -78,6 +78,21 @@ class StockController {
     }
 
     // Xử lý yêu cầu sửa/cập nhật thông tin lô hàng
+    public function handleFetchSuppliers() {
+        $productId = $_GET['product_id'] ?? $_POST['product_id'] ?? 0;
+        $productId = intval($productId);
+        if ($productId <= 0) {
+            http_response_code(400);
+            echo json_encode(['error' => 'product_id_required']);
+            exit();
+        }
+
+        $suppliers = $this->stockModel->getSuppliersByProduct($productId);
+        header('Content-Type: application/json');
+        echo json_encode($suppliers);
+        exit();
+    }
+
     public function handleUpdateBatch() {
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $batchId = trim($_POST['batch_id'] ?? '');
@@ -110,6 +125,8 @@ if (isset($_GET['action'])) {
         $controller->handleStockIn();
     } elseif ($_GET['action'] === 'stock_out') {
         $controller->handleStockOut();
+    } elseif ($_GET['action'] === 'fetch_suppliers') {
+        $controller->handleFetchSuppliers();
     } elseif ($_GET['action'] === 'update') {
         $controller->handleUpdateBatch();
     }

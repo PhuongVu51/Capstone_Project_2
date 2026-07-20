@@ -80,7 +80,7 @@ try {
 
             <div class="flex items-center gap-4">
                 <a href="export_report.php" class="inline-block bg-transparent border border-[#203434] text-[#cfeee0] px-4 py-2 rounded">Export Report</a>
-                <a href="#" class="inline-block bg-[#10b981] text-gray-900 font-bold px-4 py-2 rounded">+ Log New Batch</a>
+                <a href="log_batch.php" class="inline-block bg-[#10b981] text-gray-900 font-bold px-4 py-2 rounded">+ Log New Batch</a>
                 <div class="ml-4 text-right">
                     <p class="text-sm font-semibold text-white"><?= htmlspecialchars($_SESSION['full_name']) ?></p>
                     <p class="text-xs text-gray-400">Warehouse Staff</p>

@@ -5591,7 +5591,14 @@ ON DUPLICATE KEY UPDATE
     BCH_current_stage = VALUES(BCH_current_stage),
     BCH_health_status = VALUES(BCH_health_status);
 
--- 7. STOCK_MOVEMENTS - inbound, outbound, and inventory adjustment records.
+-- 7. PRODUCT_SUPPLIERS - Seed known product-to-supplier relations from existing batch links.
+INSERT IGNORE INTO PRODUCT_SUPPLIERS (PSP_product_id, PSP_supplier_id)
+SELECT DISTINCT b.BCH_product_id, b.BCH_supplier_id
+FROM BATCHES b
+JOIN SUPPLIERS s ON b.BCH_supplier_id = s.SUP_supplier_id
+WHERE s.SUP_supplier_name NOT IN ('SUP_UNKNOWN', 'Unknown', 'unknown');
+
+-- 8. STOCK_MOVEMENTS - inbound, outbound, and inventory adjustment records.
 INSERT INTO STOCK_MOVEMENTS (STM_reference_code, STM_batch_id, STM_movement_type, STM_quantity_kg, STM_timestamp, STM_user_id) VALUES ('SEED_IN_1_1_NHAP_4_1_5DDAC098', 'BCH_DK20DM300LS_20865E37', 'IN', 5439.00, '2025-12-31 00:00:00', (SELECT USR_user_id FROM USERS WHERE USR_username = 'wh_admin04' LIMIT 1))
 ON DUPLICATE KEY UPDATE STM_quantity_kg = VALUES(STM_quantity_kg), STM_timestamp = VALUES(STM_timestamp);
 INSERT INTO STOCK_MOVEMENTS (STM_reference_code, STM_batch_id, STM_movement_type, STM_quantity_kg, STM_timestamp, STM_user_id) VALUES ('SEED_IN_1_1_NHAP_5_2_EFDB20C7', 'BCH_DK20KM300LSQ_2A9DE8FD', 'IN', 540.00, '2025-12-31 00:00:00', (SELECT USR_user_id FROM USERS WHERE USR_username = 'wh_admin04' LIMIT 1))
