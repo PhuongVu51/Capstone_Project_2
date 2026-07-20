@@ -20,7 +20,7 @@ START TRANSACTION;
 -- 1. USERS - role values match process_login.php.
 INSERT INTO USERS (USR_username, USR_password_hash, USR_role, USR_full_name, USR_is_active) VALUES
 ('pm_alex', '$2y$10$nOUIs5kJ7naTuTFkMD1Ze.pRExhw0qEEyEHQ0QOczzN/z4N1iUOWK', 'Production_Manager', 'Alex Rivera', 1),
-('qc_op702', '$2y$10$nOUIs5kJ7naTuTFkMD1Ze.pRExhw0qEEyEHQ0QOczzN/z4N1iUOWK', 'QC', 'Operator 702', 1),
+('Nhung_Thủy', '$2y$10$nOUIs5kJ7naTuTFkMD1Ze.pRExhw0qEEyEHQ0QOczzN/z4N1iUOWK', 'QC', 'Operator 702', 1),
 ('wh_admin04', '$2y$10$nOUIs5kJ7naTuTFkMD1Ze.pRExhw0qEEyEHQ0QOczzN/z4N1iUOWK', 'Warehouse_Staff', 'System Admin 04', 1),
 ('director_demo', '$2y$10$nOUIs5kJ7naTuTFkMD1Ze.pRExhw0qEEyEHQ0QOczzN/z4N1iUOWK', 'Director', 'Director Demo', 1)
 ON DUPLICATE KEY UPDATE
@@ -30,511 +30,511 @@ ON DUPLICATE KEY UPDATE
 
 -- 2. SUPPLIERS - anonymized supplier identifiers only.
 INSERT INTO SUPPLIERS (SUP_supplier_name, SUP_contact_info, SUP_origin_facility)
-SELECT 'NCC_001', 'ANONYMIZED', 'NM Hai Duong'
-WHERE NOT EXISTS (SELECT 1 FROM SUPPLIERS WHERE SUP_supplier_name = 'NCC_001');
+SELECT 'Anh Thọ xe 29', '', 'NM Hai Duong'
+WHERE NOT EXISTS (SELECT 1 FROM SUPPLIERS WHERE SUP_supplier_name = 'Anh Thọ xe 29');
 INSERT INTO SUPPLIERS (SUP_supplier_name, SUP_contact_info, SUP_origin_facility)
-SELECT 'NCC_002', 'ANONYMIZED', 'NM Hai Duong'
-WHERE NOT EXISTS (SELECT 1 FROM SUPPLIERS WHERE SUP_supplier_name = 'NCC_002');
+SELECT 'Dứa sơ chế', '', 'NM Hai Duong'
+WHERE NOT EXISTS (SELECT 1 FROM SUPPLIERS WHERE SUP_supplier_name = 'Dứa sơ chế');
 INSERT INTO SUPPLIERS (SUP_supplier_name, SUP_contact_info, SUP_origin_facility)
-SELECT 'NCC_003', 'ANONYMIZED', 'NM Hai Duong'
-WHERE NOT EXISTS (SELECT 1 FROM SUPPLIERS WHERE SUP_supplier_name = 'NCC_003');
+SELECT 'Thành phẩm', '', 'NM Hai Duong'
+WHERE NOT EXISTS (SELECT 1 FROM SUPPLIERS WHERE SUP_supplier_name = 'Thành phẩm');
 INSERT INTO SUPPLIERS (SUP_supplier_name, SUP_contact_info, SUP_origin_facility)
-SELECT 'NCC_004', 'ANONYMIZED', 'NM Hai Duong'
-WHERE NOT EXISTS (SELECT 1 FROM SUPPLIERS WHERE SUP_supplier_name = 'NCC_004');
+SELECT 'Anh Hùng 05', '', 'NM Hai Duong'
+WHERE NOT EXISTS (SELECT 1 FROM SUPPLIERS WHERE SUP_supplier_name = 'Anh Hùng 05');
 INSERT INTO SUPPLIERS (SUP_supplier_name, SUP_contact_info, SUP_origin_facility)
-SELECT 'NCC_005', 'ANONYMIZED', 'NM Hai Duong'
-WHERE NOT EXISTS (SELECT 1 FROM SUPPLIERS WHERE SUP_supplier_name = 'NCC_005');
+SELECT 'Anh Thọ xe 30', '', 'NM Hai Duong'
+WHERE NOT EXISTS (SELECT 1 FROM SUPPLIERS WHERE SUP_supplier_name = 'Anh Thọ xe 30');
 INSERT INTO SUPPLIERS (SUP_supplier_name, SUP_contact_info, SUP_origin_facility)
-SELECT 'NCC_006', 'ANONYMIZED', 'NM Hai Duong'
-WHERE NOT EXISTS (SELECT 1 FROM SUPPLIERS WHERE SUP_supplier_name = 'NCC_006');
+SELECT 'Anh Hùng 06', '', 'NM Hai Duong'
+WHERE NOT EXISTS (SELECT 1 FROM SUPPLIERS WHERE SUP_supplier_name = 'Anh Hùng 06');
 INSERT INTO SUPPLIERS (SUP_supplier_name, SUP_contact_info, SUP_origin_facility)
-SELECT 'NCC_007', 'ANONYMIZED', 'NM Hai Duong'
-WHERE NOT EXISTS (SELECT 1 FROM SUPPLIERS WHERE SUP_supplier_name = 'NCC_007');
+SELECT 'Tân Việt Anh', '', 'NM Hai Duong'
+WHERE NOT EXISTS (SELECT 1 FROM SUPPLIERS WHERE SUP_supplier_name = 'Tân Việt Anh');
 INSERT INTO SUPPLIERS (SUP_supplier_name, SUP_contact_info, SUP_origin_facility)
-SELECT 'NCC_008', 'ANONYMIZED', 'NM Hai Duong'
-WHERE NOT EXISTS (SELECT 1 FROM SUPPLIERS WHERE SUP_supplier_name = 'NCC_008');
+SELECT 'Thanh Bình', '', 'NM Hai Duong'
+WHERE NOT EXISTS (SELECT 1 FROM SUPPLIERS WHERE SUP_supplier_name = 'Thanh Bình');
 INSERT INTO SUPPLIERS (SUP_supplier_name, SUP_contact_info, SUP_origin_facility)
-SELECT 'NCC_009', 'ANONYMIZED', 'NM Hai Duong'
-WHERE NOT EXISTS (SELECT 1 FROM SUPPLIERS WHERE SUP_supplier_name = 'NCC_009');
+SELECT 'Anh Thọ xe 33', '', 'NM Hai Duong'
+WHERE NOT EXISTS (SELECT 1 FROM SUPPLIERS WHERE SUP_supplier_name = 'Anh Thọ xe 33');
 INSERT INTO SUPPLIERS (SUP_supplier_name, SUP_contact_info, SUP_origin_facility)
-SELECT 'NCC_010', 'ANONYMIZED', 'NM Hai Duong'
-WHERE NOT EXISTS (SELECT 1 FROM SUPPLIERS WHERE SUP_supplier_name = 'NCC_010');
+SELECT 'Khoái Lạc Phúc', '', 'NM Hai Duong'
+WHERE NOT EXISTS (SELECT 1 FROM SUPPLIERS WHERE SUP_supplier_name = 'Khoái Lạc Phúc');
 INSERT INTO SUPPLIERS (SUP_supplier_name, SUP_contact_info, SUP_origin_facility)
-SELECT 'NCC_011', 'ANONYMIZED', 'NM Hai Duong'
-WHERE NOT EXISTS (SELECT 1 FROM SUPPLIERS WHERE SUP_supplier_name = 'NCC_011');
+SELECT 'Mua lẻ', '', 'NM Hai Duong'
+WHERE NOT EXISTS (SELECT 1 FROM SUPPLIERS WHERE SUP_supplier_name = 'Mua lẻ');
 INSERT INTO SUPPLIERS (SUP_supplier_name, SUP_contact_info, SUP_origin_facility)
-SELECT 'NCC_012', 'ANONYMIZED', 'NM Hai Duong'
-WHERE NOT EXISTS (SELECT 1 FROM SUPPLIERS WHERE SUP_supplier_name = 'NCC_012');
+SELECT 'Chị Thủy xe 22', '', 'NM Hai Duong'
+WHERE NOT EXISTS (SELECT 1 FROM SUPPLIERS WHERE SUP_supplier_name = 'Chị Thủy xe 22');
 INSERT INTO SUPPLIERS (SUP_supplier_name, SUP_contact_info, SUP_origin_facility)
-SELECT 'NCC_013', 'ANONYMIZED', 'NM Hai Duong'
-WHERE NOT EXISTS (SELECT 1 FROM SUPPLIERS WHERE SUP_supplier_name = 'NCC_013');
+SELECT 'Anh Thọ xe 34', '', 'NM Hai Duong'
+WHERE NOT EXISTS (SELECT 1 FROM SUPPLIERS WHERE SUP_supplier_name = 'Anh Thọ xe 34');
 INSERT INTO SUPPLIERS (SUP_supplier_name, SUP_contact_info, SUP_origin_facility)
-SELECT 'NCC_014', 'ANONYMIZED', 'NM Hai Duong'
-WHERE NOT EXISTS (SELECT 1 FROM SUPPLIERS WHERE SUP_supplier_name = 'NCC_014');
+SELECT 'Anh Hùng 07', '', 'NM Hai Duong'
+WHERE NOT EXISTS (SELECT 1 FROM SUPPLIERS WHERE SUP_supplier_name = 'Anh Hùng 07');
 INSERT INTO SUPPLIERS (SUP_supplier_name, SUP_contact_info, SUP_origin_facility)
-SELECT 'NCC_015', 'ANONYMIZED', 'NM Hai Duong'
-WHERE NOT EXISTS (SELECT 1 FROM SUPPLIERS WHERE SUP_supplier_name = 'NCC_015');
+SELECT 'Hàng gửi xe', '', 'NM Hai Duong'
+WHERE NOT EXISTS (SELECT 1 FROM SUPPLIERS WHERE SUP_supplier_name = 'Hàng gửi xe');
 INSERT INTO SUPPLIERS (SUP_supplier_name, SUP_contact_info, SUP_origin_facility)
-SELECT 'NCC_016', 'ANONYMIZED', 'NM Hai Duong'
-WHERE NOT EXISTS (SELECT 1 FROM SUPPLIERS WHERE SUP_supplier_name = 'NCC_016');
+SELECT 'Anh Lực', '', 'NM Hai Duong'
+WHERE NOT EXISTS (SELECT 1 FROM SUPPLIERS WHERE SUP_supplier_name = 'Anh Lực');
 INSERT INTO SUPPLIERS (SUP_supplier_name, SUP_contact_info, SUP_origin_facility)
-SELECT 'NCC_017', 'ANONYMIZED', 'NM Hai Duong'
-WHERE NOT EXISTS (SELECT 1 FROM SUPPLIERS WHERE SUP_supplier_name = 'NCC_017');
+SELECT 'Anh Công xe 44', '', 'NM Hai Duong'
+WHERE NOT EXISTS (SELECT 1 FROM SUPPLIERS WHERE SUP_supplier_name = 'Anh Công xe 44');
 INSERT INTO SUPPLIERS (SUP_supplier_name, SUP_contact_info, SUP_origin_facility)
-SELECT 'NCC_018', 'ANONYMIZED', 'NM Hai Duong'
-WHERE NOT EXISTS (SELECT 1 FROM SUPPLIERS WHERE SUP_supplier_name = 'NCC_018');
+SELECT 'Anh Công xe 45', '', 'NM Hai Duong'
+WHERE NOT EXISTS (SELECT 1 FROM SUPPLIERS WHERE SUP_supplier_name = 'Anh Công xe 45');
 INSERT INTO SUPPLIERS (SUP_supplier_name, SUP_contact_info, SUP_origin_facility)
-SELECT 'NCC_019', 'ANONYMIZED', 'NM Hai Duong'
-WHERE NOT EXISTS (SELECT 1 FROM SUPPLIERS WHERE SUP_supplier_name = 'NCC_019');
+SELECT 'Anh Công xe 46', '', 'NM Hai Duong'
+WHERE NOT EXISTS (SELECT 1 FROM SUPPLIERS WHERE SUP_supplier_name = 'Anh Công xe 46');
 INSERT INTO SUPPLIERS (SUP_supplier_name, SUP_contact_info, SUP_origin_facility)
-SELECT 'NCC_020', 'ANONYMIZED', 'NM Hai Duong'
-WHERE NOT EXISTS (SELECT 1 FROM SUPPLIERS WHERE SUP_supplier_name = 'NCC_020');
+SELECT 'P.A.D', '', 'NM Hai Duong'
+WHERE NOT EXISTS (SELECT 1 FROM SUPPLIERS WHERE SUP_supplier_name = 'P.A.D');
 INSERT INTO SUPPLIERS (SUP_supplier_name, SUP_contact_info, SUP_origin_facility)
-SELECT 'NCC_021', 'ANONYMIZED', 'NM Hai Duong'
-WHERE NOT EXISTS (SELECT 1 FROM SUPPLIERS WHERE SUP_supplier_name = 'NCC_021');
+SELECT 'Chị Giang', '', 'NM Hai Duong'
+WHERE NOT EXISTS (SELECT 1 FROM SUPPLIERS WHERE SUP_supplier_name = 'Chị Giang');
 INSERT INTO SUPPLIERS (SUP_supplier_name, SUP_contact_info, SUP_origin_facility)
-SELECT 'NCC_022', 'ANONYMIZED', 'NM Hai Duong'
-WHERE NOT EXISTS (SELECT 1 FROM SUPPLIERS WHERE SUP_supplier_name = 'NCC_022');
+SELECT 'Khoái Lạc Phúc xe 07', '', 'NM Hai Duong'
+WHERE NOT EXISTS (SELECT 1 FROM SUPPLIERS WHERE SUP_supplier_name = 'Khoái Lạc Phúc xe 07');
 INSERT INTO SUPPLIERS (SUP_supplier_name, SUP_contact_info, SUP_origin_facility)
-SELECT 'NCC_023', 'ANONYMIZED', 'NM Hai Duong'
-WHERE NOT EXISTS (SELECT 1 FROM SUPPLIERS WHERE SUP_supplier_name = 'NCC_023');
+SELECT 'Kiên Vương', '', 'NM Hai Duong'
+WHERE NOT EXISTS (SELECT 1 FROM SUPPLIERS WHERE SUP_supplier_name = 'Kiên Vương');
 INSERT INTO SUPPLIERS (SUP_supplier_name, SUP_contact_info, SUP_origin_facility)
-SELECT 'NCC_024', 'ANONYMIZED', 'NM Hai Duong'
-WHERE NOT EXISTS (SELECT 1 FROM SUPPLIERS WHERE SUP_supplier_name = 'NCC_024');
+SELECT 'Anh Hùng 10', '', 'NM Hai Duong'
+WHERE NOT EXISTS (SELECT 1 FROM SUPPLIERS WHERE SUP_supplier_name = 'Anh Hùng 10');
 INSERT INTO SUPPLIERS (SUP_supplier_name, SUP_contact_info, SUP_origin_facility)
-SELECT 'NCC_025', 'ANONYMIZED', 'NM Hai Duong'
-WHERE NOT EXISTS (SELECT 1 FROM SUPPLIERS WHERE SUP_supplier_name = 'NCC_025');
+SELECT 'Anh Công xe 47', '', 'NM Hai Duong'
+WHERE NOT EXISTS (SELECT 1 FROM SUPPLIERS WHERE SUP_supplier_name = 'Anh Công xe 47');
 INSERT INTO SUPPLIERS (SUP_supplier_name, SUP_contact_info, SUP_origin_facility)
-SELECT 'NCC_026', 'ANONYMIZED', 'NM Hai Duong'
-WHERE NOT EXISTS (SELECT 1 FROM SUPPLIERS WHERE SUP_supplier_name = 'NCC_026');
+SELECT 'Anh Hùng 11', '', 'NM Hai Duong'
+WHERE NOT EXISTS (SELECT 1 FROM SUPPLIERS WHERE SUP_supplier_name = 'Anh Hùng 11');
 INSERT INTO SUPPLIERS (SUP_supplier_name, SUP_contact_info, SUP_origin_facility)
-SELECT 'NCC_027', 'ANONYMIZED', 'NM Hai Duong'
-WHERE NOT EXISTS (SELECT 1 FROM SUPPLIERS WHERE SUP_supplier_name = 'NCC_027');
+SELECT 'Chị Thủy xe 23', '', 'NM Hai Duong'
+WHERE NOT EXISTS (SELECT 1 FROM SUPPLIERS WHERE SUP_supplier_name = 'Chị Thủy xe 23');
 INSERT INTO SUPPLIERS (SUP_supplier_name, SUP_contact_info, SUP_origin_facility)
-SELECT 'NCC_028', 'ANONYMIZED', 'NM Hai Duong'
-WHERE NOT EXISTS (SELECT 1 FROM SUPPLIERS WHERE SUP_supplier_name = 'NCC_028');
+SELECT 'Hưng Yên', '', 'NM Hai Duong'
+WHERE NOT EXISTS (SELECT 1 FROM SUPPLIERS WHERE SUP_supplier_name = 'Hưng Yên');
 INSERT INTO SUPPLIERS (SUP_supplier_name, SUP_contact_info, SUP_origin_facility)
-SELECT 'NCC_029', 'ANONYMIZED', 'NM Hai Duong'
-WHERE NOT EXISTS (SELECT 1 FROM SUPPLIERS WHERE SUP_supplier_name = 'NCC_029');
+SELECT 'Khái Lạc Phúc xe 10', '', 'NM Hai Duong'
+WHERE NOT EXISTS (SELECT 1 FROM SUPPLIERS WHERE SUP_supplier_name = 'Khái Lạc Phúc xe 10');
 INSERT INTO SUPPLIERS (SUP_supplier_name, SUP_contact_info, SUP_origin_facility)
-SELECT 'NCC_030', 'ANONYMIZED', 'NM Hai Duong'
-WHERE NOT EXISTS (SELECT 1 FROM SUPPLIERS WHERE SUP_supplier_name = 'NCC_030');
+SELECT 'Chị Thủy xe 24', '', 'NM Hai Duong'
+WHERE NOT EXISTS (SELECT 1 FROM SUPPLIERS WHERE SUP_supplier_name = 'Chị Thủy xe 24');
 INSERT INTO SUPPLIERS (SUP_supplier_name, SUP_contact_info, SUP_origin_facility)
-SELECT 'NCC_031', 'ANONYMIZED', 'NM Hai Duong'
-WHERE NOT EXISTS (SELECT 1 FROM SUPPLIERS WHERE SUP_supplier_name = 'NCC_031');
+SELECT 'Hồng Dương', '', 'NM Hai Duong'
+WHERE NOT EXISTS (SELECT 1 FROM SUPPLIERS WHERE SUP_supplier_name = 'Hồng Dương');
 INSERT INTO SUPPLIERS (SUP_supplier_name, SUP_contact_info, SUP_origin_facility)
-SELECT 'NCC_032', 'ANONYMIZED', 'NM Hai Duong'
-WHERE NOT EXISTS (SELECT 1 FROM SUPPLIERS WHERE SUP_supplier_name = 'NCC_032');
+SELECT 'Anh Công xe 05', '', 'NM Hai Duong'
+WHERE NOT EXISTS (SELECT 1 FROM SUPPLIERS WHERE SUP_supplier_name = 'Anh Công xe 05');
 INSERT INTO SUPPLIERS (SUP_supplier_name, SUP_contact_info, SUP_origin_facility)
-SELECT 'NCC_033', 'ANONYMIZED', 'NM Hai Duong'
-WHERE NOT EXISTS (SELECT 1 FROM SUPPLIERS WHERE SUP_supplier_name = 'NCC_033');
+SELECT 'Chị Thủy xe 25', '', 'NM Hai Duong'
+WHERE NOT EXISTS (SELECT 1 FROM SUPPLIERS WHERE SUP_supplier_name = 'Chị Thủy xe 25');
 INSERT INTO SUPPLIERS (SUP_supplier_name, SUP_contact_info, SUP_origin_facility)
-SELECT 'NCC_034', 'ANONYMIZED', 'NM Hai Duong'
-WHERE NOT EXISTS (SELECT 1 FROM SUPPLIERS WHERE SUP_supplier_name = 'NCC_034');
+SELECT 'Anh Công xe 06', '', 'NM Hai Duong'
+WHERE NOT EXISTS (SELECT 1 FROM SUPPLIERS WHERE SUP_supplier_name = 'Anh Công xe 06');
 INSERT INTO SUPPLIERS (SUP_supplier_name, SUP_contact_info, SUP_origin_facility)
-SELECT 'NCC_035', 'ANONYMIZED', 'NM Hai Duong'
-WHERE NOT EXISTS (SELECT 1 FROM SUPPLIERS WHERE SUP_supplier_name = 'NCC_035');
+SELECT 'Khoái Lạc Phúc xe 11', '', 'NM Hai Duong'
+WHERE NOT EXISTS (SELECT 1 FROM SUPPLIERS WHERE SUP_supplier_name = 'Khoái Lạc Phúc xe 11');
 INSERT INTO SUPPLIERS (SUP_supplier_name, SUP_contact_info, SUP_origin_facility)
-SELECT 'NCC_036', 'ANONYMIZED', 'NM Hai Duong'
-WHERE NOT EXISTS (SELECT 1 FROM SUPPLIERS WHERE SUP_supplier_name = 'NCC_036');
+SELECT 'Vinasam', '', 'NM Hai Duong'
+WHERE NOT EXISTS (SELECT 1 FROM SUPPLIERS WHERE SUP_supplier_name = 'Vinasam');
 INSERT INTO SUPPLIERS (SUP_supplier_name, SUP_contact_info, SUP_origin_facility)
-SELECT 'NCC_037', 'ANONYMIZED', 'NM Hai Duong'
-WHERE NOT EXISTS (SELECT 1 FROM SUPPLIERS WHERE SUP_supplier_name = 'NCC_037');
+SELECT 'Anh Công xe 07', '', 'NM Hai Duong'
+WHERE NOT EXISTS (SELECT 1 FROM SUPPLIERS WHERE SUP_supplier_name = 'Anh Công xe 07');
 INSERT INTO SUPPLIERS (SUP_supplier_name, SUP_contact_info, SUP_origin_facility)
-SELECT 'NCC_038', 'ANONYMIZED', 'NM Hai Duong'
-WHERE NOT EXISTS (SELECT 1 FROM SUPPLIERS WHERE SUP_supplier_name = 'NCC_038');
+SELECT 'Anh Mười BG', '', 'NM Hai Duong'
+WHERE NOT EXISTS (SELECT 1 FROM SUPPLIERS WHERE SUP_supplier_name = 'Anh Mười BG');
 INSERT INTO SUPPLIERS (SUP_supplier_name, SUP_contact_info, SUP_origin_facility)
-SELECT 'NCC_039', 'ANONYMIZED', 'NM Hai Duong'
-WHERE NOT EXISTS (SELECT 1 FROM SUPPLIERS WHERE SUP_supplier_name = 'NCC_039');
+SELECT 'Khoái Lạc Phúc xe 12', '', 'NM Hai Duong'
+WHERE NOT EXISTS (SELECT 1 FROM SUPPLIERS WHERE SUP_supplier_name = 'Khoái Lạc Phúc xe 12');
 INSERT INTO SUPPLIERS (SUP_supplier_name, SUP_contact_info, SUP_origin_facility)
-SELECT 'NCC_040', 'ANONYMIZED', 'NM Hai Duong'
-WHERE NOT EXISTS (SELECT 1 FROM SUPPLIERS WHERE SUP_supplier_name = 'NCC_040');
+SELECT 'Tân Viêt Anh', '', 'NM Hai Duong'
+WHERE NOT EXISTS (SELECT 1 FROM SUPPLIERS WHERE SUP_supplier_name = 'Tân Viêt Anh');
 INSERT INTO SUPPLIERS (SUP_supplier_name, SUP_contact_info, SUP_origin_facility)
-SELECT 'NCC_041', 'ANONYMIZED', 'NM Hai Duong'
-WHERE NOT EXISTS (SELECT 1 FROM SUPPLIERS WHERE SUP_supplier_name = 'NCC_041');
+SELECT 'Thanh Bình xe 22', '', 'NM Hai Duong'
+WHERE NOT EXISTS (SELECT 1 FROM SUPPLIERS WHERE SUP_supplier_name = 'Thanh Bình xe 22');
 INSERT INTO SUPPLIERS (SUP_supplier_name, SUP_contact_info, SUP_origin_facility)
-SELECT 'NCC_042', 'ANONYMIZED', 'NM Hai Duong'
-WHERE NOT EXISTS (SELECT 1 FROM SUPPLIERS WHERE SUP_supplier_name = 'NCC_042');
+SELECT 'Anh Lực HY', '', 'NM Hai Duong'
+WHERE NOT EXISTS (SELECT 1 FROM SUPPLIERS WHERE SUP_supplier_name = 'Anh Lực HY');
 INSERT INTO SUPPLIERS (SUP_supplier_name, SUP_contact_info, SUP_origin_facility)
-SELECT 'NCC_043', 'ANONYMIZED', 'NM Hai Duong'
-WHERE NOT EXISTS (SELECT 1 FROM SUPPLIERS WHERE SUP_supplier_name = 'NCC_043');
+SELECT 'Anh Công xe 8', '', 'NM Hai Duong'
+WHERE NOT EXISTS (SELECT 1 FROM SUPPLIERS WHERE SUP_supplier_name = 'Anh Công xe 8');
 INSERT INTO SUPPLIERS (SUP_supplier_name, SUP_contact_info, SUP_origin_facility)
-SELECT 'NCC_044', 'ANONYMIZED', 'NM Hai Duong'
-WHERE NOT EXISTS (SELECT 1 FROM SUPPLIERS WHERE SUP_supplier_name = 'NCC_044');
+SELECT 'Anh Thọ xe 35', '', 'NM Hai Duong'
+WHERE NOT EXISTS (SELECT 1 FROM SUPPLIERS WHERE SUP_supplier_name = 'Anh Thọ xe 35');
 INSERT INTO SUPPLIERS (SUP_supplier_name, SUP_contact_info, SUP_origin_facility)
-SELECT 'NCC_045', 'ANONYMIZED', 'NM Hai Duong'
-WHERE NOT EXISTS (SELECT 1 FROM SUPPLIERS WHERE SUP_supplier_name = 'NCC_045');
+SELECT 'Chị Thủy xe 32', '', 'NM Hai Duong'
+WHERE NOT EXISTS (SELECT 1 FROM SUPPLIERS WHERE SUP_supplier_name = 'Chị Thủy xe 32');
 INSERT INTO SUPPLIERS (SUP_supplier_name, SUP_contact_info, SUP_origin_facility)
-SELECT 'NCC_046', 'ANONYMIZED', 'NM Hai Duong'
-WHERE NOT EXISTS (SELECT 1 FROM SUPPLIERS WHERE SUP_supplier_name = 'NCC_046');
+SELECT 'Chị Thủy xe 33', '', 'NM Hai Duong'
+WHERE NOT EXISTS (SELECT 1 FROM SUPPLIERS WHERE SUP_supplier_name = 'Chị Thủy xe 33');
 INSERT INTO SUPPLIERS (SUP_supplier_name, SUP_contact_info, SUP_origin_facility)
-SELECT 'NCC_047', 'ANONYMIZED', 'NM Hai Duong'
-WHERE NOT EXISTS (SELECT 1 FROM SUPPLIERS WHERE SUP_supplier_name = 'NCC_047');
+SELECT 'Khoái Lạc Phúc xe 17', '', 'NM Hai Duong'
+WHERE NOT EXISTS (SELECT 1 FROM SUPPLIERS WHERE SUP_supplier_name = 'Khoái Lạc Phúc xe 17');
 INSERT INTO SUPPLIERS (SUP_supplier_name, SUP_contact_info, SUP_origin_facility)
-SELECT 'NCC_048', 'ANONYMIZED', 'NM Hai Duong'
-WHERE NOT EXISTS (SELECT 1 FROM SUPPLIERS WHERE SUP_supplier_name = 'NCC_048');
+SELECT 'Anh Công xe 09', '', 'NM Hai Duong'
+WHERE NOT EXISTS (SELECT 1 FROM SUPPLIERS WHERE SUP_supplier_name = 'Anh Công xe 09');
 INSERT INTO SUPPLIERS (SUP_supplier_name, SUP_contact_info, SUP_origin_facility)
-SELECT 'NCC_049', 'ANONYMIZED', 'NM Hai Duong'
-WHERE NOT EXISTS (SELECT 1 FROM SUPPLIERS WHERE SUP_supplier_name = 'NCC_049');
+SELECT 'Khoái Lạc Phúc xe 18', '', 'NM Hai Duong'
+WHERE NOT EXISTS (SELECT 1 FROM SUPPLIERS WHERE SUP_supplier_name = 'Khoái Lạc Phúc xe 18');
 INSERT INTO SUPPLIERS (SUP_supplier_name, SUP_contact_info, SUP_origin_facility)
-SELECT 'NCC_050', 'ANONYMIZED', 'NM Hai Duong'
-WHERE NOT EXISTS (SELECT 1 FROM SUPPLIERS WHERE SUP_supplier_name = 'NCC_050');
+SELECT 'Khoái Lạc Phúc xe 19', '', 'NM Hai Duong'
+WHERE NOT EXISTS (SELECT 1 FROM SUPPLIERS WHERE SUP_supplier_name = 'Khoái Lạc Phúc xe 19');
 INSERT INTO SUPPLIERS (SUP_supplier_name, SUP_contact_info, SUP_origin_facility)
-SELECT 'NCC_051', 'ANONYMIZED', 'NM Hai Duong'
-WHERE NOT EXISTS (SELECT 1 FROM SUPPLIERS WHERE SUP_supplier_name = 'NCC_051');
+SELECT 'Vĩnh Nam Anh', '', 'NM Hai Duong'
+WHERE NOT EXISTS (SELECT 1 FROM SUPPLIERS WHERE SUP_supplier_name = 'Vĩnh Nam Anh');
 INSERT INTO SUPPLIERS (SUP_supplier_name, SUP_contact_info, SUP_origin_facility)
-SELECT 'NCC_052', 'ANONYMIZED', 'NM Hai Duong'
-WHERE NOT EXISTS (SELECT 1 FROM SUPPLIERS WHERE SUP_supplier_name = 'NCC_052');
+SELECT 'Gửi xe', '', 'NM Hai Duong'
+WHERE NOT EXISTS (SELECT 1 FROM SUPPLIERS WHERE SUP_supplier_name = 'Gửi xe');
 INSERT INTO SUPPLIERS (SUP_supplier_name, SUP_contact_info, SUP_origin_facility)
-SELECT 'NCC_053', 'ANONYMIZED', 'NM Hai Duong'
-WHERE NOT EXISTS (SELECT 1 FROM SUPPLIERS WHERE SUP_supplier_name = 'NCC_053');
+SELECT 'Chị Ngát Xe 1', '', 'NM Hai Duong'
+WHERE NOT EXISTS (SELECT 1 FROM SUPPLIERS WHERE SUP_supplier_name = 'Chị Ngát Xe 1');
 INSERT INTO SUPPLIERS (SUP_supplier_name, SUP_contact_info, SUP_origin_facility)
-SELECT 'NCC_054', 'ANONYMIZED', 'NM Hai Duong'
-WHERE NOT EXISTS (SELECT 1 FROM SUPPLIERS WHERE SUP_supplier_name = 'NCC_054');
+SELECT 'Chị Ngát Xe 2', '', 'NM Hai Duong'
+WHERE NOT EXISTS (SELECT 1 FROM SUPPLIERS WHERE SUP_supplier_name = 'Chị Ngát Xe 2');
 INSERT INTO SUPPLIERS (SUP_supplier_name, SUP_contact_info, SUP_origin_facility)
-SELECT 'NCC_055', 'ANONYMIZED', 'NM Hai Duong'
-WHERE NOT EXISTS (SELECT 1 FROM SUPPLIERS WHERE SUP_supplier_name = 'NCC_055');
+SELECT 'Trung Quốc', '', 'NM Hai Duong'
+WHERE NOT EXISTS (SELECT 1 FROM SUPPLIERS WHERE SUP_supplier_name = 'Trung Quốc');
 INSERT INTO SUPPLIERS (SUP_supplier_name, SUP_contact_info, SUP_origin_facility)
-SELECT 'NCC_056', 'ANONYMIZED', 'NM Hai Duong'
-WHERE NOT EXISTS (SELECT 1 FROM SUPPLIERS WHERE SUP_supplier_name = 'NCC_056');
+SELECT 'Anh Nghị xe 1', '', 'NM Hai Duong'
+WHERE NOT EXISTS (SELECT 1 FROM SUPPLIERS WHERE SUP_supplier_name = 'Anh Nghị xe 1');
 INSERT INTO SUPPLIERS (SUP_supplier_name, SUP_contact_info, SUP_origin_facility)
-SELECT 'NCC_057', 'ANONYMIZED', 'NM Hai Duong'
-WHERE NOT EXISTS (SELECT 1 FROM SUPPLIERS WHERE SUP_supplier_name = 'NCC_057');
+SELECT 'Anh Nghị xe 2', '', 'NM Hai Duong'
+WHERE NOT EXISTS (SELECT 1 FROM SUPPLIERS WHERE SUP_supplier_name = 'Anh Nghị xe 2');
 INSERT INTO SUPPLIERS (SUP_supplier_name, SUP_contact_info, SUP_origin_facility)
-SELECT 'NCC_058', 'ANONYMIZED', 'NM Hai Duong'
-WHERE NOT EXISTS (SELECT 1 FROM SUPPLIERS WHERE SUP_supplier_name = 'NCC_058');
+SELECT 'Chị Ngát Xe 3', '', 'NM Hai Duong'
+WHERE NOT EXISTS (SELECT 1 FROM SUPPLIERS WHERE SUP_supplier_name = 'Chị Ngát Xe 3');
 INSERT INTO SUPPLIERS (SUP_supplier_name, SUP_contact_info, SUP_origin_facility)
-SELECT 'NCC_059', 'ANONYMIZED', 'NM Hai Duong'
-WHERE NOT EXISTS (SELECT 1 FROM SUPPLIERS WHERE SUP_supplier_name = 'NCC_059');
+SELECT 'Anh Nghị xe 3', '', 'NM Hai Duong'
+WHERE NOT EXISTS (SELECT 1 FROM SUPPLIERS WHERE SUP_supplier_name = 'Anh Nghị xe 3');
 INSERT INTO SUPPLIERS (SUP_supplier_name, SUP_contact_info, SUP_origin_facility)
-SELECT 'NCC_060', 'ANONYMIZED', 'NM Hai Duong'
-WHERE NOT EXISTS (SELECT 1 FROM SUPPLIERS WHERE SUP_supplier_name = 'NCC_060');
+SELECT 'Anh Chiến', '', 'NM Hai Duong'
+WHERE NOT EXISTS (SELECT 1 FROM SUPPLIERS WHERE SUP_supplier_name = 'Anh Chiến');
 INSERT INTO SUPPLIERS (SUP_supplier_name, SUP_contact_info, SUP_origin_facility)
-SELECT 'NCC_061', 'ANONYMIZED', 'NM Hai Duong'
-WHERE NOT EXISTS (SELECT 1 FROM SUPPLIERS WHERE SUP_supplier_name = 'NCC_061');
+SELECT 'Anh Nghị xe 4', '', 'NM Hai Duong'
+WHERE NOT EXISTS (SELECT 1 FROM SUPPLIERS WHERE SUP_supplier_name = 'Anh Nghị xe 4');
 INSERT INTO SUPPLIERS (SUP_supplier_name, SUP_contact_info, SUP_origin_facility)
-SELECT 'NCC_062', 'ANONYMIZED', 'NM Hai Duong'
-WHERE NOT EXISTS (SELECT 1 FROM SUPPLIERS WHERE SUP_supplier_name = 'NCC_062');
+SELECT 'Anh Nghị xe 5', '', 'NM Hai Duong'
+WHERE NOT EXISTS (SELECT 1 FROM SUPPLIERS WHERE SUP_supplier_name = 'Anh Nghị xe 5');
 INSERT INTO SUPPLIERS (SUP_supplier_name, SUP_contact_info, SUP_origin_facility)
-SELECT 'NCC_063', 'ANONYMIZED', 'NM Hai Duong'
-WHERE NOT EXISTS (SELECT 1 FROM SUPPLIERS WHERE SUP_supplier_name = 'NCC_063');
+SELECT 'HLC', '', 'NM Hai Duong'
+WHERE NOT EXISTS (SELECT 1 FROM SUPPLIERS WHERE SUP_supplier_name = 'HLC');
 INSERT INTO SUPPLIERS (SUP_supplier_name, SUP_contact_info, SUP_origin_facility)
-SELECT 'NCC_064', 'ANONYMIZED', 'NM Hai Duong'
-WHERE NOT EXISTS (SELECT 1 FROM SUPPLIERS WHERE SUP_supplier_name = 'NCC_064');
+SELECT 'Anh Nghị xe 6', '', 'NM Hai Duong'
+WHERE NOT EXISTS (SELECT 1 FROM SUPPLIERS WHERE SUP_supplier_name = 'Anh Nghị xe 6');
 INSERT INTO SUPPLIERS (SUP_supplier_name, SUP_contact_info, SUP_origin_facility)
-SELECT 'NCC_065', 'ANONYMIZED', 'NM Hai Duong'
-WHERE NOT EXISTS (SELECT 1 FROM SUPPLIERS WHERE SUP_supplier_name = 'NCC_065');
+SELECT 'Anh Nghị xe 7', '', 'NM Hai Duong'
+WHERE NOT EXISTS (SELECT 1 FROM SUPPLIERS WHERE SUP_supplier_name = 'Anh Nghị xe 7');
 INSERT INTO SUPPLIERS (SUP_supplier_name, SUP_contact_info, SUP_origin_facility)
-SELECT 'NCC_066', 'ANONYMIZED', 'NM Hai Duong'
-WHERE NOT EXISTS (SELECT 1 FROM SUPPLIERS WHERE SUP_supplier_name = 'NCC_066');
+SELECT '2 CONT', '', 'NM Hai Duong'
+WHERE NOT EXISTS (SELECT 1 FROM SUPPLIERS WHERE SUP_supplier_name = '2 CONT');
 INSERT INTO SUPPLIERS (SUP_supplier_name, SUP_contact_info, SUP_origin_facility)
-SELECT 'NCC_067', 'ANONYMIZED', 'NM Hai Duong'
-WHERE NOT EXISTS (SELECT 1 FROM SUPPLIERS WHERE SUP_supplier_name = 'NCC_067');
+SELECT 'Anh Dưỡng xe 1', '', 'NM Hai Duong'
+WHERE NOT EXISTS (SELECT 1 FROM SUPPLIERS WHERE SUP_supplier_name = 'Anh Dưỡng xe 1');
 INSERT INTO SUPPLIERS (SUP_supplier_name, SUP_contact_info, SUP_origin_facility)
-SELECT 'NCC_068', 'ANONYMIZED', 'NM Hai Duong'
-WHERE NOT EXISTS (SELECT 1 FROM SUPPLIERS WHERE SUP_supplier_name = 'NCC_068');
+SELECT 'VPHN', '', 'NM Hai Duong'
+WHERE NOT EXISTS (SELECT 1 FROM SUPPLIERS WHERE SUP_supplier_name = 'VPHN');
 INSERT INTO SUPPLIERS (SUP_supplier_name, SUP_contact_info, SUP_origin_facility)
-SELECT 'NCC_069', 'ANONYMIZED', 'NM Hai Duong'
-WHERE NOT EXISTS (SELECT 1 FROM SUPPLIERS WHERE SUP_supplier_name = 'NCC_069');
+SELECT 'Anh Nghị xe 8', '', 'NM Hai Duong'
+WHERE NOT EXISTS (SELECT 1 FROM SUPPLIERS WHERE SUP_supplier_name = 'Anh Nghị xe 8');
 INSERT INTO SUPPLIERS (SUP_supplier_name, SUP_contact_info, SUP_origin_facility)
-SELECT 'NCC_070', 'ANONYMIZED', 'NM Hai Duong'
-WHERE NOT EXISTS (SELECT 1 FROM SUPPLIERS WHERE SUP_supplier_name = 'NCC_070');
+SELECT 'Chị Ngát xe 4', '', 'NM Hai Duong'
+WHERE NOT EXISTS (SELECT 1 FROM SUPPLIERS WHERE SUP_supplier_name = 'Chị Ngát xe 4');
 INSERT INTO SUPPLIERS (SUP_supplier_name, SUP_contact_info, SUP_origin_facility)
-SELECT 'NCC_071', 'ANONYMIZED', 'NM Hai Duong'
-WHERE NOT EXISTS (SELECT 1 FROM SUPPLIERS WHERE SUP_supplier_name = 'NCC_071');
+SELECT 'ANh Tuyến', '', 'NM Hai Duong'
+WHERE NOT EXISTS (SELECT 1 FROM SUPPLIERS WHERE SUP_supplier_name = 'ANh Tuyến');
 INSERT INTO SUPPLIERS (SUP_supplier_name, SUP_contact_info, SUP_origin_facility)
-SELECT 'NCC_072', 'ANONYMIZED', 'NM Hai Duong'
-WHERE NOT EXISTS (SELECT 1 FROM SUPPLIERS WHERE SUP_supplier_name = 'NCC_072');
+SELECT 'ANh Dưỡng xe 2', '', 'NM Hai Duong'
+WHERE NOT EXISTS (SELECT 1 FROM SUPPLIERS WHERE SUP_supplier_name = 'ANh Dưỡng xe 2');
 INSERT INTO SUPPLIERS (SUP_supplier_name, SUP_contact_info, SUP_origin_facility)
-SELECT 'NCC_073', 'ANONYMIZED', 'NM Hai Duong'
-WHERE NOT EXISTS (SELECT 1 FROM SUPPLIERS WHERE SUP_supplier_name = 'NCC_073');
+SELECT 'ANh Dưỡng xe 3', '', 'NM Hai Duong'
+WHERE NOT EXISTS (SELECT 1 FROM SUPPLIERS WHERE SUP_supplier_name = 'ANh Dưỡng xe 3');
 INSERT INTO SUPPLIERS (SUP_supplier_name, SUP_contact_info, SUP_origin_facility)
-SELECT 'NCC_074', 'ANONYMIZED', 'NM Hai Duong'
-WHERE NOT EXISTS (SELECT 1 FROM SUPPLIERS WHERE SUP_supplier_name = 'NCC_074');
+SELECT 'Anh Nghị xe 9', '', 'NM Hai Duong'
+WHERE NOT EXISTS (SELECT 1 FROM SUPPLIERS WHERE SUP_supplier_name = 'Anh Nghị xe 9');
 INSERT INTO SUPPLIERS (SUP_supplier_name, SUP_contact_info, SUP_origin_facility)
-SELECT 'NCC_075', 'ANONYMIZED', 'NM Hai Duong'
-WHERE NOT EXISTS (SELECT 1 FROM SUPPLIERS WHERE SUP_supplier_name = 'NCC_075');
+SELECT 'Anh Nghị xe 10', '', 'NM Hai Duong'
+WHERE NOT EXISTS (SELECT 1 FROM SUPPLIERS WHERE SUP_supplier_name = 'Anh Nghị xe 10');
 INSERT INTO SUPPLIERS (SUP_supplier_name, SUP_contact_info, SUP_origin_facility)
-SELECT 'NCC_076', 'ANONYMIZED', 'NM Hai Duong'
-WHERE NOT EXISTS (SELECT 1 FROM SUPPLIERS WHERE SUP_supplier_name = 'NCC_076');
+SELECT 'Anh Nghị xe 11', '', 'NM Hai Duong'
+WHERE NOT EXISTS (SELECT 1 FROM SUPPLIERS WHERE SUP_supplier_name = 'Anh Nghị xe 11');
 INSERT INTO SUPPLIERS (SUP_supplier_name, SUP_contact_info, SUP_origin_facility)
-SELECT 'NCC_077', 'ANONYMIZED', 'NM Hai Duong'
-WHERE NOT EXISTS (SELECT 1 FROM SUPPLIERS WHERE SUP_supplier_name = 'NCC_077');
+SELECT 'Anh Nghị xe 12', '', 'NM Hai Duong'
+WHERE NOT EXISTS (SELECT 1 FROM SUPPLIERS WHERE SUP_supplier_name = 'Anh Nghị xe 12');
 INSERT INTO SUPPLIERS (SUP_supplier_name, SUP_contact_info, SUP_origin_facility)
-SELECT 'NCC_078', 'ANONYMIZED', 'NM Hai Duong'
-WHERE NOT EXISTS (SELECT 1 FROM SUPPLIERS WHERE SUP_supplier_name = 'NCC_078');
+SELECT 'Lọ tái chế', '', 'NM Hai Duong'
+WHERE NOT EXISTS (SELECT 1 FROM SUPPLIERS WHERE SUP_supplier_name = 'Lọ tái chế');
 INSERT INTO SUPPLIERS (SUP_supplier_name, SUP_contact_info, SUP_origin_facility)
-SELECT 'NCC_079', 'ANONYMIZED', 'NM Hai Duong'
-WHERE NOT EXISTS (SELECT 1 FROM SUPPLIERS WHERE SUP_supplier_name = 'NCC_079');
+SELECT 'Anh Tuyến xe 1', '', 'NM Hai Duong'
+WHERE NOT EXISTS (SELECT 1 FROM SUPPLIERS WHERE SUP_supplier_name = 'Anh Tuyến xe 1');
 INSERT INTO SUPPLIERS (SUP_supplier_name, SUP_contact_info, SUP_origin_facility)
-SELECT 'NCC_080', 'ANONYMIZED', 'NM Hai Duong'
-WHERE NOT EXISTS (SELECT 1 FROM SUPPLIERS WHERE SUP_supplier_name = 'NCC_080');
+SELECT 'Anh Tuyến xe 2', '', 'NM Hai Duong'
+WHERE NOT EXISTS (SELECT 1 FROM SUPPLIERS WHERE SUP_supplier_name = 'Anh Tuyến xe 2');
 INSERT INTO SUPPLIERS (SUP_supplier_name, SUP_contact_info, SUP_origin_facility)
-SELECT 'NCC_081', 'ANONYMIZED', 'NM Hai Duong'
-WHERE NOT EXISTS (SELECT 1 FROM SUPPLIERS WHERE SUP_supplier_name = 'NCC_081');
+SELECT 'Anh Đại xe 1', '', 'NM Hai Duong'
+WHERE NOT EXISTS (SELECT 1 FROM SUPPLIERS WHERE SUP_supplier_name = 'Anh Đại xe 1');
 INSERT INTO SUPPLIERS (SUP_supplier_name, SUP_contact_info, SUP_origin_facility)
-SELECT 'NCC_082', 'ANONYMIZED', 'NM Hai Duong'
-WHERE NOT EXISTS (SELECT 1 FROM SUPPLIERS WHERE SUP_supplier_name = 'NCC_082');
+SELECT 'Anh Tuyến xe 3', '', 'NM Hai Duong'
+WHERE NOT EXISTS (SELECT 1 FROM SUPPLIERS WHERE SUP_supplier_name = 'Anh Tuyến xe 3');
 INSERT INTO SUPPLIERS (SUP_supplier_name, SUP_contact_info, SUP_origin_facility)
-SELECT 'NCC_083', 'ANONYMIZED', 'NM Hai Duong'
-WHERE NOT EXISTS (SELECT 1 FROM SUPPLIERS WHERE SUP_supplier_name = 'NCC_083');
+SELECT 'Anh Đại xe 2', '', 'NM Hai Duong'
+WHERE NOT EXISTS (SELECT 1 FROM SUPPLIERS WHERE SUP_supplier_name = 'Anh Đại xe 2');
 INSERT INTO SUPPLIERS (SUP_supplier_name, SUP_contact_info, SUP_origin_facility)
-SELECT 'NCC_084', 'ANONYMIZED', 'NM Hai Duong'
-WHERE NOT EXISTS (SELECT 1 FROM SUPPLIERS WHERE SUP_supplier_name = 'NCC_084');
+SELECT 'Anh Đại xe 3', '', 'NM Hai Duong'
+WHERE NOT EXISTS (SELECT 1 FROM SUPPLIERS WHERE SUP_supplier_name = 'Anh Đại xe 3');
 INSERT INTO SUPPLIERS (SUP_supplier_name, SUP_contact_info, SUP_origin_facility)
-SELECT 'NCC_085', 'ANONYMIZED', 'NM Hai Duong'
-WHERE NOT EXISTS (SELECT 1 FROM SUPPLIERS WHERE SUP_supplier_name = 'NCC_085');
+SELECT 'Chị Ngát xe 5', '', 'NM Hai Duong'
+WHERE NOT EXISTS (SELECT 1 FROM SUPPLIERS WHERE SUP_supplier_name = 'Chị Ngát xe 5');
 INSERT INTO SUPPLIERS (SUP_supplier_name, SUP_contact_info, SUP_origin_facility)
-SELECT 'NCC_086', 'ANONYMIZED', 'NM Hai Duong'
-WHERE NOT EXISTS (SELECT 1 FROM SUPPLIERS WHERE SUP_supplier_name = 'NCC_086');
+SELECT 'Chị Ngát xe 6', '', 'NM Hai Duong'
+WHERE NOT EXISTS (SELECT 1 FROM SUPPLIERS WHERE SUP_supplier_name = 'Chị Ngát xe 6');
 INSERT INTO SUPPLIERS (SUP_supplier_name, SUP_contact_info, SUP_origin_facility)
-SELECT 'NCC_087', 'ANONYMIZED', 'NM Hai Duong'
-WHERE NOT EXISTS (SELECT 1 FROM SUPPLIERS WHERE SUP_supplier_name = 'NCC_087');
+SELECT 'Chị Ngát xe 7', '', 'NM Hai Duong'
+WHERE NOT EXISTS (SELECT 1 FROM SUPPLIERS WHERE SUP_supplier_name = 'Chị Ngát xe 7');
 INSERT INTO SUPPLIERS (SUP_supplier_name, SUP_contact_info, SUP_origin_facility)
-SELECT 'NCC_088', 'ANONYMIZED', 'NM Hai Duong'
-WHERE NOT EXISTS (SELECT 1 FROM SUPPLIERS WHERE SUP_supplier_name = 'NCC_088');
+SELECT 'Chị Ngát xe 8', '', 'NM Hai Duong'
+WHERE NOT EXISTS (SELECT 1 FROM SUPPLIERS WHERE SUP_supplier_name = 'Chị Ngát xe 8');
 INSERT INTO SUPPLIERS (SUP_supplier_name, SUP_contact_info, SUP_origin_facility)
-SELECT 'NCC_089', 'ANONYMIZED', 'NM Hai Duong'
-WHERE NOT EXISTS (SELECT 1 FROM SUPPLIERS WHERE SUP_supplier_name = 'NCC_089');
+SELECT 'Chị Ngát xe 9', '', 'NM Hai Duong'
+WHERE NOT EXISTS (SELECT 1 FROM SUPPLIERS WHERE SUP_supplier_name = 'Chị Ngát xe 9');
 INSERT INTO SUPPLIERS (SUP_supplier_name, SUP_contact_info, SUP_origin_facility)
-SELECT 'NCC_090', 'ANONYMIZED', 'NM Hai Duong'
-WHERE NOT EXISTS (SELECT 1 FROM SUPPLIERS WHERE SUP_supplier_name = 'NCC_090');
+SELECT 'Chị Ngát xe 10', '', 'NM Hai Duong'
+WHERE NOT EXISTS (SELECT 1 FROM SUPPLIERS WHERE SUP_supplier_name = 'Chị Ngát xe 10');
 INSERT INTO SUPPLIERS (SUP_supplier_name, SUP_contact_info, SUP_origin_facility)
-SELECT 'NCC_091', 'ANONYMIZED', 'NM Hai Duong'
-WHERE NOT EXISTS (SELECT 1 FROM SUPPLIERS WHERE SUP_supplier_name = 'NCC_091');
+SELECT 'Anh Nghị xe 01', '', 'NM Hai Duong'
+WHERE NOT EXISTS (SELECT 1 FROM SUPPLIERS WHERE SUP_supplier_name = 'Anh Nghị xe 01');
 INSERT INTO SUPPLIERS (SUP_supplier_name, SUP_contact_info, SUP_origin_facility)
-SELECT 'NCC_092', 'ANONYMIZED', 'NM Hai Duong'
-WHERE NOT EXISTS (SELECT 1 FROM SUPPLIERS WHERE SUP_supplier_name = 'NCC_092');
+SELECT 'Anh Nghị xe 02', '', 'NM Hai Duong'
+WHERE NOT EXISTS (SELECT 1 FROM SUPPLIERS WHERE SUP_supplier_name = 'Anh Nghị xe 02');
 INSERT INTO SUPPLIERS (SUP_supplier_name, SUP_contact_info, SUP_origin_facility)
-SELECT 'NCC_093', 'ANONYMIZED', 'NM Hai Duong'
-WHERE NOT EXISTS (SELECT 1 FROM SUPPLIERS WHERE SUP_supplier_name = 'NCC_093');
+SELECT 'Anh Nghị xe 03', '', 'NM Hai Duong'
+WHERE NOT EXISTS (SELECT 1 FROM SUPPLIERS WHERE SUP_supplier_name = 'Anh Nghị xe 03');
 INSERT INTO SUPPLIERS (SUP_supplier_name, SUP_contact_info, SUP_origin_facility)
-SELECT 'NCC_094', 'ANONYMIZED', 'NM Hai Duong'
-WHERE NOT EXISTS (SELECT 1 FROM SUPPLIERS WHERE SUP_supplier_name = 'NCC_094');
+SELECT 'Lọ tái chế hàng hủy', '', 'NM Hai Duong'
+WHERE NOT EXISTS (SELECT 1 FROM SUPPLIERS WHERE SUP_supplier_name = 'Lọ tái chế hàng hủy');
 INSERT INTO SUPPLIERS (SUP_supplier_name, SUP_contact_info, SUP_origin_facility)
-SELECT 'NCC_095', 'ANONYMIZED', 'NM Hai Duong'
-WHERE NOT EXISTS (SELECT 1 FROM SUPPLIERS WHERE SUP_supplier_name = 'NCC_095');
+SELECT 'Anh Nghị xe 04', '', 'NM Hai Duong'
+WHERE NOT EXISTS (SELECT 1 FROM SUPPLIERS WHERE SUP_supplier_name = 'Anh Nghị xe 04');
 INSERT INTO SUPPLIERS (SUP_supplier_name, SUP_contact_info, SUP_origin_facility)
-SELECT 'NCC_096', 'ANONYMIZED', 'NM Hai Duong'
-WHERE NOT EXISTS (SELECT 1 FROM SUPPLIERS WHERE SUP_supplier_name = 'NCC_096');
+SELECT 'Trang điểm gọt', '', 'NM Hai Duong'
+WHERE NOT EXISTS (SELECT 1 FROM SUPPLIERS WHERE SUP_supplier_name = 'Trang điểm gọt');
 INSERT INTO SUPPLIERS (SUP_supplier_name, SUP_contact_info, SUP_origin_facility)
-SELECT 'NCC_097', 'ANONYMIZED', 'NM Hai Duong'
-WHERE NOT EXISTS (SELECT 1 FROM SUPPLIERS WHERE SUP_supplier_name = 'NCC_097');
+SELECT 'Anh Nghị xe 05', '', 'NM Hai Duong'
+WHERE NOT EXISTS (SELECT 1 FROM SUPPLIERS WHERE SUP_supplier_name = 'Anh Nghị xe 05');
 INSERT INTO SUPPLIERS (SUP_supplier_name, SUP_contact_info, SUP_origin_facility)
-SELECT 'NCC_098', 'ANONYMIZED', 'NM Hai Duong'
-WHERE NOT EXISTS (SELECT 1 FROM SUPPLIERS WHERE SUP_supplier_name = 'NCC_098');
+SELECT 'Anh Nghị xe 06', '', 'NM Hai Duong'
+WHERE NOT EXISTS (SELECT 1 FROM SUPPLIERS WHERE SUP_supplier_name = 'Anh Nghị xe 06');
 INSERT INTO SUPPLIERS (SUP_supplier_name, SUP_contact_info, SUP_origin_facility)
-SELECT 'NCC_099', 'ANONYMIZED', 'NM Hai Duong'
-WHERE NOT EXISTS (SELECT 1 FROM SUPPLIERS WHERE SUP_supplier_name = 'NCC_099');
+SELECT 'Anh Nghị xe 07', '', 'NM Hai Duong'
+WHERE NOT EXISTS (SELECT 1 FROM SUPPLIERS WHERE SUP_supplier_name = 'Anh Nghị xe 07');
 INSERT INTO SUPPLIERS (SUP_supplier_name, SUP_contact_info, SUP_origin_facility)
-SELECT 'NCC_100', 'ANONYMIZED', 'NM Hai Duong'
-WHERE NOT EXISTS (SELECT 1 FROM SUPPLIERS WHERE SUP_supplier_name = 'NCC_100');
+SELECT 'Hoàng Gửi', '', 'NM Hai Duong'
+WHERE NOT EXISTS (SELECT 1 FROM SUPPLIERS WHERE SUP_supplier_name = 'Hoàng Gửi');
 INSERT INTO SUPPLIERS (SUP_supplier_name, SUP_contact_info, SUP_origin_facility)
-SELECT 'NCC_101', 'ANONYMIZED', 'NM Hai Duong'
-WHERE NOT EXISTS (SELECT 1 FROM SUPPLIERS WHERE SUP_supplier_name = 'NCC_101');
+SELECT 'Anh Nghị xe 08', '', 'NM Hai Duong'
+WHERE NOT EXISTS (SELECT 1 FROM SUPPLIERS WHERE SUP_supplier_name = 'Anh Nghị xe 08');
 INSERT INTO SUPPLIERS (SUP_supplier_name, SUP_contact_info, SUP_origin_facility)
-SELECT 'NCC_102', 'ANONYMIZED', 'NM Hai Duong'
-WHERE NOT EXISTS (SELECT 1 FROM SUPPLIERS WHERE SUP_supplier_name = 'NCC_102');
+SELECT 'Anh Nghị xe 09', '', 'NM Hai Duong'
+WHERE NOT EXISTS (SELECT 1 FROM SUPPLIERS WHERE SUP_supplier_name = 'Anh Nghị xe 09');
 INSERT INTO SUPPLIERS (SUP_supplier_name, SUP_contact_info, SUP_origin_facility)
-SELECT 'NCC_103', 'ANONYMIZED', 'NM Hai Duong'
-WHERE NOT EXISTS (SELECT 1 FROM SUPPLIERS WHERE SUP_supplier_name = 'NCC_103');
+SELECT 'Anh Công xe 10', '', 'NM Hai Duong'
+WHERE NOT EXISTS (SELECT 1 FROM SUPPLIERS WHERE SUP_supplier_name = 'Anh Công xe 10');
 INSERT INTO SUPPLIERS (SUP_supplier_name, SUP_contact_info, SUP_origin_facility)
-SELECT 'NCC_104', 'ANONYMIZED', 'NM Hai Duong'
-WHERE NOT EXISTS (SELECT 1 FROM SUPPLIERS WHERE SUP_supplier_name = 'NCC_104');
+SELECT 'Anh Hùng xe 18', '', 'NM Hai Duong'
+WHERE NOT EXISTS (SELECT 1 FROM SUPPLIERS WHERE SUP_supplier_name = 'Anh Hùng xe 18');
 INSERT INTO SUPPLIERS (SUP_supplier_name, SUP_contact_info, SUP_origin_facility)
-SELECT 'NCC_105', 'ANONYMIZED', 'NM Hai Duong'
-WHERE NOT EXISTS (SELECT 1 FROM SUPPLIERS WHERE SUP_supplier_name = 'NCC_105');
+SELECT 'Hàng TQ', '', 'NM Hai Duong'
+WHERE NOT EXISTS (SELECT 1 FROM SUPPLIERS WHERE SUP_supplier_name = 'Hàng TQ');
 INSERT INTO SUPPLIERS (SUP_supplier_name, SUP_contact_info, SUP_origin_facility)
-SELECT 'NCC_106', 'ANONYMIZED', 'NM Hai Duong'
-WHERE NOT EXISTS (SELECT 1 FROM SUPPLIERS WHERE SUP_supplier_name = 'NCC_106');
+SELECT 'Anh Tứ xe 77', '', 'NM Hai Duong'
+WHERE NOT EXISTS (SELECT 1 FROM SUPPLIERS WHERE SUP_supplier_name = 'Anh Tứ xe 77');
 INSERT INTO SUPPLIERS (SUP_supplier_name, SUP_contact_info, SUP_origin_facility)
-SELECT 'NCC_107', 'ANONYMIZED', 'NM Hai Duong'
-WHERE NOT EXISTS (SELECT 1 FROM SUPPLIERS WHERE SUP_supplier_name = 'NCC_107');
+SELECT 'Sơ chế dứa NCC Loan Tam Kỳ', '', 'NM Hai Duong'
+WHERE NOT EXISTS (SELECT 1 FROM SUPPLIERS WHERE SUP_supplier_name = 'Sơ chế dứa NCC Loan Tam Kỳ');
 INSERT INTO SUPPLIERS (SUP_supplier_name, SUP_contact_info, SUP_origin_facility)
-SELECT 'NCC_108', 'ANONYMIZED', 'NM Hai Duong'
-WHERE NOT EXISTS (SELECT 1 FROM SUPPLIERS WHERE SUP_supplier_name = 'NCC_108');
+SELECT 'Anh Tứ xe 78', '', 'NM Hai Duong'
+WHERE NOT EXISTS (SELECT 1 FROM SUPPLIERS WHERE SUP_supplier_name = 'Anh Tứ xe 78');
 INSERT INTO SUPPLIERS (SUP_supplier_name, SUP_contact_info, SUP_origin_facility)
-SELECT 'NCC_109', 'ANONYMIZED', 'NM Hai Duong'
-WHERE NOT EXISTS (SELECT 1 FROM SUPPLIERS WHERE SUP_supplier_name = 'NCC_109');
+SELECT 'Sơ chế', '', 'NM Hai Duong'
+WHERE NOT EXISTS (SELECT 1 FROM SUPPLIERS WHERE SUP_supplier_name = 'Sơ chế');
 INSERT INTO SUPPLIERS (SUP_supplier_name, SUP_contact_info, SUP_origin_facility)
-SELECT 'NCC_110', 'ANONYMIZED', 'NM Hai Duong'
-WHERE NOT EXISTS (SELECT 1 FROM SUPPLIERS WHERE SUP_supplier_name = 'NCC_110');
+SELECT 'Anh Thọ xe 58', '', 'NM Hai Duong'
+WHERE NOT EXISTS (SELECT 1 FROM SUPPLIERS WHERE SUP_supplier_name = 'Anh Thọ xe 58');
 INSERT INTO SUPPLIERS (SUP_supplier_name, SUP_contact_info, SUP_origin_facility)
-SELECT 'NCC_111', 'ANONYMIZED', 'NM Hai Duong'
-WHERE NOT EXISTS (SELECT 1 FROM SUPPLIERS WHERE SUP_supplier_name = 'NCC_111');
+SELECT 'Anh Thọ xe 62', '', 'NM Hai Duong'
+WHERE NOT EXISTS (SELECT 1 FROM SUPPLIERS WHERE SUP_supplier_name = 'Anh Thọ xe 62');
 INSERT INTO SUPPLIERS (SUP_supplier_name, SUP_contact_info, SUP_origin_facility)
-SELECT 'NCC_112', 'ANONYMIZED', 'NM Hai Duong'
-WHERE NOT EXISTS (SELECT 1 FROM SUPPLIERS WHERE SUP_supplier_name = 'NCC_112');
+SELECT 'Chú Tứ xe 80', '', 'NM Hai Duong'
+WHERE NOT EXISTS (SELECT 1 FROM SUPPLIERS WHERE SUP_supplier_name = 'Chú Tứ xe 80');
 INSERT INTO SUPPLIERS (SUP_supplier_name, SUP_contact_info, SUP_origin_facility)
-SELECT 'NCC_113', 'ANONYMIZED', 'NM Hai Duong'
-WHERE NOT EXISTS (SELECT 1 FROM SUPPLIERS WHERE SUP_supplier_name = 'NCC_113');
+SELECT 'Chú Tứ xe 82', '', 'NM Hai Duong'
+WHERE NOT EXISTS (SELECT 1 FROM SUPPLIERS WHERE SUP_supplier_name = 'Chú Tứ xe 82');
 INSERT INTO SUPPLIERS (SUP_supplier_name, SUP_contact_info, SUP_origin_facility)
-SELECT 'NCC_114', 'ANONYMIZED', 'NM Hai Duong'
-WHERE NOT EXISTS (SELECT 1 FROM SUPPLIERS WHERE SUP_supplier_name = 'NCC_114');
+SELECT 'Chú Tứ xe 83', '', 'NM Hai Duong'
+WHERE NOT EXISTS (SELECT 1 FROM SUPPLIERS WHERE SUP_supplier_name = 'Chú Tứ xe 83');
 INSERT INTO SUPPLIERS (SUP_supplier_name, SUP_contact_info, SUP_origin_facility)
-SELECT 'NCC_115', 'ANONYMIZED', 'NM Hai Duong'
-WHERE NOT EXISTS (SELECT 1 FROM SUPPLIERS WHERE SUP_supplier_name = 'NCC_115');
+SELECT 'Chú Tứ xe 84', '', 'NM Hai Duong'
+WHERE NOT EXISTS (SELECT 1 FROM SUPPLIERS WHERE SUP_supplier_name = 'Chú Tứ xe 84');
 INSERT INTO SUPPLIERS (SUP_supplier_name, SUP_contact_info, SUP_origin_facility)
-SELECT 'NCC_116', 'ANONYMIZED', 'NM Hai Duong'
-WHERE NOT EXISTS (SELECT 1 FROM SUPPLIERS WHERE SUP_supplier_name = 'NCC_116');
+SELECT 'Nguyên vật liệu - Gia vị', '', 'NM Hai Duong'
+WHERE NOT EXISTS (SELECT 1 FROM SUPPLIERS WHERE SUP_supplier_name = 'Nguyên vật liệu - Gia vị');
 INSERT INTO SUPPLIERS (SUP_supplier_name, SUP_contact_info, SUP_origin_facility)
-SELECT 'NCC_117', 'ANONYMIZED', 'NM Hai Duong'
-WHERE NOT EXISTS (SELECT 1 FROM SUPPLIERS WHERE SUP_supplier_name = 'NCC_117');
+SELECT 'Chị Ngát xe 11', '', 'NM Hai Duong'
+WHERE NOT EXISTS (SELECT 1 FROM SUPPLIERS WHERE SUP_supplier_name = 'Chị Ngát xe 11');
 INSERT INTO SUPPLIERS (SUP_supplier_name, SUP_contact_info, SUP_origin_facility)
-SELECT 'NCC_118', 'ANONYMIZED', 'NM Hai Duong'
-WHERE NOT EXISTS (SELECT 1 FROM SUPPLIERS WHERE SUP_supplier_name = 'NCC_118');
+SELECT 'Nhập kho Hưng Yên chuyển FG1', '', 'NM Hai Duong'
+WHERE NOT EXISTS (SELECT 1 FROM SUPPLIERS WHERE SUP_supplier_name = 'Nhập kho Hưng Yên chuyển FG1');
 INSERT INTO SUPPLIERS (SUP_supplier_name, SUP_contact_info, SUP_origin_facility)
-SELECT 'NCC_119', 'ANONYMIZED', 'NM Hai Duong'
-WHERE NOT EXISTS (SELECT 1 FROM SUPPLIERS WHERE SUP_supplier_name = 'NCC_119');
+SELECT 'Nhập kho nhãn Ngô', '', 'NM Hai Duong'
+WHERE NOT EXISTS (SELECT 1 FROM SUPPLIERS WHERE SUP_supplier_name = 'Nhập kho nhãn Ngô');
 INSERT INTO SUPPLIERS (SUP_supplier_name, SUP_contact_info, SUP_origin_facility)
-SELECT 'NCC_120', 'ANONYMIZED', 'NM Hai Duong'
-WHERE NOT EXISTS (SELECT 1 FROM SUPPLIERS WHERE SUP_supplier_name = 'NCC_120');
+SELECT 'Chị Ngát xe 12', '', 'NM Hai Duong'
+WHERE NOT EXISTS (SELECT 1 FROM SUPPLIERS WHERE SUP_supplier_name = 'Chị Ngát xe 12');
 INSERT INTO SUPPLIERS (SUP_supplier_name, SUP_contact_info, SUP_origin_facility)
-SELECT 'NCC_121', 'ANONYMIZED', 'NM Hai Duong'
-WHERE NOT EXISTS (SELECT 1 FROM SUPPLIERS WHERE SUP_supplier_name = 'NCC_121');
+SELECT 'Anh Thọ xe 63', '', 'NM Hai Duong'
+WHERE NOT EXISTS (SELECT 1 FROM SUPPLIERS WHERE SUP_supplier_name = 'Anh Thọ xe 63');
 INSERT INTO SUPPLIERS (SUP_supplier_name, SUP_contact_info, SUP_origin_facility)
-SELECT 'NCC_122', 'ANONYMIZED', 'NM Hai Duong'
-WHERE NOT EXISTS (SELECT 1 FROM SUPPLIERS WHERE SUP_supplier_name = 'NCC_122');
+SELECT 'Nhập kho NVL', '', 'NM Hai Duong'
+WHERE NOT EXISTS (SELECT 1 FROM SUPPLIERS WHERE SUP_supplier_name = 'Nhập kho NVL');
 INSERT INTO SUPPLIERS (SUP_supplier_name, SUP_contact_info, SUP_origin_facility)
-SELECT 'NCC_123', 'ANONYMIZED', 'NM Hai Duong'
-WHERE NOT EXISTS (SELECT 1 FROM SUPPLIERS WHERE SUP_supplier_name = 'NCC_123');
+SELECT 'Chú Tứ Xe 88', '', 'NM Hai Duong'
+WHERE NOT EXISTS (SELECT 1 FROM SUPPLIERS WHERE SUP_supplier_name = 'Chú Tứ Xe 88');
 INSERT INTO SUPPLIERS (SUP_supplier_name, SUP_contact_info, SUP_origin_facility)
-SELECT 'NCC_124', 'ANONYMIZED', 'NM Hai Duong'
-WHERE NOT EXISTS (SELECT 1 FROM SUPPLIERS WHERE SUP_supplier_name = 'NCC_124');
+SELECT 'Chú Tứ xe 89', '', 'NM Hai Duong'
+WHERE NOT EXISTS (SELECT 1 FROM SUPPLIERS WHERE SUP_supplier_name = 'Chú Tứ xe 89');
 INSERT INTO SUPPLIERS (SUP_supplier_name, SUP_contact_info, SUP_origin_facility)
-SELECT 'NCC_125', 'ANONYMIZED', 'NM Hai Duong'
-WHERE NOT EXISTS (SELECT 1 FROM SUPPLIERS WHERE SUP_supplier_name = 'NCC_125');
+SELECT 'NVL dây buộc cà', '', 'NM Hai Duong'
+WHERE NOT EXISTS (SELECT 1 FROM SUPPLIERS WHERE SUP_supplier_name = 'NVL dây buộc cà');
 INSERT INTO SUPPLIERS (SUP_supplier_name, SUP_contact_info, SUP_origin_facility)
-SELECT 'NCC_126', 'ANONYMIZED', 'NM Hai Duong'
-WHERE NOT EXISTS (SELECT 1 FROM SUPPLIERS WHERE SUP_supplier_name = 'NCC_126');
+SELECT 'Nhâp NVL', '', 'NM Hai Duong'
+WHERE NOT EXISTS (SELECT 1 FROM SUPPLIERS WHERE SUP_supplier_name = 'Nhâp NVL');
 INSERT INTO SUPPLIERS (SUP_supplier_name, SUP_contact_info, SUP_origin_facility)
-SELECT 'NCC_127', 'ANONYMIZED', 'NM Hai Duong'
-WHERE NOT EXISTS (SELECT 1 FROM SUPPLIERS WHERE SUP_supplier_name = 'NCC_127');
+SELECT 'Chú Tứ xe 90', '', 'NM Hai Duong'
+WHERE NOT EXISTS (SELECT 1 FROM SUPPLIERS WHERE SUP_supplier_name = 'Chú Tứ xe 90');
 INSERT INTO SUPPLIERS (SUP_supplier_name, SUP_contact_info, SUP_origin_facility)
-SELECT 'NCC_128', 'ANONYMIZED', 'NM Hai Duong'
-WHERE NOT EXISTS (SELECT 1 FROM SUPPLIERS WHERE SUP_supplier_name = 'NCC_128');
+SELECT 'Chú Tứ xe 91', '', 'NM Hai Duong'
+WHERE NOT EXISTS (SELECT 1 FROM SUPPLIERS WHERE SUP_supplier_name = 'Chú Tứ xe 91');
 INSERT INTO SUPPLIERS (SUP_supplier_name, SUP_contact_info, SUP_origin_facility)
-SELECT 'NCC_129', 'ANONYMIZED', 'NM Hai Duong'
-WHERE NOT EXISTS (SELECT 1 FROM SUPPLIERS WHERE SUP_supplier_name = 'NCC_129');
+SELECT 'Anh Công 10', '', 'NM Hai Duong'
+WHERE NOT EXISTS (SELECT 1 FROM SUPPLIERS WHERE SUP_supplier_name = 'Anh Công 10');
 INSERT INTO SUPPLIERS (SUP_supplier_name, SUP_contact_info, SUP_origin_facility)
-SELECT 'NCC_130', 'ANONYMIZED', 'NM Hai Duong'
-WHERE NOT EXISTS (SELECT 1 FROM SUPPLIERS WHERE SUP_supplier_name = 'NCC_130');
+SELECT 'Nhập NVL', '', 'NM Hai Duong'
+WHERE NOT EXISTS (SELECT 1 FROM SUPPLIERS WHERE SUP_supplier_name = 'Nhập NVL');
 INSERT INTO SUPPLIERS (SUP_supplier_name, SUP_contact_info, SUP_origin_facility)
-SELECT 'NCC_131', 'ANONYMIZED', 'NM Hai Duong'
-WHERE NOT EXISTS (SELECT 1 FROM SUPPLIERS WHERE SUP_supplier_name = 'NCC_131');
+SELECT 'Nhập NVL Dứa MD2-Dứa đồi FG xe 1', '', 'NM Hai Duong'
+WHERE NOT EXISTS (SELECT 1 FROM SUPPLIERS WHERE SUP_supplier_name = 'Nhập NVL Dứa MD2-Dứa đồi FG xe 1');
 INSERT INTO SUPPLIERS (SUP_supplier_name, SUP_contact_info, SUP_origin_facility)
-SELECT 'NCC_132', 'ANONYMIZED', 'NM Hai Duong'
-WHERE NOT EXISTS (SELECT 1 FROM SUPPLIERS WHERE SUP_supplier_name = 'NCC_132');
+SELECT 'Nhập NVL- Trung Quốc', '', 'NM Hai Duong'
+WHERE NOT EXISTS (SELECT 1 FROM SUPPLIERS WHERE SUP_supplier_name = 'Nhập NVL- Trung Quốc');
 INSERT INTO SUPPLIERS (SUP_supplier_name, SUP_contact_info, SUP_origin_facility)
-SELECT 'NCC_133', 'ANONYMIZED', 'NM Hai Duong'
-WHERE NOT EXISTS (SELECT 1 FROM SUPPLIERS WHERE SUP_supplier_name = 'NCC_133');
+SELECT 'Nhập NVL Dứa MD2-Dứa đồi FG xe 2', '', 'NM Hai Duong'
+WHERE NOT EXISTS (SELECT 1 FROM SUPPLIERS WHERE SUP_supplier_name = 'Nhập NVL Dứa MD2-Dứa đồi FG xe 2');
 INSERT INTO SUPPLIERS (SUP_supplier_name, SUP_contact_info, SUP_origin_facility)
-SELECT 'NCC_134', 'ANONYMIZED', 'NM Hai Duong'
-WHERE NOT EXISTS (SELECT 1 FROM SUPPLIERS WHERE SUP_supplier_name = 'NCC_134');
+SELECT 'Nhập dứa sơ chế', '', 'NM Hai Duong'
+WHERE NOT EXISTS (SELECT 1 FROM SUPPLIERS WHERE SUP_supplier_name = 'Nhập dứa sơ chế');
 INSERT INTO SUPPLIERS (SUP_supplier_name, SUP_contact_info, SUP_origin_facility)
-SELECT 'NCC_135', 'ANONYMIZED', 'NM Hai Duong'
-WHERE NOT EXISTS (SELECT 1 FROM SUPPLIERS WHERE SUP_supplier_name = 'NCC_135');
+SELECT 'Thành phẩm Hưng Yên', '', 'NM Hai Duong'
+WHERE NOT EXISTS (SELECT 1 FROM SUPPLIERS WHERE SUP_supplier_name = 'Thành phẩm Hưng Yên');
 INSERT INTO SUPPLIERS (SUP_supplier_name, SUP_contact_info, SUP_origin_facility)
-SELECT 'NCC_136', 'ANONYMIZED', 'NM Hai Duong'
-WHERE NOT EXISTS (SELECT 1 FROM SUPPLIERS WHERE SUP_supplier_name = 'NCC_136');
+SELECT 'NVL Hưng Yên', '', 'NM Hai Duong'
+WHERE NOT EXISTS (SELECT 1 FROM SUPPLIERS WHERE SUP_supplier_name = 'NVL Hưng Yên');
 INSERT INTO SUPPLIERS (SUP_supplier_name, SUP_contact_info, SUP_origin_facility)
-SELECT 'NCC_137', 'ANONYMIZED', 'NM Hai Duong'
-WHERE NOT EXISTS (SELECT 1 FROM SUPPLIERS WHERE SUP_supplier_name = 'NCC_137');
+SELECT 'Anh Công xe số 11', '', 'NM Hai Duong'
+WHERE NOT EXISTS (SELECT 1 FROM SUPPLIERS WHERE SUP_supplier_name = 'Anh Công xe số 11');
 INSERT INTO SUPPLIERS (SUP_supplier_name, SUP_contact_info, SUP_origin_facility)
-SELECT 'NCC_138', 'ANONYMIZED', 'NM Hai Duong'
-WHERE NOT EXISTS (SELECT 1 FROM SUPPLIERS WHERE SUP_supplier_name = 'NCC_138');
+SELECT 'Nhập NVL- Khoái Lạc Phúc', '', 'NM Hai Duong'
+WHERE NOT EXISTS (SELECT 1 FROM SUPPLIERS WHERE SUP_supplier_name = 'Nhập NVL- Khoái Lạc Phúc');
 INSERT INTO SUPPLIERS (SUP_supplier_name, SUP_contact_info, SUP_origin_facility)
-SELECT 'NCC_139', 'ANONYMIZED', 'NM Hai Duong'
-WHERE NOT EXISTS (SELECT 1 FROM SUPPLIERS WHERE SUP_supplier_name = 'NCC_139');
+SELECT 'Nhập NVL- Tân Việt Anh', '', 'NM Hai Duong'
+WHERE NOT EXISTS (SELECT 1 FROM SUPPLIERS WHERE SUP_supplier_name = 'Nhập NVL- Tân Việt Anh');
 INSERT INTO SUPPLIERS (SUP_supplier_name, SUP_contact_info, SUP_origin_facility)
-SELECT 'NCC_140', 'ANONYMIZED', 'NM Hai Duong'
-WHERE NOT EXISTS (SELECT 1 FROM SUPPLIERS WHERE SUP_supplier_name = 'NCC_140');
+SELECT 'Nhập NVL Dứa MD2-Dứa đồi FG xe 3', '', 'NM Hai Duong'
+WHERE NOT EXISTS (SELECT 1 FROM SUPPLIERS WHERE SUP_supplier_name = 'Nhập NVL Dứa MD2-Dứa đồi FG xe 3');
 INSERT INTO SUPPLIERS (SUP_supplier_name, SUP_contact_info, SUP_origin_facility)
-SELECT 'NCC_141', 'ANONYMIZED', 'NM Hai Duong'
-WHERE NOT EXISTS (SELECT 1 FROM SUPPLIERS WHERE SUP_supplier_name = 'NCC_141');
+SELECT 'Nhập NVL Dứa MD2-Dứa đồi FG xe 4', '', 'NM Hai Duong'
+WHERE NOT EXISTS (SELECT 1 FROM SUPPLIERS WHERE SUP_supplier_name = 'Nhập NVL Dứa MD2-Dứa đồi FG xe 4');
 INSERT INTO SUPPLIERS (SUP_supplier_name, SUP_contact_info, SUP_origin_facility)
-SELECT 'NCC_142', 'ANONYMIZED', 'NM Hai Duong'
-WHERE NOT EXISTS (SELECT 1 FROM SUPPLIERS WHERE SUP_supplier_name = 'NCC_142');
+SELECT 'Nhập NVL Dứa MD2-Dứa đồi FG xe 5', '', 'NM Hai Duong'
+WHERE NOT EXISTS (SELECT 1 FROM SUPPLIERS WHERE SUP_supplier_name = 'Nhập NVL Dứa MD2-Dứa đồi FG xe 5');
 INSERT INTO SUPPLIERS (SUP_supplier_name, SUP_contact_info, SUP_origin_facility)
-SELECT 'NCC_143', 'ANONYMIZED', 'NM Hai Duong'
-WHERE NOT EXISTS (SELECT 1 FROM SUPPLIERS WHERE SUP_supplier_name = 'NCC_143');
+SELECT 'Nhập NVL Dứa MD2- xe 95 Chú Tứ', '', 'NM Hai Duong'
+WHERE NOT EXISTS (SELECT 1 FROM SUPPLIERS WHERE SUP_supplier_name = 'Nhập NVL Dứa MD2- xe 95 Chú Tứ');
 INSERT INTO SUPPLIERS (SUP_supplier_name, SUP_contact_info, SUP_origin_facility)
-SELECT 'NCC_144', 'ANONYMIZED', 'NM Hai Duong'
-WHERE NOT EXISTS (SELECT 1 FROM SUPPLIERS WHERE SUP_supplier_name = 'NCC_144');
+SELECT 'Nhập NVL Dứa MD2-Xe 96 Chú Tứ', '', 'NM Hai Duong'
+WHERE NOT EXISTS (SELECT 1 FROM SUPPLIERS WHERE SUP_supplier_name = 'Nhập NVL Dứa MD2-Xe 96 Chú Tứ');
 INSERT INTO SUPPLIERS (SUP_supplier_name, SUP_contact_info, SUP_origin_facility)
-SELECT 'NCC_145', 'ANONYMIZED', 'NM Hai Duong'
-WHERE NOT EXISTS (SELECT 1 FROM SUPPLIERS WHERE SUP_supplier_name = 'NCC_145');
+SELECT 'Nhập NVL Dứa Cayene-Xe 97 Chú Tứ', '', 'NM Hai Duong'
+WHERE NOT EXISTS (SELECT 1 FROM SUPPLIERS WHERE SUP_supplier_name = 'Nhập NVL Dứa Cayene-Xe 97 Chú Tứ');
 INSERT INTO SUPPLIERS (SUP_supplier_name, SUP_contact_info, SUP_origin_facility)
-SELECT 'NCC_146', 'ANONYMIZED', 'NM Hai Duong'
-WHERE NOT EXISTS (SELECT 1 FROM SUPPLIERS WHERE SUP_supplier_name = 'NCC_146');
+SELECT 'Nhập thành phẩm + sơ chế', '', 'NM Hai Duong'
+WHERE NOT EXISTS (SELECT 1 FROM SUPPLIERS WHERE SUP_supplier_name = 'Nhập thành phẩm + sơ chế');
 INSERT INTO SUPPLIERS (SUP_supplier_name, SUP_contact_info, SUP_origin_facility)
-SELECT 'NCC_147', 'ANONYMIZED', 'NM Hai Duong'
-WHERE NOT EXISTS (SELECT 1 FROM SUPPLIERS WHERE SUP_supplier_name = 'NCC_147');
+SELECT 'Nhập NVL Anh Khi - Dứa Cayenne Xe số 01', '', 'NM Hai Duong'
+WHERE NOT EXISTS (SELECT 1 FROM SUPPLIERS WHERE SUP_supplier_name = 'Nhập NVL Anh Khi - Dứa Cayenne Xe số 01');
 INSERT INTO SUPPLIERS (SUP_supplier_name, SUP_contact_info, SUP_origin_facility)
-SELECT 'NCC_148', 'ANONYMIZED', 'NM Hai Duong'
-WHERE NOT EXISTS (SELECT 1 FROM SUPPLIERS WHERE SUP_supplier_name = 'NCC_148');
+SELECT 'Chú Tứ -Xe 100', '', 'NM Hai Duong'
+WHERE NOT EXISTS (SELECT 1 FROM SUPPLIERS WHERE SUP_supplier_name = 'Chú Tứ -Xe 100');
 INSERT INTO SUPPLIERS (SUP_supplier_name, SUP_contact_info, SUP_origin_facility)
-SELECT 'NCC_149', 'ANONYMIZED', 'NM Hai Duong'
-WHERE NOT EXISTS (SELECT 1 FROM SUPPLIERS WHERE SUP_supplier_name = 'NCC_149');
+SELECT 'Anh Khi -Xe 03', '', 'NM Hai Duong'
+WHERE NOT EXISTS (SELECT 1 FROM SUPPLIERS WHERE SUP_supplier_name = 'Anh Khi -Xe 03');
 INSERT INTO SUPPLIERS (SUP_supplier_name, SUP_contact_info, SUP_origin_facility)
-SELECT 'NCC_150', 'ANONYMIZED', 'NM Hai Duong'
-WHERE NOT EXISTS (SELECT 1 FROM SUPPLIERS WHERE SUP_supplier_name = 'NCC_150');
+SELECT 'Anh Thọ xe 29', '', 'NM Hai Duong'
+WHERE NOT EXISTS (SELECT 1 FROM SUPPLIERS WHERE SUP_supplier_name = 'Anh Thọ xe 29');
 INSERT INTO SUPPLIERS (SUP_supplier_name, SUP_contact_info, SUP_origin_facility)
-SELECT 'NCC_151', 'ANONYMIZED', 'NM Hai Duong'
-WHERE NOT EXISTS (SELECT 1 FROM SUPPLIERS WHERE SUP_supplier_name = 'NCC_151');
+SELECT 'Dứa sơ chế', '', 'NM Hai Duong'
+WHERE NOT EXISTS (SELECT 1 FROM SUPPLIERS WHERE SUP_supplier_name = 'Dứa sơ chế');
 INSERT INTO SUPPLIERS (SUP_supplier_name, SUP_contact_info, SUP_origin_facility)
-SELECT 'NCC_152', 'ANONYMIZED', 'NM Hai Duong'
-WHERE NOT EXISTS (SELECT 1 FROM SUPPLIERS WHERE SUP_supplier_name = 'NCC_152');
+SELECT 'Thành phẩm', '', 'NM Hai Duong'
+WHERE NOT EXISTS (SELECT 1 FROM SUPPLIERS WHERE SUP_supplier_name = 'Thành phẩm');
 INSERT INTO SUPPLIERS (SUP_supplier_name, SUP_contact_info, SUP_origin_facility)
-SELECT 'NCC_153', 'ANONYMIZED', 'NM Hai Duong'
-WHERE NOT EXISTS (SELECT 1 FROM SUPPLIERS WHERE SUP_supplier_name = 'NCC_153');
+SELECT 'Anh Hùng 05', '', 'NM Hai Duong'
+WHERE NOT EXISTS (SELECT 1 FROM SUPPLIERS WHERE SUP_supplier_name = 'Anh Hùng 05');
 INSERT INTO SUPPLIERS (SUP_supplier_name, SUP_contact_info, SUP_origin_facility)
-SELECT 'NCC_154', 'ANONYMIZED', 'NM Hai Duong'
-WHERE NOT EXISTS (SELECT 1 FROM SUPPLIERS WHERE SUP_supplier_name = 'NCC_154');
+SELECT 'Anh Thọ xe 30', '', 'NM Hai Duong'
+WHERE NOT EXISTS (SELECT 1 FROM SUPPLIERS WHERE SUP_supplier_name = 'Anh Thọ xe 30');
 INSERT INTO SUPPLIERS (SUP_supplier_name, SUP_contact_info, SUP_origin_facility)
-SELECT 'NCC_155', 'ANONYMIZED', 'NM Hai Duong'
-WHERE NOT EXISTS (SELECT 1 FROM SUPPLIERS WHERE SUP_supplier_name = 'NCC_155');
+SELECT 'Anh Hùng 06', '', 'NM Hai Duong'
+WHERE NOT EXISTS (SELECT 1 FROM SUPPLIERS WHERE SUP_supplier_name = 'Anh Hùng 06');
 INSERT INTO SUPPLIERS (SUP_supplier_name, SUP_contact_info, SUP_origin_facility)
-SELECT 'NCC_156', 'ANONYMIZED', 'NM Hai Duong'
-WHERE NOT EXISTS (SELECT 1 FROM SUPPLIERS WHERE SUP_supplier_name = 'NCC_156');
+SELECT 'Tân Việt Anh', '', 'NM Hai Duong'
+WHERE NOT EXISTS (SELECT 1 FROM SUPPLIERS WHERE SUP_supplier_name = 'Tân Việt Anh');
 INSERT INTO SUPPLIERS (SUP_supplier_name, SUP_contact_info, SUP_origin_facility)
-SELECT 'NCC_157', 'ANONYMIZED', 'NM Hai Duong'
-WHERE NOT EXISTS (SELECT 1 FROM SUPPLIERS WHERE SUP_supplier_name = 'NCC_157');
+SELECT 'Thanh Bình', '', 'NM Hai Duong'
+WHERE NOT EXISTS (SELECT 1 FROM SUPPLIERS WHERE SUP_supplier_name = 'Thanh Bình');
 INSERT INTO SUPPLIERS (SUP_supplier_name, SUP_contact_info, SUP_origin_facility)
-SELECT 'NCC_158', 'ANONYMIZED', 'NM Hai Duong'
-WHERE NOT EXISTS (SELECT 1 FROM SUPPLIERS WHERE SUP_supplier_name = 'NCC_158');
+SELECT 'Anh Thọ xe 33', '', 'NM Hai Duong'
+WHERE NOT EXISTS (SELECT 1 FROM SUPPLIERS WHERE SUP_supplier_name = 'Anh Thọ xe 33');
 INSERT INTO SUPPLIERS (SUP_supplier_name, SUP_contact_info, SUP_origin_facility)
-SELECT 'NCC_159', 'ANONYMIZED', 'NM Hai Duong'
-WHERE NOT EXISTS (SELECT 1 FROM SUPPLIERS WHERE SUP_supplier_name = 'NCC_159');
+SELECT 'Khoái Lạc Phúc', '', 'NM Hai Duong'
+WHERE NOT EXISTS (SELECT 1 FROM SUPPLIERS WHERE SUP_supplier_name = 'Khoái Lạc Phúc');
 INSERT INTO SUPPLIERS (SUP_supplier_name, SUP_contact_info, SUP_origin_facility)
-SELECT 'NCC_160', 'ANONYMIZED', 'NM Hai Duong'
-WHERE NOT EXISTS (SELECT 1 FROM SUPPLIERS WHERE SUP_supplier_name = 'NCC_160');
+SELECT 'Mua lẻ', '', 'NM Hai Duong'
+WHERE NOT EXISTS (SELECT 1 FROM SUPPLIERS WHERE SUP_supplier_name = 'Mua lẻ');
 INSERT INTO SUPPLIERS (SUP_supplier_name, SUP_contact_info, SUP_origin_facility)
-SELECT 'NCC_161', 'ANONYMIZED', 'NM Hai Duong'
-WHERE NOT EXISTS (SELECT 1 FROM SUPPLIERS WHERE SUP_supplier_name = 'NCC_161');
+SELECT 'Chị Thủy xe 22', '', 'NM Hai Duong'
+WHERE NOT EXISTS (SELECT 1 FROM SUPPLIERS WHERE SUP_supplier_name = 'Chị Thủy xe 22');
 INSERT INTO SUPPLIERS (SUP_supplier_name, SUP_contact_info, SUP_origin_facility)
-SELECT 'NCC_162', 'ANONYMIZED', 'NM Hai Duong'
-WHERE NOT EXISTS (SELECT 1 FROM SUPPLIERS WHERE SUP_supplier_name = 'NCC_162');
+SELECT 'Anh Thọ xe 34', '', 'NM Hai Duong'
+WHERE NOT EXISTS (SELECT 1 FROM SUPPLIERS WHERE SUP_supplier_name = 'Anh Thọ xe 34');
 INSERT INTO SUPPLIERS (SUP_supplier_name, SUP_contact_info, SUP_origin_facility)
-SELECT 'NCC_163', 'ANONYMIZED', 'NM Hai Duong'
-WHERE NOT EXISTS (SELECT 1 FROM SUPPLIERS WHERE SUP_supplier_name = 'NCC_163');
+SELECT 'Anh Hùng 07', '', 'NM Hai Duong'
+WHERE NOT EXISTS (SELECT 1 FROM SUPPLIERS WHERE SUP_supplier_name = 'Anh Hùng 07');
 INSERT INTO SUPPLIERS (SUP_supplier_name, SUP_contact_info, SUP_origin_facility)
-SELECT 'NCC_164', 'ANONYMIZED', 'NM Hai Duong'
-WHERE NOT EXISTS (SELECT 1 FROM SUPPLIERS WHERE SUP_supplier_name = 'NCC_164');
+SELECT 'Hàng gửi xe', '', 'NM Hai Duong'
+WHERE NOT EXISTS (SELECT 1 FROM SUPPLIERS WHERE SUP_supplier_name = 'Hàng gửi xe');
 INSERT INTO SUPPLIERS (SUP_supplier_name, SUP_contact_info, SUP_origin_facility)
-SELECT 'NCC_165', 'ANONYMIZED', 'NM Hai Duong'
-WHERE NOT EXISTS (SELECT 1 FROM SUPPLIERS WHERE SUP_supplier_name = 'NCC_165');
+SELECT 'Anh Lực', '', 'NM Hai Duong'
+WHERE NOT EXISTS (SELECT 1 FROM SUPPLIERS WHERE SUP_supplier_name = 'Anh Lực');
 INSERT INTO SUPPLIERS (SUP_supplier_name, SUP_contact_info, SUP_origin_facility)
-SELECT 'NCC_166', 'ANONYMIZED', 'NM Hai Duong'
-WHERE NOT EXISTS (SELECT 1 FROM SUPPLIERS WHERE SUP_supplier_name = 'NCC_166');
+SELECT 'Anh Công xe 44', '', 'NM Hai Duong'
+WHERE NOT EXISTS (SELECT 1 FROM SUPPLIERS WHERE SUP_supplier_name = 'Anh Công xe 44');
 INSERT INTO SUPPLIERS (SUP_supplier_name, SUP_contact_info, SUP_origin_facility)
-SELECT 'NCC_167', 'ANONYMIZED', 'NM Hai Duong'
-WHERE NOT EXISTS (SELECT 1 FROM SUPPLIERS WHERE SUP_supplier_name = 'NCC_167');
+SELECT 'Anh Công xe 45', '', 'NM Hai Duong'
+WHERE NOT EXISTS (SELECT 1 FROM SUPPLIERS WHERE SUP_supplier_name = 'Anh Công xe 45');
 INSERT INTO SUPPLIERS (SUP_supplier_name, SUP_contact_info, SUP_origin_facility)
-SELECT 'NCC_168', 'ANONYMIZED', 'NM Hai Duong'
-WHERE NOT EXISTS (SELECT 1 FROM SUPPLIERS WHERE SUP_supplier_name = 'NCC_168');
+SELECT 'Anh Công xe 46', '', 'NM Hai Duong'
+WHERE NOT EXISTS (SELECT 1 FROM SUPPLIERS WHERE SUP_supplier_name = 'Anh Công xe 46');
 INSERT INTO SUPPLIERS (SUP_supplier_name, SUP_contact_info, SUP_origin_facility)
-SELECT 'SUP_UNKNOWN', 'ANONYMIZED', 'NM Hai Duong'
+SELECT 'SUP_UNKNOWN', '', 'NM Hai Duong'
 WHERE NOT EXISTS (SELECT 1 FROM SUPPLIERS WHERE SUP_supplier_name = 'SUP_UNKNOWN');
 
 -- 3. PRODUCTS - PRD_material_grade stores the anonymized/cleaned item code used for lookup.
@@ -4425,7 +4425,7 @@ ON DUPLICATE KEY UPDATE
     BCH_available_stock_kg = VALUES(BCH_available_stock_kg),
     BCH_current_stage = VALUES(BCH_current_stage),
     BCH_health_status = VALUES(BCH_health_status);
-INSERT INTO BATCHES (BCH_batch_id, BCH_product_id, BCH_supplier_id, BCH_shift_id, BCH_zone_id, BCH_received_date, BCH_expiry_date, BCH_priority, BCH_initial_volume_kg, BCH_available_stock_kg, BCH_current_stage, BCH_health_status) VALUES ('BCH_MAY_DUCLOI_5D323385', (SELECT PRD_product_id FROM PRODUCTS WHERE PRD_material_grade = 'MAY.DUCLOI' LIMIT 1), (SELECT SUP_supplier_id FROM SUPPLIERS WHERE SUP_supplier_name = 'NCC_096' LIMIT 1), (SELECT SHF_shift_id FROM SHIFTS WHERE SHF_shift_date = '2026-04-24' AND SHF_shift_type = 'Morning' LIMIT 1), (SELECT STZ_zone_id FROM STORAGE_ZONES WHERE STZ_zone_name = 'Default Zone' LIMIT 1), '2026-04-24 00:00:00', '2027-04-24 00:00:00', 'NORMAL', 2.00, 2.00, 'Seeded_From_Filtered_Data', 'Good')
+INSERT INTO BATCHES (BCH_batch_id, BCH_product_id, BCH_supplier_id, BCH_shift_id, BCH_zone_id, BCH_received_date, BCH_expiry_date, BCH_priority, BCH_initial_volume_kg, BCH_available_stock_kg, BCH_current_stage, BCH_health_status) VALUES ('BCH_MAY_DUCLOI_5D323385', (SELECT PRD_product_id FROM PRODUCTS WHERE PRD_material_grade = 'MAY.DUCLOI' LIMIT 1), (SELECT SUP_supplier_id FROM SUPPLIERS WHERE SUP_supplier_name = 'Trang điểm gọt' LIMIT 1), (SELECT SHF_shift_id FROM SHIFTS WHERE SHF_shift_date = '2026-04-24' AND SHF_shift_type = 'Morning' LIMIT 1), (SELECT STZ_zone_id FROM STORAGE_ZONES WHERE STZ_zone_name = 'Default Zone' LIMIT 1), '2026-04-24 00:00:00', '2027-04-24 00:00:00', 'NORMAL', 2.00, 2.00, 'Seeded_From_Filtered_Data', 'Good')
 ON DUPLICATE KEY UPDATE
     BCH_available_stock_kg = VALUES(BCH_available_stock_kg),
     BCH_current_stage = VALUES(BCH_current_stage),
@@ -4440,7 +4440,7 @@ ON DUPLICATE KEY UPDATE
     BCH_available_stock_kg = VALUES(BCH_available_stock_kg),
     BCH_current_stage = VALUES(BCH_current_stage),
     BCH_health_status = VALUES(BCH_health_status);
-INSERT INTO BATCHES (BCH_batch_id, BCH_product_id, BCH_supplier_id, BCH_shift_id, BCH_zone_id, BCH_received_date, BCH_expiry_date, BCH_priority, BCH_initial_volume_kg, BCH_available_stock_kg, BCH_current_stage, BCH_health_status) VALUES ('BCH_MAYCAT_DUDU_C45E4817', (SELECT PRD_product_id FROM PRODUCTS WHERE PRD_material_grade = 'MAYCAT_DUDU' LIMIT 1), (SELECT SUP_supplier_id FROM SUPPLIERS WHERE SUP_supplier_name = 'NCC_052' LIMIT 1), (SELECT SHF_shift_id FROM SHIFTS WHERE SHF_shift_date = '2026-05-11' AND SHF_shift_type = 'Morning' LIMIT 1), (SELECT STZ_zone_id FROM STORAGE_ZONES WHERE STZ_zone_name = 'Default Zone' LIMIT 1), '2026-05-11 00:00:00', '2027-05-11 00:00:00', 'NORMAL', 1.00, 1.00, 'Seeded_From_Filtered_Data', 'Good')
+INSERT INTO BATCHES (BCH_batch_id, BCH_product_id, BCH_supplier_id, BCH_shift_id, BCH_zone_id, BCH_received_date, BCH_expiry_date, BCH_priority, BCH_initial_volume_kg, BCH_available_stock_kg, BCH_current_stage, BCH_health_status) VALUES ('BCH_MAYCAT_DUDU_C45E4817', (SELECT PRD_product_id FROM PRODUCTS WHERE PRD_material_grade = 'MAYCAT_DUDU' LIMIT 1), (SELECT SUP_supplier_id FROM SUPPLIERS WHERE SUP_supplier_name = 'Gửi xe' LIMIT 1), (SELECT SHF_shift_id FROM SHIFTS WHERE SHF_shift_date = '2026-05-11' AND SHF_shift_type = 'Morning' LIMIT 1), (SELECT STZ_zone_id FROM STORAGE_ZONES WHERE STZ_zone_name = 'Default Zone' LIMIT 1), '2026-05-11 00:00:00', '2027-05-11 00:00:00', 'NORMAL', 1.00, 1.00, 'Seeded_From_Filtered_Data', 'Good')
 ON DUPLICATE KEY UPDATE
     BCH_available_stock_kg = VALUES(BCH_available_stock_kg),
     BCH_current_stage = VALUES(BCH_current_stage),
@@ -4470,12 +4470,12 @@ ON DUPLICATE KEY UPDATE
     BCH_available_stock_kg = VALUES(BCH_available_stock_kg),
     BCH_current_stage = VALUES(BCH_current_stage),
     BCH_health_status = VALUES(BCH_health_status);
-INSERT INTO BATCHES (BCH_batch_id, BCH_product_id, BCH_supplier_id, BCH_shift_id, BCH_zone_id, BCH_received_date, BCH_expiry_date, BCH_priority, BCH_initial_volume_kg, BCH_available_stock_kg, BCH_current_stage, BCH_health_status) VALUES ('BCH_MUCIN_V4211_D750ML_3DF39D3E', (SELECT PRD_product_id FROM PRODUCTS WHERE PRD_material_grade = 'MUCIN V4211-D750ML' LIMIT 1), (SELECT SUP_supplier_id FROM SUPPLIERS WHERE SUP_supplier_name = 'NCC_130' LIMIT 1), (SELECT SHF_shift_id FROM SHIFTS WHERE SHF_shift_date = '2026-07-15' AND SHF_shift_type = 'Morning' LIMIT 1), (SELECT STZ_zone_id FROM STORAGE_ZONES WHERE STZ_zone_name = 'Default Zone' LIMIT 1), '2026-07-15 00:00:00', '2027-07-15 00:00:00', 'NORMAL', 1.00, 1.00, 'Seeded_From_Filtered_Data', 'Good')
+INSERT INTO BATCHES (BCH_batch_id, BCH_product_id, BCH_supplier_id, BCH_shift_id, BCH_zone_id, BCH_received_date, BCH_expiry_date, BCH_priority, BCH_initial_volume_kg, BCH_available_stock_kg, BCH_current_stage, BCH_health_status) VALUES ('BCH_MUCIN_V4211_D750ML_3DF39D3E', (SELECT PRD_product_id FROM PRODUCTS WHERE PRD_material_grade = 'MUCIN V4211-D750ML' LIMIT 1), (SELECT SUP_supplier_id FROM SUPPLIERS WHERE SUP_supplier_name = 'Nhập NVL' LIMIT 1), (SELECT SHF_shift_id FROM SHIFTS WHERE SHF_shift_date = '2026-07-15' AND SHF_shift_type = 'Morning' LIMIT 1), (SELECT STZ_zone_id FROM STORAGE_ZONES WHERE STZ_zone_name = 'Default Zone' LIMIT 1), '2026-07-15 00:00:00', '2027-07-15 00:00:00', 'NORMAL', 1.00, 1.00, 'Seeded_From_Filtered_Data', 'Good')
 ON DUPLICATE KEY UPDATE
     BCH_available_stock_kg = VALUES(BCH_available_stock_kg),
     BCH_current_stage = VALUES(BCH_current_stage),
     BCH_health_status = VALUES(BCH_health_status);
-INSERT INTO BATCHES (BCH_batch_id, BCH_product_id, BCH_supplier_id, BCH_shift_id, BCH_zone_id, BCH_received_date, BCH_expiry_date, BCH_priority, BCH_initial_volume_kg, BCH_available_stock_kg, BCH_current_stage, BCH_health_status) VALUES ('BCH_MUCIN_V410_D_698839E2', (SELECT PRD_product_id FROM PRODUCTS WHERE PRD_material_grade = 'MUCIN_V410-D' LIMIT 1), (SELECT SUP_supplier_id FROM SUPPLIERS WHERE SUP_supplier_name = 'NCC_130' LIMIT 1), (SELECT SHF_shift_id FROM SHIFTS WHERE SHF_shift_date = '2026-07-15' AND SHF_shift_type = 'Morning' LIMIT 1), (SELECT STZ_zone_id FROM STORAGE_ZONES WHERE STZ_zone_name = 'Default Zone' LIMIT 1), '2026-07-15 00:00:00', '2027-07-15 00:00:00', 'NORMAL', 1.00, 1.00, 'Seeded_From_Filtered_Data', 'Good')
+INSERT INTO BATCHES (BCH_batch_id, BCH_product_id, BCH_supplier_id, BCH_shift_id, BCH_zone_id, BCH_received_date, BCH_expiry_date, BCH_priority, BCH_initial_volume_kg, BCH_available_stock_kg, BCH_current_stage, BCH_health_status) VALUES ('BCH_MUCIN_V410_D_698839E2', (SELECT PRD_product_id FROM PRODUCTS WHERE PRD_material_grade = 'MUCIN_V410-D' LIMIT 1), (SELECT SUP_supplier_id FROM SUPPLIERS WHERE SUP_supplier_name = 'Nhập NVL' LIMIT 1), (SELECT SHF_shift_id FROM SHIFTS WHERE SHF_shift_date = '2026-07-15' AND SHF_shift_type = 'Morning' LIMIT 1), (SELECT STZ_zone_id FROM STORAGE_ZONES WHERE STZ_zone_name = 'Default Zone' LIMIT 1), '2026-07-15 00:00:00', '2027-07-15 00:00:00', 'NORMAL', 1.00, 1.00, 'Seeded_From_Filtered_Data', 'Good')
 ON DUPLICATE KEY UPDATE
     BCH_available_stock_kg = VALUES(BCH_available_stock_kg),
     BCH_current_stage = VALUES(BCH_current_stage),
@@ -4485,7 +4485,7 @@ ON DUPLICATE KEY UPDATE
     BCH_available_stock_kg = VALUES(BCH_available_stock_kg),
     BCH_current_stage = VALUES(BCH_current_stage),
     BCH_health_status = VALUES(BCH_health_status);
-INSERT INTO BATCHES (BCH_batch_id, BCH_product_id, BCH_supplier_id, BCH_shift_id, BCH_zone_id, BCH_received_date, BCH_expiry_date, BCH_priority, BCH_initial_volume_kg, BCH_available_stock_kg, BCH_current_stage, BCH_health_status) VALUES ('BCH_NAPLON_30OZ_5A20A241', (SELECT PRD_product_id FROM PRODUCTS WHERE PRD_material_grade = 'NAPLON_30oz' LIMIT 1), (SELECT SUP_supplier_id FROM SUPPLIERS WHERE SUP_supplier_name = 'NCC_105' LIMIT 1), (SELECT SHF_shift_id FROM SHIFTS WHERE SHF_shift_date = '2026-05-18' AND SHF_shift_type = 'Morning' LIMIT 1), (SELECT STZ_zone_id FROM STORAGE_ZONES WHERE STZ_zone_name = 'Default Zone' LIMIT 1), '2026-05-18 00:00:00', '2027-05-18 00:00:00', 'NORMAL', 840.00, 840.00, 'Seeded_From_Filtered_Data', 'Good')
+INSERT INTO BATCHES (BCH_batch_id, BCH_product_id, BCH_supplier_id, BCH_shift_id, BCH_zone_id, BCH_received_date, BCH_expiry_date, BCH_priority, BCH_initial_volume_kg, BCH_available_stock_kg, BCH_current_stage, BCH_health_status) VALUES ('BCH_NAPLON_30OZ_5A20A241', (SELECT PRD_product_id FROM PRODUCTS WHERE PRD_material_grade = 'NAPLON_30oz' LIMIT 1), (SELECT SUP_supplier_id FROM SUPPLIERS WHERE SUP_supplier_name = 'Hàng TQ' LIMIT 1), (SELECT SHF_shift_id FROM SHIFTS WHERE SHF_shift_date = '2026-05-18' AND SHF_shift_type = 'Morning' LIMIT 1), (SELECT STZ_zone_id FROM STORAGE_ZONES WHERE STZ_zone_name = 'Default Zone' LIMIT 1), '2026-05-18 00:00:00', '2027-05-18 00:00:00', 'NORMAL', 840.00, 840.00, 'Seeded_From_Filtered_Data', 'Good')
 ON DUPLICATE KEY UPDATE
     BCH_available_stock_kg = VALUES(BCH_available_stock_kg),
     BCH_current_stage = VALUES(BCH_current_stage),
@@ -4730,7 +4730,7 @@ ON DUPLICATE KEY UPDATE
     BCH_available_stock_kg = VALUES(BCH_available_stock_kg),
     BCH_current_stage = VALUES(BCH_current_stage),
     BCH_health_status = VALUES(BCH_health_status);
-INSERT INTO BATCHES (BCH_batch_id, BCH_product_id, BCH_supplier_id, BCH_shift_id, BCH_zone_id, BCH_received_date, BCH_expiry_date, BCH_priority, BCH_initial_volume_kg, BCH_available_stock_kg, BCH_current_stage, BCH_health_status) VALUES ('BCH_NHANDUWA20OZ_2518_7667DB17', (SELECT PRD_product_id FROM PRODUCTS WHERE PRD_material_grade = 'NHANDUWA20oz_2518' LIMIT 1), (SELECT SUP_supplier_id FROM SUPPLIERS WHERE SUP_supplier_name = 'NCC_020' LIMIT 1), (SELECT SHF_shift_id FROM SHIFTS WHERE SHF_shift_date = '2026-05-23' AND SHF_shift_type = 'Morning' LIMIT 1), (SELECT STZ_zone_id FROM STORAGE_ZONES WHERE STZ_zone_name = 'Default Zone' LIMIT 1), '2026-05-23 00:00:00', '2027-05-23 00:00:00', 'NORMAL', 4500.00, 4500.00, 'Seeded_From_Filtered_Data', 'Good')
+INSERT INTO BATCHES (BCH_batch_id, BCH_product_id, BCH_supplier_id, BCH_shift_id, BCH_zone_id, BCH_received_date, BCH_expiry_date, BCH_priority, BCH_initial_volume_kg, BCH_available_stock_kg, BCH_current_stage, BCH_health_status) VALUES ('BCH_NHANDUWA20OZ_2518_7667DB17', (SELECT PRD_product_id FROM PRODUCTS WHERE PRD_material_grade = 'NHANDUWA20oz_2518' LIMIT 1), (SELECT SUP_supplier_id FROM SUPPLIERS WHERE SUP_supplier_name = 'P.A.D' LIMIT 1), (SELECT SHF_shift_id FROM SHIFTS WHERE SHF_shift_date = '2026-05-23' AND SHF_shift_type = 'Morning' LIMIT 1), (SELECT STZ_zone_id FROM STORAGE_ZONES WHERE STZ_zone_name = 'Default Zone' LIMIT 1), '2026-05-23 00:00:00', '2027-05-23 00:00:00', 'NORMAL', 4500.00, 4500.00, 'Seeded_From_Filtered_Data', 'Good')
 ON DUPLICATE KEY UPDATE
     BCH_available_stock_kg = VALUES(BCH_available_stock_kg),
     BCH_current_stage = VALUES(BCH_current_stage),
@@ -5080,67 +5080,67 @@ ON DUPLICATE KEY UPDATE
     BCH_available_stock_kg = VALUES(BCH_available_stock_kg),
     BCH_current_stage = VALUES(BCH_current_stage),
     BCH_health_status = VALUES(BCH_health_status);
-INSERT INTO BATCHES (BCH_batch_id, BCH_product_id, BCH_supplier_id, BCH_shift_id, BCH_zone_id, BCH_received_date, BCH_expiry_date, BCH_priority, BCH_initial_volume_kg, BCH_available_stock_kg, BCH_current_stage, BCH_health_status) VALUES ('BCH_RM_CH_T_F093036D_29E16540', (SELECT PRD_product_id FROM PRODUCTS WHERE PRD_material_grade = 'RM_CH_T_F093036D' LIMIT 1), (SELECT SUP_supplier_id FROM SUPPLIERS WHERE SUP_supplier_name = 'NCC_158' LIMIT 1), (SELECT SHF_shift_id FROM SHIFTS WHERE SHF_shift_date = '2026-06-29' AND SHF_shift_type = 'Morning' LIMIT 1), (SELECT STZ_zone_id FROM STORAGE_ZONES WHERE STZ_zone_name = 'Default Zone' LIMIT 1), '2026-06-29 00:00:00', '2027-06-29 00:00:00', 'NORMAL', 0.00, 0.00, 'Seeded_From_Filtered_Data', 'Warning')
+INSERT INTO BATCHES (BCH_batch_id, BCH_product_id, BCH_supplier_id, BCH_shift_id, BCH_zone_id, BCH_received_date, BCH_expiry_date, BCH_priority, BCH_initial_volume_kg, BCH_available_stock_kg, BCH_current_stage, BCH_health_status) VALUES ('BCH_RM_CH_T_F093036D_29E16540', (SELECT PRD_product_id FROM PRODUCTS WHERE PRD_material_grade = 'RM_CH_T_F093036D' LIMIT 1), (SELECT SUP_supplier_id FROM SUPPLIERS WHERE SUP_supplier_name = 'Anh Thọ xe 33' LIMIT 1), (SELECT SHF_shift_id FROM SHIFTS WHERE SHF_shift_date = '2026-06-29' AND SHF_shift_type = 'Morning' LIMIT 1), (SELECT STZ_zone_id FROM STORAGE_ZONES WHERE STZ_zone_name = 'Default Zone' LIMIT 1), '2026-06-29 00:00:00', '2027-06-29 00:00:00', 'NORMAL', 0.00, 0.00, 'Seeded_From_Filtered_Data', 'Warning')
 ON DUPLICATE KEY UPDATE
     BCH_available_stock_kg = VALUES(BCH_available_stock_kg),
     BCH_current_stage = VALUES(BCH_current_stage),
     BCH_health_status = VALUES(BCH_health_status);
-INSERT INTO BATCHES (BCH_batch_id, BCH_product_id, BCH_supplier_id, BCH_shift_id, BCH_zone_id, BCH_received_date, BCH_expiry_date, BCH_priority, BCH_initial_volume_kg, BCH_available_stock_kg, BCH_current_stage, BCH_health_status) VALUES ('BCH_RM_C_CHUA_922C745F_7059CF75', (SELECT PRD_product_id FROM PRODUCTS WHERE PRD_material_grade = 'RM_C_CHUA_922C745F' LIMIT 1), (SELECT SUP_supplier_id FROM SUPPLIERS WHERE SUP_supplier_name = 'NCC_150' LIMIT 1), (SELECT SHF_shift_id FROM SHIFTS WHERE SHF_shift_date = '2026-03-04' AND SHF_shift_type = 'Morning' LIMIT 1), (SELECT STZ_zone_id FROM STORAGE_ZONES WHERE STZ_zone_name = 'Default Zone' LIMIT 1), '2026-03-04 00:00:00', '2027-03-04 00:00:00', 'NORMAL', 0.00, 0.00, 'Seeded_From_Filtered_Data', 'Warning')
+INSERT INTO BATCHES (BCH_batch_id, BCH_product_id, BCH_supplier_id, BCH_shift_id, BCH_zone_id, BCH_received_date, BCH_expiry_date, BCH_priority, BCH_initial_volume_kg, BCH_available_stock_kg, BCH_current_stage, BCH_health_status) VALUES ('BCH_RM_C_CHUA_922C745F_7059CF75', (SELECT PRD_product_id FROM PRODUCTS WHERE PRD_material_grade = 'RM_C_CHUA_922C745F' LIMIT 1), (SELECT SUP_supplier_id FROM SUPPLIERS WHERE SUP_supplier_name = 'Anh Thọ xe 29' LIMIT 1), (SELECT SHF_shift_id FROM SHIFTS WHERE SHF_shift_date = '2026-03-04' AND SHF_shift_type = 'Morning' LIMIT 1), (SELECT STZ_zone_id FROM STORAGE_ZONES WHERE STZ_zone_name = 'Default Zone' LIMIT 1), '2026-03-04 00:00:00', '2027-03-04 00:00:00', 'NORMAL', 0.00, 0.00, 'Seeded_From_Filtered_Data', 'Warning')
 ON DUPLICATE KEY UPDATE
     BCH_available_stock_kg = VALUES(BCH_available_stock_kg),
     BCH_current_stage = VALUES(BCH_current_stage),
     BCH_health_status = VALUES(BCH_health_status);
-INSERT INTO BATCHES (BCH_batch_id, BCH_product_id, BCH_supplier_id, BCH_shift_id, BCH_zone_id, BCH_received_date, BCH_expiry_date, BCH_priority, BCH_initial_volume_kg, BCH_available_stock_kg, BCH_current_stage, BCH_health_status) VALUES ('BCH_RM_D_A_BAO_T_0FC9EEBF_A74D3B5F', (SELECT PRD_product_id FROM PRODUCTS WHERE PRD_material_grade = 'RM_D_A_BAO_T_0FC9EEBF' LIMIT 1), (SELECT SUP_supplier_id FROM SUPPLIERS WHERE SUP_supplier_name = 'NCC_165' LIMIT 1), (SELECT SHF_shift_id FROM SHIFTS WHERE SHF_shift_date = '2026-04-15' AND SHF_shift_type = 'Morning' LIMIT 1), (SELECT STZ_zone_id FROM STORAGE_ZONES WHERE STZ_zone_name = 'Default Zone' LIMIT 1), '2026-04-15 00:00:00', '2027-04-15 00:00:00', 'NORMAL', 0.00, 0.00, 'Seeded_From_Filtered_Data', 'Warning')
+INSERT INTO BATCHES (BCH_batch_id, BCH_product_id, BCH_supplier_id, BCH_shift_id, BCH_zone_id, BCH_received_date, BCH_expiry_date, BCH_priority, BCH_initial_volume_kg, BCH_available_stock_kg, BCH_current_stage, BCH_health_status) VALUES ('BCH_RM_D_A_BAO_T_0FC9EEBF_A74D3B5F', (SELECT PRD_product_id FROM PRODUCTS WHERE PRD_material_grade = 'RM_D_A_BAO_T_0FC9EEBF' LIMIT 1), (SELECT SUP_supplier_id FROM SUPPLIERS WHERE SUP_supplier_name = 'Anh Lực' LIMIT 1), (SELECT SHF_shift_id FROM SHIFTS WHERE SHF_shift_date = '2026-04-15' AND SHF_shift_type = 'Morning' LIMIT 1), (SELECT STZ_zone_id FROM STORAGE_ZONES WHERE STZ_zone_name = 'Default Zone' LIMIT 1), '2026-04-15 00:00:00', '2027-04-15 00:00:00', 'NORMAL', 0.00, 0.00, 'Seeded_From_Filtered_Data', 'Warning')
 ON DUPLICATE KEY UPDATE
     BCH_available_stock_kg = VALUES(BCH_available_stock_kg),
     BCH_current_stage = VALUES(BCH_current_stage),
     BCH_health_status = VALUES(BCH_health_status);
-INSERT INTO BATCHES (BCH_batch_id, BCH_product_id, BCH_supplier_id, BCH_shift_id, BCH_zone_id, BCH_received_date, BCH_expiry_date, BCH_priority, BCH_initial_volume_kg, BCH_available_stock_kg, BCH_current_stage, BCH_health_status) VALUES ('BCH_RM_D_A_CAYENE_F158C046_D17934EB', (SELECT PRD_product_id FROM PRODUCTS WHERE PRD_material_grade = 'RM_D_A_CAYENE_F158C046' LIMIT 1), (SELECT SUP_supplier_id FROM SUPPLIERS WHERE SUP_supplier_name = 'NCC_160' LIMIT 1), (SELECT SHF_shift_id FROM SHIFTS WHERE SHF_shift_date = '2026-07-02' AND SHF_shift_type = 'Morning' LIMIT 1), (SELECT STZ_zone_id FROM STORAGE_ZONES WHERE STZ_zone_name = 'Default Zone' LIMIT 1), '2026-07-02 00:00:00', '2027-07-02 00:00:00', 'NORMAL', 0.00, 0.00, 'Seeded_From_Filtered_Data', 'Warning')
+INSERT INTO BATCHES (BCH_batch_id, BCH_product_id, BCH_supplier_id, BCH_shift_id, BCH_zone_id, BCH_received_date, BCH_expiry_date, BCH_priority, BCH_initial_volume_kg, BCH_available_stock_kg, BCH_current_stage, BCH_health_status) VALUES ('BCH_RM_D_A_CAYENE_F158C046_D17934EB', (SELECT PRD_product_id FROM PRODUCTS WHERE PRD_material_grade = 'RM_D_A_CAYENE_F158C046' LIMIT 1), (SELECT SUP_supplier_id FROM SUPPLIERS WHERE SUP_supplier_name = 'Mua lẻ' LIMIT 1), (SELECT SHF_shift_id FROM SHIFTS WHERE SHF_shift_date = '2026-07-02' AND SHF_shift_type = 'Morning' LIMIT 1), (SELECT STZ_zone_id FROM STORAGE_ZONES WHERE STZ_zone_name = 'Default Zone' LIMIT 1), '2026-07-02 00:00:00', '2027-07-02 00:00:00', 'NORMAL', 0.00, 0.00, 'Seeded_From_Filtered_Data', 'Warning')
 ON DUPLICATE KEY UPDATE
     BCH_available_stock_kg = VALUES(BCH_available_stock_kg),
     BCH_current_stage = VALUES(BCH_current_stage),
     BCH_health_status = VALUES(BCH_health_status);
-INSERT INTO BATCHES (BCH_batch_id, BCH_product_id, BCH_supplier_id, BCH_shift_id, BCH_zone_id, BCH_received_date, BCH_expiry_date, BCH_priority, BCH_initial_volume_kg, BCH_available_stock_kg, BCH_current_stage, BCH_health_status) VALUES ('BCH_RM_D_A_CAYNEL_7B388C53_1C938066', (SELECT PRD_product_id FROM PRODUCTS WHERE PRD_material_grade = 'RM_D_A_CAYNEL_7B388C53' LIMIT 1), (SELECT SUP_supplier_id FROM SUPPLIERS WHERE SUP_supplier_name = 'NCC_158' LIMIT 1), (SELECT SHF_shift_id FROM SHIFTS WHERE SHF_shift_date = '2026-01-02' AND SHF_shift_type = 'Morning' LIMIT 1), (SELECT STZ_zone_id FROM STORAGE_ZONES WHERE STZ_zone_name = 'Default Zone' LIMIT 1), '2026-01-02 00:00:00', '2027-01-02 00:00:00', 'NORMAL', 0.00, 0.00, 'Seeded_From_Filtered_Data', 'Warning')
+INSERT INTO BATCHES (BCH_batch_id, BCH_product_id, BCH_supplier_id, BCH_shift_id, BCH_zone_id, BCH_received_date, BCH_expiry_date, BCH_priority, BCH_initial_volume_kg, BCH_available_stock_kg, BCH_current_stage, BCH_health_status) VALUES ('BCH_RM_D_A_CAYNEL_7B388C53_1C938066', (SELECT PRD_product_id FROM PRODUCTS WHERE PRD_material_grade = 'RM_D_A_CAYNEL_7B388C53' LIMIT 1), (SELECT SUP_supplier_id FROM SUPPLIERS WHERE SUP_supplier_name = 'Anh Thọ xe 33' LIMIT 1), (SELECT SHF_shift_id FROM SHIFTS WHERE SHF_shift_date = '2026-01-02' AND SHF_shift_type = 'Morning' LIMIT 1), (SELECT STZ_zone_id FROM STORAGE_ZONES WHERE STZ_zone_name = 'Default Zone' LIMIT 1), '2026-01-02 00:00:00', '2027-01-02 00:00:00', 'NORMAL', 0.00, 0.00, 'Seeded_From_Filtered_Data', 'Warning')
 ON DUPLICATE KEY UPDATE
     BCH_available_stock_kg = VALUES(BCH_available_stock_kg),
     BCH_current_stage = VALUES(BCH_current_stage),
     BCH_health_status = VALUES(BCH_health_status);
-INSERT INTO BATCHES (BCH_batch_id, BCH_product_id, BCH_supplier_id, BCH_shift_id, BCH_zone_id, BCH_received_date, BCH_expiry_date, BCH_priority, BCH_initial_volume_kg, BCH_available_stock_kg, BCH_current_stage, BCH_health_status) VALUES ('BCH_RM_D_A_MD2_7F66BBA4_33411E3B', (SELECT PRD_product_id FROM PRODUCTS WHERE PRD_material_grade = 'RM_D_A_MD2_7F66BBA4' LIMIT 1), (SELECT SUP_supplier_id FROM SUPPLIERS WHERE SUP_supplier_name = 'NCC_159' LIMIT 1), (SELECT SHF_shift_id FROM SHIFTS WHERE SHF_shift_date = '2026-06-21' AND SHF_shift_type = 'Morning' LIMIT 1), (SELECT STZ_zone_id FROM STORAGE_ZONES WHERE STZ_zone_name = 'Default Zone' LIMIT 1), '2026-06-21 00:00:00', '2027-06-21 00:00:00', 'NORMAL', 0.00, 0.00, 'Seeded_From_Filtered_Data', 'Warning')
+INSERT INTO BATCHES (BCH_batch_id, BCH_product_id, BCH_supplier_id, BCH_shift_id, BCH_zone_id, BCH_received_date, BCH_expiry_date, BCH_priority, BCH_initial_volume_kg, BCH_available_stock_kg, BCH_current_stage, BCH_health_status) VALUES ('BCH_RM_D_A_MD2_7F66BBA4_33411E3B', (SELECT PRD_product_id FROM PRODUCTS WHERE PRD_material_grade = 'RM_D_A_MD2_7F66BBA4' LIMIT 1), (SELECT SUP_supplier_id FROM SUPPLIERS WHERE SUP_supplier_name = 'Khoái Lạc Phúc' LIMIT 1), (SELECT SHF_shift_id FROM SHIFTS WHERE SHF_shift_date = '2026-06-21' AND SHF_shift_type = 'Morning' LIMIT 1), (SELECT STZ_zone_id FROM STORAGE_ZONES WHERE STZ_zone_name = 'Default Zone' LIMIT 1), '2026-06-21 00:00:00', '2027-06-21 00:00:00', 'NORMAL', 0.00, 0.00, 'Seeded_From_Filtered_Data', 'Warning')
 ON DUPLICATE KEY UPDATE
     BCH_available_stock_kg = VALUES(BCH_available_stock_kg),
     BCH_current_stage = VALUES(BCH_current_stage),
     BCH_health_status = VALUES(BCH_health_status);
-INSERT INTO BATCHES (BCH_batch_id, BCH_product_id, BCH_supplier_id, BCH_shift_id, BCH_zone_id, BCH_received_date, BCH_expiry_date, BCH_priority, BCH_initial_volume_kg, BCH_available_stock_kg, BCH_current_stage, BCH_health_status) VALUES ('BCH_RM_D_A_MD2_CH_T_6EAC0E8E_7DB1D857', (SELECT PRD_product_id FROM PRODUCTS WHERE PRD_material_grade = 'RM_D_A_MD2_CH_T_6EAC0E8E' LIMIT 1), (SELECT SUP_supplier_id FROM SUPPLIERS WHERE SUP_supplier_name = 'NCC_158' LIMIT 1), (SELECT SHF_shift_id FROM SHIFTS WHERE SHF_shift_date = '2026-07-01' AND SHF_shift_type = 'Morning' LIMIT 1), (SELECT STZ_zone_id FROM STORAGE_ZONES WHERE STZ_zone_name = 'Default Zone' LIMIT 1), '2026-07-01 00:00:00', '2027-07-01 00:00:00', 'NORMAL', 0.00, 0.00, 'Seeded_From_Filtered_Data', 'Warning')
+INSERT INTO BATCHES (BCH_batch_id, BCH_product_id, BCH_supplier_id, BCH_shift_id, BCH_zone_id, BCH_received_date, BCH_expiry_date, BCH_priority, BCH_initial_volume_kg, BCH_available_stock_kg, BCH_current_stage, BCH_health_status) VALUES ('BCH_RM_D_A_MD2_CH_T_6EAC0E8E_7DB1D857', (SELECT PRD_product_id FROM PRODUCTS WHERE PRD_material_grade = 'RM_D_A_MD2_CH_T_6EAC0E8E' LIMIT 1), (SELECT SUP_supplier_id FROM SUPPLIERS WHERE SUP_supplier_name = 'Anh Thọ xe 33' LIMIT 1), (SELECT SHF_shift_id FROM SHIFTS WHERE SHF_shift_date = '2026-07-01' AND SHF_shift_type = 'Morning' LIMIT 1), (SELECT STZ_zone_id FROM STORAGE_ZONES WHERE STZ_zone_name = 'Default Zone' LIMIT 1), '2026-07-01 00:00:00', '2027-07-01 00:00:00', 'NORMAL', 0.00, 0.00, 'Seeded_From_Filtered_Data', 'Warning')
 ON DUPLICATE KEY UPDATE
     BCH_available_stock_kg = VALUES(BCH_available_stock_kg),
     BCH_current_stage = VALUES(BCH_current_stage),
     BCH_health_status = VALUES(BCH_health_status);
-INSERT INTO BATCHES (BCH_batch_id, BCH_product_id, BCH_supplier_id, BCH_shift_id, BCH_zone_id, BCH_received_date, BCH_expiry_date, BCH_priority, BCH_initial_volume_kg, BCH_available_stock_kg, BCH_current_stage, BCH_health_status) VALUES ('BCH_RM_D_A_QUEEN_8AAD394C_BB0988CC', (SELECT PRD_product_id FROM PRODUCTS WHERE PRD_material_grade = 'RM_D_A_QUEEN_8AAD394C' LIMIT 1), (SELECT SUP_supplier_id FROM SUPPLIERS WHERE SUP_supplier_name = 'NCC_154' LIMIT 1), (SELECT SHF_shift_id FROM SHIFTS WHERE SHF_shift_date = '2026-05-22' AND SHF_shift_type = 'Morning' LIMIT 1), (SELECT STZ_zone_id FROM STORAGE_ZONES WHERE STZ_zone_name = 'Default Zone' LIMIT 1), '2026-05-22 00:00:00', '2027-05-22 00:00:00', 'NORMAL', 0.00, 0.00, 'Seeded_From_Filtered_Data', 'Warning')
+INSERT INTO BATCHES (BCH_batch_id, BCH_product_id, BCH_supplier_id, BCH_shift_id, BCH_zone_id, BCH_received_date, BCH_expiry_date, BCH_priority, BCH_initial_volume_kg, BCH_available_stock_kg, BCH_current_stage, BCH_health_status) VALUES ('BCH_RM_D_A_QUEEN_8AAD394C_BB0988CC', (SELECT PRD_product_id FROM PRODUCTS WHERE PRD_material_grade = 'RM_D_A_QUEEN_8AAD394C' LIMIT 1), (SELECT SUP_supplier_id FROM SUPPLIERS WHERE SUP_supplier_name = 'Anh Thọ xe 30' LIMIT 1), (SELECT SHF_shift_id FROM SHIFTS WHERE SHF_shift_date = '2026-05-22' AND SHF_shift_type = 'Morning' LIMIT 1), (SELECT STZ_zone_id FROM STORAGE_ZONES WHERE STZ_zone_name = 'Default Zone' LIMIT 1), '2026-05-22 00:00:00', '2027-05-22 00:00:00', 'NORMAL', 0.00, 0.00, 'Seeded_From_Filtered_Data', 'Warning')
 ON DUPLICATE KEY UPDATE
     BCH_available_stock_kg = VALUES(BCH_available_stock_kg),
     BCH_current_stage = VALUES(BCH_current_stage),
     BCH_health_status = VALUES(BCH_health_status);
-INSERT INTO BATCHES (BCH_batch_id, BCH_product_id, BCH_supplier_id, BCH_shift_id, BCH_zone_id, BCH_received_date, BCH_expiry_date, BCH_priority, BCH_initial_volume_kg, BCH_available_stock_kg, BCH_current_stage, BCH_health_status) VALUES ('BCH_RM_D_A_TRUNG_T_99FC5F4B_9C02BCBC', (SELECT PRD_product_id FROM PRODUCTS WHERE PRD_material_grade = 'RM_D_A_TRUNG_T_99FC5F4B' LIMIT 1), (SELECT SUP_supplier_id FROM SUPPLIERS WHERE SUP_supplier_name = 'NCC_151' LIMIT 1), (SELECT SHF_shift_id FROM SHIFTS WHERE SHF_shift_date = '2026-05-02' AND SHF_shift_type = 'Morning' LIMIT 1), (SELECT STZ_zone_id FROM STORAGE_ZONES WHERE STZ_zone_name = 'Default Zone' LIMIT 1), '2026-05-02 00:00:00', '2027-05-02 00:00:00', 'NORMAL', 0.00, 0.00, 'Seeded_From_Filtered_Data', 'Warning')
+INSERT INTO BATCHES (BCH_batch_id, BCH_product_id, BCH_supplier_id, BCH_shift_id, BCH_zone_id, BCH_received_date, BCH_expiry_date, BCH_priority, BCH_initial_volume_kg, BCH_available_stock_kg, BCH_current_stage, BCH_health_status) VALUES ('BCH_RM_D_A_TRUNG_T_99FC5F4B_9C02BCBC', (SELECT PRD_product_id FROM PRODUCTS WHERE PRD_material_grade = 'RM_D_A_TRUNG_T_99FC5F4B' LIMIT 1), (SELECT SUP_supplier_id FROM SUPPLIERS WHERE SUP_supplier_name = 'Dứa sơ chế' LIMIT 1), (SELECT SHF_shift_id FROM SHIFTS WHERE SHF_shift_date = '2026-05-02' AND SHF_shift_type = 'Morning' LIMIT 1), (SELECT STZ_zone_id FROM STORAGE_ZONES WHERE STZ_zone_name = 'Default Zone' LIMIT 1), '2026-05-02 00:00:00', '2027-05-02 00:00:00', 'NORMAL', 0.00, 0.00, 'Seeded_From_Filtered_Data', 'Warning')
 ON DUPLICATE KEY UPDATE
     BCH_available_stock_kg = VALUES(BCH_available_stock_kg),
     BCH_current_stage = VALUES(BCH_current_stage),
     BCH_health_status = VALUES(BCH_health_status);
-INSERT INTO BATCHES (BCH_batch_id, BCH_product_id, BCH_supplier_id, BCH_shift_id, BCH_zone_id, BCH_received_date, BCH_expiry_date, BCH_priority, BCH_initial_volume_kg, BCH_available_stock_kg, BCH_current_stage, BCH_health_status) VALUES ('BCH_RM_NG_B_P_NG_T_12584CAF_8445107C', (SELECT PRD_product_id FROM PRODUCTS WHERE PRD_material_grade = 'RM_NG_B_P_NG_T_12584CAF' LIMIT 1), (SELECT SUP_supplier_id FROM SUPPLIERS WHERE SUP_supplier_name = 'NCC_038' LIMIT 1), (SELECT SHF_shift_id FROM SHIFTS WHERE SHF_shift_date = '2026-02-02' AND SHF_shift_type = 'Morning' LIMIT 1), (SELECT STZ_zone_id FROM STORAGE_ZONES WHERE STZ_zone_name = 'Default Zone' LIMIT 1), '2026-02-02 00:00:00', '2027-02-02 00:00:00', 'NORMAL', 0.00, 0.00, 'Seeded_From_Filtered_Data', 'Warning')
+INSERT INTO BATCHES (BCH_batch_id, BCH_product_id, BCH_supplier_id, BCH_shift_id, BCH_zone_id, BCH_received_date, BCH_expiry_date, BCH_priority, BCH_initial_volume_kg, BCH_available_stock_kg, BCH_current_stage, BCH_health_status) VALUES ('BCH_RM_NG_B_P_NG_T_12584CAF_8445107C', (SELECT PRD_product_id FROM PRODUCTS WHERE PRD_material_grade = 'RM_NG_B_P_NG_T_12584CAF' LIMIT 1), (SELECT SUP_supplier_id FROM SUPPLIERS WHERE SUP_supplier_name = 'Anh Mười BG' LIMIT 1), (SELECT SHF_shift_id FROM SHIFTS WHERE SHF_shift_date = '2026-02-02' AND SHF_shift_type = 'Morning' LIMIT 1), (SELECT STZ_zone_id FROM STORAGE_ZONES WHERE STZ_zone_name = 'Default Zone' LIMIT 1), '2026-02-02 00:00:00', '2027-02-02 00:00:00', 'NORMAL', 0.00, 0.00, 'Seeded_From_Filtered_Data', 'Warning')
 ON DUPLICATE KEY UPDATE
     BCH_available_stock_kg = VALUES(BCH_available_stock_kg),
     BCH_current_stage = VALUES(BCH_current_stage),
     BCH_health_status = VALUES(BCH_health_status);
-INSERT INTO BATCHES (BCH_batch_id, BCH_product_id, BCH_supplier_id, BCH_shift_id, BCH_zone_id, BCH_received_date, BCH_expiry_date, BCH_priority, BCH_initial_volume_kg, BCH_available_stock_kg, BCH_current_stage, BCH_health_status) VALUES ('BCH_RM_QU_V_I_T_I_20887E54_DEB91782', (SELECT PRD_product_id FROM PRODUCTS WHERE PRD_material_grade = 'RM_QU_V_I_T_I_20887E54' LIMIT 1), (SELECT SUP_supplier_id FROM SUPPLIERS WHERE SUP_supplier_name = 'NCC_161' LIMIT 1), (SELECT SHF_shift_id FROM SHIFTS WHERE SHF_shift_date = '2025-06-17' AND SHF_shift_type = 'Morning' LIMIT 1), (SELECT STZ_zone_id FROM STORAGE_ZONES WHERE STZ_zone_name = 'Default Zone' LIMIT 1), '2025-06-17 00:00:00', '2026-06-17 00:00:00', 'NORMAL', 0.00, 0.00, 'Seeded_From_Filtered_Data', 'Warning')
+INSERT INTO BATCHES (BCH_batch_id, BCH_product_id, BCH_supplier_id, BCH_shift_id, BCH_zone_id, BCH_received_date, BCH_expiry_date, BCH_priority, BCH_initial_volume_kg, BCH_available_stock_kg, BCH_current_stage, BCH_health_status) VALUES ('BCH_RM_QU_V_I_T_I_20887E54_DEB91782', (SELECT PRD_product_id FROM PRODUCTS WHERE PRD_material_grade = 'RM_QU_V_I_T_I_20887E54' LIMIT 1), (SELECT SUP_supplier_id FROM SUPPLIERS WHERE SUP_supplier_name = 'Chị Thủy xe 22' LIMIT 1), (SELECT SHF_shift_id FROM SHIFTS WHERE SHF_shift_date = '2025-06-17' AND SHF_shift_type = 'Morning' LIMIT 1), (SELECT STZ_zone_id FROM STORAGE_ZONES WHERE STZ_zone_name = 'Default Zone' LIMIT 1), '2025-06-17 00:00:00', '2026-06-17 00:00:00', 'NORMAL', 0.00, 0.00, 'Seeded_From_Filtered_Data', 'Warning')
 ON DUPLICATE KEY UPDATE
     BCH_available_stock_kg = VALUES(BCH_available_stock_kg),
     BCH_current_stage = VALUES(BCH_current_stage),
     BCH_health_status = VALUES(BCH_health_status);
-INSERT INTO BATCHES (BCH_batch_id, BCH_product_id, BCH_supplier_id, BCH_shift_id, BCH_zone_id, BCH_received_date, BCH_expiry_date, BCH_priority, BCH_initial_volume_kg, BCH_available_stock_kg, BCH_current_stage, BCH_health_status) VALUES ('BCH_RM_XU_T_TR_T_JALAPENOS_6AF4B493_A6CBE85D', (SELECT PRD_product_id FROM PRODUCTS WHERE PRD_material_grade = 'RM_XU_T_TR_T_JALAPENOS_6AF4B493' LIMIT 1), (SELECT SUP_supplier_id FROM SUPPLIERS WHERE SUP_supplier_name = 'NCC_167' LIMIT 1), (SELECT SHF_shift_id FROM SHIFTS WHERE SHF_shift_date = '2025-05-16' AND SHF_shift_type = 'Morning' LIMIT 1), (SELECT STZ_zone_id FROM STORAGE_ZONES WHERE STZ_zone_name = 'Default Zone' LIMIT 1), '2025-05-16 00:00:00', '2026-05-16 00:00:00', 'NORMAL', 0.00, 0.00, 'Seeded_From_Filtered_Data', 'Warning')
+INSERT INTO BATCHES (BCH_batch_id, BCH_product_id, BCH_supplier_id, BCH_shift_id, BCH_zone_id, BCH_received_date, BCH_expiry_date, BCH_priority, BCH_initial_volume_kg, BCH_available_stock_kg, BCH_current_stage, BCH_health_status) VALUES ('BCH_RM_XU_T_TR_T_JALAPENOS_6AF4B493_A6CBE85D', (SELECT PRD_product_id FROM PRODUCTS WHERE PRD_material_grade = 'RM_XU_T_TR_T_JALAPENOS_6AF4B493' LIMIT 1), (SELECT SUP_supplier_id FROM SUPPLIERS WHERE SUP_supplier_name = 'Anh Công xe 45' LIMIT 1), (SELECT SHF_shift_id FROM SHIFTS WHERE SHF_shift_date = '2025-05-16' AND SHF_shift_type = 'Morning' LIMIT 1), (SELECT STZ_zone_id FROM STORAGE_ZONES WHERE STZ_zone_name = 'Default Zone' LIMIT 1), '2025-05-16 00:00:00', '2026-05-16 00:00:00', 'NORMAL', 0.00, 0.00, 'Seeded_From_Filtered_Data', 'Warning')
 ON DUPLICATE KEY UPDATE
     BCH_available_stock_kg = VALUES(BCH_available_stock_kg),
     BCH_current_stage = VALUES(BCH_current_stage),
     BCH_health_status = VALUES(BCH_health_status);
-INSERT INTO BATCHES (BCH_batch_id, BCH_product_id, BCH_supplier_id, BCH_shift_id, BCH_zone_id, BCH_received_date, BCH_expiry_date, BCH_priority, BCH_initial_volume_kg, BCH_available_stock_kg, BCH_current_stage, BCH_health_status) VALUES ('BCH_RM__T_T_I_CH_THI_N_AFFB50E6_C60D0652', (SELECT PRD_product_id FROM PRODUCTS WHERE PRD_material_grade = 'RM__T_T_I_CH_THI_N_AFFB50E6' LIMIT 1), (SELECT SUP_supplier_id FROM SUPPLIERS WHERE SUP_supplier_name = 'NCC_168' LIMIT 1), (SELECT SHF_shift_id FROM SHIFTS WHERE SHF_shift_date = '2026-04-01' AND SHF_shift_type = 'Morning' LIMIT 1), (SELECT STZ_zone_id FROM STORAGE_ZONES WHERE STZ_zone_name = 'Default Zone' LIMIT 1), '2026-04-01 00:00:00', '2027-04-01 00:00:00', 'NORMAL', 0.00, 0.00, 'Seeded_From_Filtered_Data', 'Warning')
+INSERT INTO BATCHES (BCH_batch_id, BCH_product_id, BCH_supplier_id, BCH_shift_id, BCH_zone_id, BCH_received_date, BCH_expiry_date, BCH_priority, BCH_initial_volume_kg, BCH_available_stock_kg, BCH_current_stage, BCH_health_status) VALUES ('BCH_RM__T_T_I_CH_THI_N_AFFB50E6_C60D0652', (SELECT PRD_product_id FROM PRODUCTS WHERE PRD_material_grade = 'RM__T_T_I_CH_THI_N_AFFB50E6' LIMIT 1), (SELECT SUP_supplier_id FROM SUPPLIERS WHERE SUP_supplier_name = 'Anh Công xe 46' LIMIT 1), (SELECT SHF_shift_id FROM SHIFTS WHERE SHF_shift_date = '2026-04-01' AND SHF_shift_type = 'Morning' LIMIT 1), (SELECT STZ_zone_id FROM STORAGE_ZONES WHERE STZ_zone_name = 'Default Zone' LIMIT 1), '2026-04-01 00:00:00', '2027-04-01 00:00:00', 'NORMAL', 0.00, 0.00, 'Seeded_From_Filtered_Data', 'Warning')
 ON DUPLICATE KEY UPDATE
     BCH_available_stock_kg = VALUES(BCH_available_stock_kg),
     BCH_current_stage = VALUES(BCH_current_stage),
@@ -5150,7 +5150,7 @@ ON DUPLICATE KEY UPDATE
     BCH_available_stock_kg = VALUES(BCH_available_stock_kg),
     BCH_current_stage = VALUES(BCH_current_stage),
     BCH_health_status = VALUES(BCH_health_status);
-INSERT INTO BATCHES (BCH_batch_id, BCH_product_id, BCH_supplier_id, BCH_shift_id, BCH_zone_id, BCH_received_date, BCH_expiry_date, BCH_priority, BCH_initial_volume_kg, BCH_available_stock_kg, BCH_current_stage, BCH_health_status) VALUES ('BCH_RODUNGNVL_9E065A6A', (SELECT PRD_product_id FROM PRODUCTS WHERE PRD_material_grade = 'RODUNGNVL' LIMIT 1), (SELECT SUP_supplier_id FROM SUPPLIERS WHERE SUP_supplier_name = 'NCC_096' LIMIT 1), (SELECT SHF_shift_id FROM SHIFTS WHERE SHF_shift_date = '2026-04-24' AND SHF_shift_type = 'Morning' LIMIT 1), (SELECT STZ_zone_id FROM STORAGE_ZONES WHERE STZ_zone_name = 'Default Zone' LIMIT 1), '2026-04-24 00:00:00', '2027-04-24 00:00:00', 'NORMAL', 39.00, 39.00, 'Seeded_From_Filtered_Data', 'Good')
+INSERT INTO BATCHES (BCH_batch_id, BCH_product_id, BCH_supplier_id, BCH_shift_id, BCH_zone_id, BCH_received_date, BCH_expiry_date, BCH_priority, BCH_initial_volume_kg, BCH_available_stock_kg, BCH_current_stage, BCH_health_status) VALUES ('BCH_RODUNGNVL_9E065A6A', (SELECT PRD_product_id FROM PRODUCTS WHERE PRD_material_grade = 'RODUNGNVL' LIMIT 1), (SELECT SUP_supplier_id FROM SUPPLIERS WHERE SUP_supplier_name = 'Trang điểm gọt' LIMIT 1), (SELECT SHF_shift_id FROM SHIFTS WHERE SHF_shift_date = '2026-04-24' AND SHF_shift_type = 'Morning' LIMIT 1), (SELECT STZ_zone_id FROM STORAGE_ZONES WHERE STZ_zone_name = 'Default Zone' LIMIT 1), '2026-04-24 00:00:00', '2027-04-24 00:00:00', 'NORMAL', 39.00, 39.00, 'Seeded_From_Filtered_Data', 'Good')
 ON DUPLICATE KEY UPDATE
     BCH_available_stock_kg = VALUES(BCH_available_stock_kg),
     BCH_current_stage = VALUES(BCH_current_stage),
@@ -5245,7 +5245,7 @@ ON DUPLICATE KEY UPDATE
     BCH_available_stock_kg = VALUES(BCH_available_stock_kg),
     BCH_current_stage = VALUES(BCH_current_stage),
     BCH_health_status = VALUES(BCH_health_status);
-INSERT INTO BATCHES (BCH_batch_id, BCH_product_id, BCH_supplier_id, BCH_shift_id, BCH_zone_id, BCH_received_date, BCH_expiry_date, BCH_priority, BCH_initial_volume_kg, BCH_available_stock_kg, BCH_current_stage, BCH_health_status) VALUES ('BCH_THUNG_20_AF_28904AD6', (SELECT PRD_product_id FROM PRODUCTS WHERE PRD_material_grade = 'THUNG_20_AF' LIMIT 1), (SELECT SUP_supplier_id FROM SUPPLIERS WHERE SUP_supplier_name = 'NCC_007' LIMIT 1), (SELECT SHF_shift_id FROM SHIFTS WHERE SHF_shift_date = '2026-05-30' AND SHF_shift_type = 'Morning' LIMIT 1), (SELECT STZ_zone_id FROM STORAGE_ZONES WHERE STZ_zone_name = 'Default Zone' LIMIT 1), '2026-05-30 00:00:00', '2027-05-30 00:00:00', 'NORMAL', 150.00, 150.00, 'Seeded_From_Filtered_Data', 'Good')
+INSERT INTO BATCHES (BCH_batch_id, BCH_product_id, BCH_supplier_id, BCH_shift_id, BCH_zone_id, BCH_received_date, BCH_expiry_date, BCH_priority, BCH_initial_volume_kg, BCH_available_stock_kg, BCH_current_stage, BCH_health_status) VALUES ('BCH_THUNG_20_AF_28904AD6', (SELECT PRD_product_id FROM PRODUCTS WHERE PRD_material_grade = 'THUNG_20_AF' LIMIT 1), (SELECT SUP_supplier_id FROM SUPPLIERS WHERE SUP_supplier_name = 'Tân Việt Anh' LIMIT 1), (SELECT SHF_shift_id FROM SHIFTS WHERE SHF_shift_date = '2026-05-30' AND SHF_shift_type = 'Morning' LIMIT 1), (SELECT STZ_zone_id FROM STORAGE_ZONES WHERE STZ_zone_name = 'Default Zone' LIMIT 1), '2026-05-30 00:00:00', '2027-05-30 00:00:00', 'NORMAL', 150.00, 150.00, 'Seeded_From_Filtered_Data', 'Good')
 ON DUPLICATE KEY UPDATE
     BCH_available_stock_kg = VALUES(BCH_available_stock_kg),
     BCH_current_stage = VALUES(BCH_current_stage),
@@ -14715,80 +14715,80 @@ SELECT 'BCH_LON_30OZDM_9C053250', (SELECT USR_user_id FROM USERS WHERE USR_usern
 WHERE NOT EXISTS (SELECT 1 FROM MATERIAL_ALLOCATIONS WHERE ALC_batch_id = 'BCH_LON_30OZDM_9C053250' AND ALC_production_line = 'Production Line' AND ALC_allocation_time = '2026-07-09 00:00:00'); -- Seed allocation 1115 source 1.2. Xuat:1654
 
 -- 9. QC_INSPECTIONS - damaged-goods records from anonymized damaged sheet.
-INSERT INTO QC_INSPECTIONS (QCI_batch_id, QCI_user_id, QCI_rotten_weight_kg, QCI_natural_loss_weight_kg, QCI_usable_weight_kg, QCI_rejection_reason, QCI_inspector_comments, QCI_visual_record_url, QCI_destination)
-SELECT 'BCH_DM20KM300LS_96BF3A39', (SELECT USR_user_id FROM USERS WHERE USR_username = 'qc_op702' LIMIT 1), 27.00, 0.00, 0.00, 'Đã dán nhãn đen, hàng VP Chuyển xuổng', 'Seed source Hàng lỗihỏng:3', 'MEDIA_001', 'Kho Thành phẩm'
+INSERT INTO QC_INSPECTIONS (QCI_batch_id, QCI_user_id, QCI_rotten_weight_kg, QCI_natural_loss_weight_kg, QCI_usable_weight_kg, QCI_actual_yield_pct, QCI_rejection_reason, QCI_inspector_comments, QCI_visual_record_url, QCI_destination)
+SELECT 'BCH_DM20KM300LS_96BF3A39', (SELECT USR_user_id FROM USERS WHERE USR_username = 'Nhung_Thủy' LIMIT 1), 27.00, 0.00, 0.00, 100.00, 'Đã dán nhãn đen, hàng VP Chuyển xuổng', 'Seed source Hàng lỗihỏng:3', 'MEDIA_001', 'Kho Thành phẩm'
 WHERE NOT EXISTS (SELECT 1 FROM QC_INSPECTIONS WHERE QCI_batch_id = 'BCH_DM20KM300LS_96BF3A39' AND QCI_inspector_comments = 'Seed source Hàng lỗihỏng:3'); -- seed QC row 1
-INSERT INTO QC_INSPECTIONS (QCI_batch_id, QCI_user_id, QCI_rotten_weight_kg, QCI_natural_loss_weight_kg, QCI_usable_weight_kg, QCI_rejection_reason, QCI_inspector_comments, QCI_visual_record_url, QCI_destination)
-SELECT 'BCH_DM20KM300LS_96BF3A39', (SELECT USR_user_id FROM USERS WHERE USR_username = 'qc_op702' LIMIT 1), 48.00, 0.00, 0.00, 'Đã dán nhãn trắng, hàng VP Chuyển xuổng', 'Seed source Hàng lỗihỏng:4', 'MEDIA_002', 'Kho Thành phẩm'
+INSERT INTO QC_INSPECTIONS (QCI_batch_id, QCI_user_id, QCI_rotten_weight_kg, QCI_natural_loss_weight_kg, QCI_usable_weight_kg, QCI_actual_yield_pct, QCI_rejection_reason, QCI_inspector_comments, QCI_visual_record_url, QCI_destination)
+SELECT 'BCH_DM20KM300LS_96BF3A39', (SELECT USR_user_id FROM USERS WHERE USR_username = 'Nhung_Thủy' LIMIT 1), 48.00, 0.00, 0.00, 100.00, 'Đã dán nhãn trắng, hàng VP Chuyển xuổng', 'Seed source Hàng lỗihỏng:4', 'MEDIA_002', 'Kho Thành phẩm'
 WHERE NOT EXISTS (SELECT 1 FROM QC_INSPECTIONS WHERE QCI_batch_id = 'BCH_DM20KM300LS_96BF3A39' AND QCI_inspector_comments = 'Seed source Hàng lỗihỏng:4'); -- seed QC row 2
-INSERT INTO QC_INSPECTIONS (QCI_batch_id, QCI_user_id, QCI_rotten_weight_kg, QCI_natural_loss_weight_kg, QCI_usable_weight_kg, QCI_rejection_reason, QCI_inspector_comments, QCI_visual_record_url, QCI_destination)
-SELECT 'BCH_BT36_720_6524B78F', (SELECT USR_user_id FROM USERS WHERE USR_username = 'qc_op702' LIMIT 1), 61.00, 0.00, 0.00, 'Hàng Hưng Yên bị nhũn còn xót lại', 'Seed source Hàng lỗihỏng:5', 'MEDIA_003', 'Kho Thành phẩm'
+INSERT INTO QC_INSPECTIONS (QCI_batch_id, QCI_user_id, QCI_rotten_weight_kg, QCI_natural_loss_weight_kg, QCI_usable_weight_kg, QCI_actual_yield_pct, QCI_rejection_reason, QCI_inspector_comments, QCI_visual_record_url, QCI_destination)
+SELECT 'BCH_BT36_720_6524B78F', (SELECT USR_user_id FROM USERS WHERE USR_username = 'Nhung_Thủy' LIMIT 1), 61.00, 0.00, 0.00, 100.00, 'Hàng Hưng Yên bị nhũn còn xót lại', 'Seed source Hàng lỗihỏng:5', 'MEDIA_003', 'Kho Thành phẩm'
 WHERE NOT EXISTS (SELECT 1 FROM QC_INSPECTIONS WHERE QCI_batch_id = 'BCH_BT36_720_6524B78F' AND QCI_inspector_comments = 'Seed source Hàng lỗihỏng:5'); -- seed QC row 3
-INSERT INTO QC_INSPECTIONS (QCI_batch_id, QCI_user_id, QCI_rotten_weight_kg, QCI_natural_loss_weight_kg, QCI_usable_weight_kg, QCI_rejection_reason, QCI_inspector_comments, QCI_visual_record_url, QCI_destination)
-SELECT 'BCH_DK30DM480LS_FDCE0A5B', (SELECT USR_user_id FROM USERS WHERE USR_username = 'qc_op702' LIMIT 1), 331.00, 0.00, 0.00, '27 Thùng + 7 lon (Hàng han nhiều)', 'Seed source Hàng lỗihỏng:9', NULL, 'QC Hold'
+INSERT INTO QC_INSPECTIONS (QCI_batch_id, QCI_user_id, QCI_rotten_weight_kg, QCI_natural_loss_weight_kg, QCI_usable_weight_kg, QCI_actual_yield_pct, QCI_rejection_reason, QCI_inspector_comments, QCI_visual_record_url, QCI_destination)
+SELECT 'BCH_DK30DM480LS_FDCE0A5B', (SELECT USR_user_id FROM USERS WHERE USR_username = 'Nhung_Thủy' LIMIT 1), 331.00, 0.00, 0.00, 100.00, '27 Thùng + 7 lon (Hàng han nhiều)', 'Seed source Hàng lỗihỏng:9', NULL, 'QC Hold'
 WHERE NOT EXISTS (SELECT 1 FROM QC_INSPECTIONS WHERE QCI_batch_id = 'BCH_DK30DM480LS_FDCE0A5B' AND QCI_inspector_comments = 'Seed source Hàng lỗihỏng:9'); -- seed QC row 4
-INSERT INTO QC_INSPECTIONS (QCI_batch_id, QCI_user_id, QCI_rotten_weight_kg, QCI_natural_loss_weight_kg, QCI_usable_weight_kg, QCI_rejection_reason, QCI_inspector_comments, QCI_visual_record_url, QCI_destination)
-SELECT 'BCH_DMA10_1600LS_LOI_3DC2380A', (SELECT USR_user_id FROM USERS WHERE USR_username = 'qc_op702' LIMIT 1), 416.00, 0.00, 0.00, 'Tibit', 'Seed source Hàng lỗihỏng:10', NULL, 'Kho Thành phẩm'
+INSERT INTO QC_INSPECTIONS (QCI_batch_id, QCI_user_id, QCI_rotten_weight_kg, QCI_natural_loss_weight_kg, QCI_usable_weight_kg, QCI_actual_yield_pct, QCI_rejection_reason, QCI_inspector_comments, QCI_visual_record_url, QCI_destination)
+SELECT 'BCH_DMA10_1600LS_LOI_3DC2380A', (SELECT USR_user_id FROM USERS WHERE USR_username = 'Nhung_Thủy' LIMIT 1), 416.00, 0.00, 0.00, 100.00, 'Tibit', 'Seed source Hàng lỗihỏng:10', NULL, 'Kho Thành phẩm'
 WHERE NOT EXISTS (SELECT 1 FROM QC_INSPECTIONS WHERE QCI_batch_id = 'BCH_DMA10_1600LS_LOI_3DC2380A' AND QCI_inspector_comments = 'Seed source Hàng lỗihỏng:10'); -- seed QC row 5
-INSERT INTO QC_INSPECTIONS (QCI_batch_id, QCI_user_id, QCI_rotten_weight_kg, QCI_natural_loss_weight_kg, QCI_usable_weight_kg, QCI_rejection_reason, QCI_inspector_comments, QCI_visual_record_url, QCI_destination)
-SELECT 'BCH_DMA10_1600LS_LOI_3DC2380A', (SELECT USR_user_id FROM USERS WHERE USR_username = 'qc_op702' LIMIT 1), 416.00, 0.00, 0.00, 'Tibit', 'Seed source Hàng lỗihỏng:11', NULL, 'Kho Thành phẩm'
+INSERT INTO QC_INSPECTIONS (QCI_batch_id, QCI_user_id, QCI_rotten_weight_kg, QCI_natural_loss_weight_kg, QCI_usable_weight_kg, QCI_actual_yield_pct, QCI_rejection_reason, QCI_inspector_comments, QCI_visual_record_url, QCI_destination)
+SELECT 'BCH_DMA10_1600LS_LOI_3DC2380A', (SELECT USR_user_id FROM USERS WHERE USR_username = 'Nhung_Thủy' LIMIT 1), 416.00, 0.00, 0.00, 100.00, 'Tibit', 'Seed source Hàng lỗihỏng:11', NULL, 'Kho Thành phẩm'
 WHERE NOT EXISTS (SELECT 1 FROM QC_INSPECTIONS WHERE QCI_batch_id = 'BCH_DMA10_1600LS_LOI_3DC2380A' AND QCI_inspector_comments = 'Seed source Hàng lỗihỏng:11'); -- seed QC row 6
-INSERT INTO QC_INSPECTIONS (QCI_batch_id, QCI_user_id, QCI_rotten_weight_kg, QCI_natural_loss_weight_kg, QCI_usable_weight_kg, QCI_rejection_reason, QCI_inspector_comments, QCI_visual_record_url, QCI_destination)
-SELECT 'BCH_DMA10_1600LS_LOI_3DC2380A', (SELECT USR_user_id FROM USERS WHERE USR_username = 'qc_op702' LIMIT 1), 175.00, 0.00, 0.00, 'Tibit', 'Seed source Hàng lỗihỏng:12', NULL, 'Kho Thành phẩm'
+INSERT INTO QC_INSPECTIONS (QCI_batch_id, QCI_user_id, QCI_rotten_weight_kg, QCI_natural_loss_weight_kg, QCI_usable_weight_kg, QCI_actual_yield_pct, QCI_rejection_reason, QCI_inspector_comments, QCI_visual_record_url, QCI_destination)
+SELECT 'BCH_DMA10_1600LS_LOI_3DC2380A', (SELECT USR_user_id FROM USERS WHERE USR_username = 'Nhung_Thủy' LIMIT 1), 175.00, 0.00, 0.00, 100.00, 'Tibit', 'Seed source Hàng lỗihỏng:12', NULL, 'Kho Thành phẩm'
 WHERE NOT EXISTS (SELECT 1 FROM QC_INSPECTIONS WHERE QCI_batch_id = 'BCH_DMA10_1600LS_LOI_3DC2380A' AND QCI_inspector_comments = 'Seed source Hàng lỗihỏng:12'); -- seed QC row 7
-INSERT INTO QC_INSPECTIONS (QCI_batch_id, QCI_user_id, QCI_rotten_weight_kg, QCI_natural_loss_weight_kg, QCI_usable_weight_kg, QCI_rejection_reason, QCI_inspector_comments, QCI_visual_record_url, QCI_destination)
-SELECT 'BCH_DMA10_1600LS_LOI_3DC2380A', (SELECT USR_user_id FROM USERS WHERE USR_username = 'qc_op702' LIMIT 1), 415.00, 0.00, 0.00, 'Tibit', 'Seed source Hàng lỗihỏng:13', NULL, 'Kho Thành phẩm'
+INSERT INTO QC_INSPECTIONS (QCI_batch_id, QCI_user_id, QCI_rotten_weight_kg, QCI_natural_loss_weight_kg, QCI_usable_weight_kg, QCI_actual_yield_pct, QCI_rejection_reason, QCI_inspector_comments, QCI_visual_record_url, QCI_destination)
+SELECT 'BCH_DMA10_1600LS_LOI_3DC2380A', (SELECT USR_user_id FROM USERS WHERE USR_username = 'Nhung_Thủy' LIMIT 1), 415.00, 0.00, 0.00, 100.00, 'Tibit', 'Seed source Hàng lỗihỏng:13', NULL, 'Kho Thành phẩm'
 WHERE NOT EXISTS (SELECT 1 FROM QC_INSPECTIONS WHERE QCI_batch_id = 'BCH_DMA10_1600LS_LOI_3DC2380A' AND QCI_inspector_comments = 'Seed source Hàng lỗihỏng:13'); -- seed QC row 8
-INSERT INTO QC_INSPECTIONS (QCI_batch_id, QCI_user_id, QCI_rotten_weight_kg, QCI_natural_loss_weight_kg, QCI_usable_weight_kg, QCI_rejection_reason, QCI_inspector_comments, QCI_visual_record_url, QCI_destination)
-SELECT 'BCH_DMA10_1600LS_LOI_3DC2380A', (SELECT USR_user_id FROM USERS WHERE USR_username = 'qc_op702' LIMIT 1), 416.00, 0.00, 0.00, 'Tibit', 'Seed source Hàng lỗihỏng:14', NULL, 'Kho Thành phẩm'
+INSERT INTO QC_INSPECTIONS (QCI_batch_id, QCI_user_id, QCI_rotten_weight_kg, QCI_natural_loss_weight_kg, QCI_usable_weight_kg, QCI_actual_yield_pct, QCI_rejection_reason, QCI_inspector_comments, QCI_visual_record_url, QCI_destination)
+SELECT 'BCH_DMA10_1600LS_LOI_3DC2380A', (SELECT USR_user_id FROM USERS WHERE USR_username = 'Nhung_Thủy' LIMIT 1), 416.00, 0.00, 0.00, 100.00, 'Tibit', 'Seed source Hàng lỗihỏng:14', NULL, 'Kho Thành phẩm'
 WHERE NOT EXISTS (SELECT 1 FROM QC_INSPECTIONS WHERE QCI_batch_id = 'BCH_DMA10_1600LS_LOI_3DC2380A' AND QCI_inspector_comments = 'Seed source Hàng lỗihỏng:14'); -- seed QC row 9
-INSERT INTO QC_INSPECTIONS (QCI_batch_id, QCI_user_id, QCI_rotten_weight_kg, QCI_natural_loss_weight_kg, QCI_usable_weight_kg, QCI_rejection_reason, QCI_inspector_comments, QCI_visual_record_url, QCI_destination)
-SELECT 'BCH_DMA10_1600LS_LOI_3DC2380A', (SELECT USR_user_id FROM USERS WHERE USR_username = 'qc_op702' LIMIT 1), 411.00, 0.00, 0.00, 'Tibit', 'Seed source Hàng lỗihỏng:15', NULL, 'Kho Thành phẩm'
+INSERT INTO QC_INSPECTIONS (QCI_batch_id, QCI_user_id, QCI_rotten_weight_kg, QCI_natural_loss_weight_kg, QCI_usable_weight_kg, QCI_actual_yield_pct, QCI_rejection_reason, QCI_inspector_comments, QCI_visual_record_url, QCI_destination)
+SELECT 'BCH_DMA10_1600LS_LOI_3DC2380A', (SELECT USR_user_id FROM USERS WHERE USR_username = 'Nhung_Thủy' LIMIT 1), 411.00, 0.00, 0.00, 100.00, 'Tibit', 'Seed source Hàng lỗihỏng:15', NULL, 'Kho Thành phẩm'
 WHERE NOT EXISTS (SELECT 1 FROM QC_INSPECTIONS WHERE QCI_batch_id = 'BCH_DMA10_1600LS_LOI_3DC2380A' AND QCI_inspector_comments = 'Seed source Hàng lỗihỏng:15'); -- seed QC row 10
-INSERT INTO QC_INSPECTIONS (QCI_batch_id, QCI_user_id, QCI_rotten_weight_kg, QCI_natural_loss_weight_kg, QCI_usable_weight_kg, QCI_rejection_reason, QCI_inspector_comments, QCI_visual_record_url, QCI_destination)
-SELECT 'BCH_DMA10_1600LS_LOI_3DC2380A', (SELECT USR_user_id FROM USERS WHERE USR_username = 'qc_op702' LIMIT 1), 127.00, 0.00, 0.00, 'Tibit', 'Seed source Hàng lỗihỏng:16', NULL, 'Kho Thành phẩm'
+INSERT INTO QC_INSPECTIONS (QCI_batch_id, QCI_user_id, QCI_rotten_weight_kg, QCI_natural_loss_weight_kg, QCI_usable_weight_kg, QCI_actual_yield_pct, QCI_rejection_reason, QCI_inspector_comments, QCI_visual_record_url, QCI_destination)
+SELECT 'BCH_DMA10_1600LS_LOI_3DC2380A', (SELECT USR_user_id FROM USERS WHERE USR_username = 'Nhung_Thủy' LIMIT 1), 127.00, 0.00, 0.00, 100.00, 'Tibit', 'Seed source Hàng lỗihỏng:16', NULL, 'Kho Thành phẩm'
 WHERE NOT EXISTS (SELECT 1 FROM QC_INSPECTIONS WHERE QCI_batch_id = 'BCH_DMA10_1600LS_LOI_3DC2380A' AND QCI_inspector_comments = 'Seed source Hàng lỗihỏng:16'); -- seed QC row 11
-INSERT INTO QC_INSPECTIONS (QCI_batch_id, QCI_user_id, QCI_rotten_weight_kg, QCI_natural_loss_weight_kg, QCI_usable_weight_kg, QCI_rejection_reason, QCI_inspector_comments, QCI_visual_record_url, QCI_destination)
-SELECT 'BCH_DMA10_1600LS_LOI_3DC2380A', (SELECT USR_user_id FROM USERS WHERE USR_username = 'qc_op702' LIMIT 1), 289.00, 0.00, 0.00, 'Tibit', 'Seed source Hàng lỗihỏng:17', NULL, 'Kho Thành phẩm'
+INSERT INTO QC_INSPECTIONS (QCI_batch_id, QCI_user_id, QCI_rotten_weight_kg, QCI_natural_loss_weight_kg, QCI_usable_weight_kg, QCI_actual_yield_pct, QCI_rejection_reason, QCI_inspector_comments, QCI_visual_record_url, QCI_destination)
+SELECT 'BCH_DMA10_1600LS_LOI_3DC2380A', (SELECT USR_user_id FROM USERS WHERE USR_username = 'Nhung_Thủy' LIMIT 1), 289.00, 0.00, 0.00, 100.00, 'Tibit', 'Seed source Hàng lỗihỏng:17', NULL, 'Kho Thành phẩm'
 WHERE NOT EXISTS (SELECT 1 FROM QC_INSPECTIONS WHERE QCI_batch_id = 'BCH_DMA10_1600LS_LOI_3DC2380A' AND QCI_inspector_comments = 'Seed source Hàng lỗihỏng:17'); -- seed QC row 12
-INSERT INTO QC_INSPECTIONS (QCI_batch_id, QCI_user_id, QCI_rotten_weight_kg, QCI_natural_loss_weight_kg, QCI_usable_weight_kg, QCI_rejection_reason, QCI_inspector_comments, QCI_visual_record_url, QCI_destination)
-SELECT 'BCH_DMA10_1600LS_EFBA43FB', (SELECT USR_user_id FROM USERS WHERE USR_username = 'qc_op702' LIMIT 1), 63.00, 0.00, 0.00, 'KH trả về bị chín quá xin hủy đã dán nhãn', 'Seed source Hàng lỗihỏng:18', NULL, 'Kho Thành phẩm'
+INSERT INTO QC_INSPECTIONS (QCI_batch_id, QCI_user_id, QCI_rotten_weight_kg, QCI_natural_loss_weight_kg, QCI_usable_weight_kg, QCI_actual_yield_pct, QCI_rejection_reason, QCI_inspector_comments, QCI_visual_record_url, QCI_destination)
+SELECT 'BCH_DMA10_1600LS_EFBA43FB', (SELECT USR_user_id FROM USERS WHERE USR_username = 'Nhung_Thủy' LIMIT 1), 63.00, 0.00, 0.00, 100.00, 'KH trả về bị chín quá xin hủy đã dán nhãn', 'Seed source Hàng lỗihỏng:18', NULL, 'Kho Thành phẩm'
 WHERE NOT EXISTS (SELECT 1 FROM QC_INSPECTIONS WHERE QCI_batch_id = 'BCH_DMA10_1600LS_EFBA43FB' AND QCI_inspector_comments = 'Seed source Hàng lỗihỏng:18'); -- seed QC row 13
-INSERT INTO QC_INSPECTIONS (QCI_batch_id, QCI_user_id, QCI_rotten_weight_kg, QCI_natural_loss_weight_kg, QCI_usable_weight_kg, QCI_rejection_reason, QCI_inspector_comments, QCI_visual_record_url, QCI_destination)
-SELECT 'BCH_DMA10_1600LS_EFBA43FB', (SELECT USR_user_id FROM USERS WHERE USR_username = 'qc_op702' LIMIT 1), 28.00, 0.00, 0.00, 'Móp, méo, han', 'Seed source Hàng lỗihỏng:19', NULL, 'Kho Thành phẩm'
+INSERT INTO QC_INSPECTIONS (QCI_batch_id, QCI_user_id, QCI_rotten_weight_kg, QCI_natural_loss_weight_kg, QCI_usable_weight_kg, QCI_actual_yield_pct, QCI_rejection_reason, QCI_inspector_comments, QCI_visual_record_url, QCI_destination)
+SELECT 'BCH_DMA10_1600LS_EFBA43FB', (SELECT USR_user_id FROM USERS WHERE USR_username = 'Nhung_Thủy' LIMIT 1), 28.00, 0.00, 0.00, 100.00, 'Móp, méo, han', 'Seed source Hàng lỗihỏng:19', NULL, 'Kho Thành phẩm'
 WHERE NOT EXISTS (SELECT 1 FROM QC_INSPECTIONS WHERE QCI_batch_id = 'BCH_DMA10_1600LS_EFBA43FB' AND QCI_inspector_comments = 'Seed source Hàng lỗihỏng:19'); -- seed QC row 14
-INSERT INTO QC_INSPECTIONS (QCI_batch_id, QCI_user_id, QCI_rotten_weight_kg, QCI_natural_loss_weight_kg, QCI_usable_weight_kg, QCI_rejection_reason, QCI_inspector_comments, QCI_visual_record_url, QCI_destination)
-SELECT 'BCH_DDA10_1800_LOI_74A474DA', (SELECT USR_user_id FROM USERS WHERE USR_username = 'qc_op702' LIMIT 1), 403.00, 0.00, 0.00, 'Hàng lẫn quy cách cắt', 'Seed source Hàng lỗihỏng:20', NULL, 'Kho Thành phẩm'
+INSERT INTO QC_INSPECTIONS (QCI_batch_id, QCI_user_id, QCI_rotten_weight_kg, QCI_natural_loss_weight_kg, QCI_usable_weight_kg, QCI_actual_yield_pct, QCI_rejection_reason, QCI_inspector_comments, QCI_visual_record_url, QCI_destination)
+SELECT 'BCH_DDA10_1800_LOI_74A474DA', (SELECT USR_user_id FROM USERS WHERE USR_username = 'Nhung_Thủy' LIMIT 1), 403.00, 0.00, 0.00, 100.00, 'Hàng lẫn quy cách cắt', 'Seed source Hàng lỗihỏng:20', NULL, 'Kho Thành phẩm'
 WHERE NOT EXISTS (SELECT 1 FROM QC_INSPECTIONS WHERE QCI_batch_id = 'BCH_DDA10_1800_LOI_74A474DA' AND QCI_inspector_comments = 'Seed source Hàng lỗihỏng:20'); -- seed QC row 15
-INSERT INTO QC_INSPECTIONS (QCI_batch_id, QCI_user_id, QCI_rotten_weight_kg, QCI_natural_loss_weight_kg, QCI_usable_weight_kg, QCI_rejection_reason, QCI_inspector_comments, QCI_visual_record_url, QCI_destination)
-SELECT 'BCH_CTNC720_96008ECD', (SELECT USR_user_id FROM USERS WHERE USR_username = 'qc_op702' LIMIT 1), 0.00, 0.00, 0.00, 'Damaged goods seed record', 'Seed source Hàng lỗihỏng:21', 'MEDIA_007', 'QC Hold'
+INSERT INTO QC_INSPECTIONS (QCI_batch_id, QCI_user_id, QCI_rotten_weight_kg, QCI_natural_loss_weight_kg, QCI_usable_weight_kg, QCI_actual_yield_pct, QCI_rejection_reason, QCI_inspector_comments, QCI_visual_record_url, QCI_destination)
+SELECT 'BCH_CTNC720_96008ECD', (SELECT USR_user_id FROM USERS WHERE USR_username = 'Nhung_Thủy' LIMIT 1), 0.00, 0.00, 0.00, 100.00, 'Damaged goods seed record', 'Seed source Hàng lỗihỏng:21', 'MEDIA_007', 'QC Hold'
 WHERE NOT EXISTS (SELECT 1 FROM QC_INSPECTIONS WHERE QCI_batch_id = 'BCH_CTNC720_96008ECD' AND QCI_inspector_comments = 'Seed source Hàng lỗihỏng:21'); -- seed QC row 16
-INSERT INTO QC_INSPECTIONS (QCI_batch_id, QCI_user_id, QCI_rotten_weight_kg, QCI_natural_loss_weight_kg, QCI_usable_weight_kg, QCI_rejection_reason, QCI_inspector_comments, QCI_visual_record_url, QCI_destination)
-SELECT 'BCH_DK20KM300LS_9FFD8AB6', (SELECT USR_user_id FROM USERS WHERE USR_username = 'qc_op702' LIMIT 1), 275.00, 0.00, 0.00, 'Han gỉ', 'Seed source Hàng lỗihỏng:26', 'MEDIA_011', 'Kho Thành phẩm'
+INSERT INTO QC_INSPECTIONS (QCI_batch_id, QCI_user_id, QCI_rotten_weight_kg, QCI_natural_loss_weight_kg, QCI_usable_weight_kg, QCI_actual_yield_pct, QCI_rejection_reason, QCI_inspector_comments, QCI_visual_record_url, QCI_destination)
+SELECT 'BCH_DK20KM300LS_9FFD8AB6', (SELECT USR_user_id FROM USERS WHERE USR_username = 'Nhung_Thủy' LIMIT 1), 275.00, 0.00, 0.00, 100.00, 'Han gỉ', 'Seed source Hàng lỗihỏng:26', 'MEDIA_011', 'Kho Thành phẩm'
 WHERE NOT EXISTS (SELECT 1 FROM QC_INSPECTIONS WHERE QCI_batch_id = 'BCH_DK20KM300LS_9FFD8AB6' AND QCI_inspector_comments = 'Seed source Hàng lỗihỏng:26'); -- seed QC row 17
-INSERT INTO QC_INSPECTIONS (QCI_batch_id, QCI_user_id, QCI_rotten_weight_kg, QCI_natural_loss_weight_kg, QCI_usable_weight_kg, QCI_rejection_reason, QCI_inspector_comments, QCI_visual_record_url, QCI_destination)
-SELECT 'BCH_NGO15_200_4FF8283E', (SELECT USR_user_id FROM USERS WHERE USR_username = 'qc_op702' LIMIT 1), 80.00, 0.00, 0.00, 'Han gỉ, hỏng', 'Seed source Hàng lỗihỏng:27', 'MEDIA_012', 'Kho Thành phẩm'
+INSERT INTO QC_INSPECTIONS (QCI_batch_id, QCI_user_id, QCI_rotten_weight_kg, QCI_natural_loss_weight_kg, QCI_usable_weight_kg, QCI_actual_yield_pct, QCI_rejection_reason, QCI_inspector_comments, QCI_visual_record_url, QCI_destination)
+SELECT 'BCH_NGO15_200_4FF8283E', (SELECT USR_user_id FROM USERS WHERE USR_username = 'Nhung_Thủy' LIMIT 1), 80.00, 0.00, 0.00, 100.00, 'Han gỉ, hỏng', 'Seed source Hàng lỗihỏng:27', 'MEDIA_012', 'Kho Thành phẩm'
 WHERE NOT EXISTS (SELECT 1 FROM QC_INSPECTIONS WHERE QCI_batch_id = 'BCH_NGO15_200_4FF8283E' AND QCI_inspector_comments = 'Seed source Hàng lỗihỏng:27'); -- seed QC row 18
-INSERT INTO QC_INSPECTIONS (QCI_batch_id, QCI_user_id, QCI_rotten_weight_kg, QCI_natural_loss_weight_kg, QCI_usable_weight_kg, QCI_rejection_reason, QCI_inspector_comments, QCI_visual_record_url, QCI_destination)
-SELECT 'BCH_DTLA20OZ_CC621C82', (SELECT USR_user_id FROM USERS WHERE USR_username = 'qc_op702' LIMIT 1), 12.00, 0.00, 0.00, 'HAN GỈ', 'Seed source Hàng lỗihỏng:28', 'MEDIA_013', 'Kho Thành phẩm'
+INSERT INTO QC_INSPECTIONS (QCI_batch_id, QCI_user_id, QCI_rotten_weight_kg, QCI_natural_loss_weight_kg, QCI_usable_weight_kg, QCI_actual_yield_pct, QCI_rejection_reason, QCI_inspector_comments, QCI_visual_record_url, QCI_destination)
+SELECT 'BCH_DTLA20OZ_CC621C82', (SELECT USR_user_id FROM USERS WHERE USR_username = 'Nhung_Thủy' LIMIT 1), 12.00, 0.00, 0.00, 100.00, 'HAN GỈ', 'Seed source Hàng lỗihỏng:28', 'MEDIA_013', 'Kho Thành phẩm'
 WHERE NOT EXISTS (SELECT 1 FROM QC_INSPECTIONS WHERE QCI_batch_id = 'BCH_DTLA20OZ_CC621C82' AND QCI_inspector_comments = 'Seed source Hàng lỗihỏng:28'); -- seed QC row 19
-INSERT INTO QC_INSPECTIONS (QCI_batch_id, QCI_user_id, QCI_rotten_weight_kg, QCI_natural_loss_weight_kg, QCI_usable_weight_kg, QCI_rejection_reason, QCI_inspector_comments, QCI_visual_record_url, QCI_destination)
-SELECT 'BCH_DM20KM300LS_96BF3A39', (SELECT USR_user_id FROM USERS WHERE USR_username = 'qc_op702' LIMIT 1), 2444.00, 0.00, 0.00, 'Các lon phía ngoài bị han, không nhìn sâu được tình trạng bên trong', 'Seed source Hàng lỗihỏng:29', 'MEDIA_014', 'Kho Thành phẩm'
+INSERT INTO QC_INSPECTIONS (QCI_batch_id, QCI_user_id, QCI_rotten_weight_kg, QCI_natural_loss_weight_kg, QCI_usable_weight_kg, QCI_actual_yield_pct, QCI_rejection_reason, QCI_inspector_comments, QCI_visual_record_url, QCI_destination)
+SELECT 'BCH_DM20KM300LS_96BF3A39', (SELECT USR_user_id FROM USERS WHERE USR_username = 'Nhung_Thủy' LIMIT 1), 2444.00, 0.00, 0.00, 100.00, 'Các lon phía ngoài bị han, không nhìn sâu được tình trạng bên trong', 'Seed source Hàng lỗihỏng:29', 'MEDIA_014', 'Kho Thành phẩm'
 WHERE NOT EXISTS (SELECT 1 FROM QC_INSPECTIONS WHERE QCI_batch_id = 'BCH_DM20KM300LS_96BF3A39' AND QCI_inspector_comments = 'Seed source Hàng lỗihỏng:29'); -- seed QC row 20
-INSERT INTO QC_INSPECTIONS (QCI_batch_id, QCI_user_id, QCI_rotten_weight_kg, QCI_natural_loss_weight_kg, QCI_usable_weight_kg, QCI_rejection_reason, QCI_inspector_comments, QCI_visual_record_url, QCI_destination)
-SELECT 'BCH_DK30DM480MS_EBCE77F0', (SELECT USR_user_id FROM USERS WHERE USR_username = 'qc_op702' LIMIT 1), 600.00, 0.00, 0.00, '10 móp', 'Seed source Hàng lỗihỏng:30', NULL, 'Kho Thành phẩm'
+INSERT INTO QC_INSPECTIONS (QCI_batch_id, QCI_user_id, QCI_rotten_weight_kg, QCI_natural_loss_weight_kg, QCI_usable_weight_kg, QCI_actual_yield_pct, QCI_rejection_reason, QCI_inspector_comments, QCI_visual_record_url, QCI_destination)
+SELECT 'BCH_DK30DM480MS_EBCE77F0', (SELECT USR_user_id FROM USERS WHERE USR_username = 'Nhung_Thủy' LIMIT 1), 600.00, 0.00, 0.00, 100.00, '10 móp', 'Seed source Hàng lỗihỏng:30', NULL, 'Kho Thành phẩm'
 WHERE NOT EXISTS (SELECT 1 FROM QC_INSPECTIONS WHERE QCI_batch_id = 'BCH_DK30DM480MS_EBCE77F0' AND QCI_inspector_comments = 'Seed source Hàng lỗihỏng:30'); -- seed QC row 21
-INSERT INTO QC_INSPECTIONS (QCI_batch_id, QCI_user_id, QCI_rotten_weight_kg, QCI_natural_loss_weight_kg, QCI_usable_weight_kg, QCI_rejection_reason, QCI_inspector_comments, QCI_visual_record_url, QCI_destination)
-SELECT 'BCH_DM20KM300LS_96BF3A39', (SELECT USR_user_id FROM USERS WHERE USR_username = 'qc_op702' LIMIT 1), 2134.00, 0.00, 0.00, 'Han gỉ', 'Seed source Hàng lỗihỏng:31', NULL, 'Kho Thành phẩm'
+INSERT INTO QC_INSPECTIONS (QCI_batch_id, QCI_user_id, QCI_rotten_weight_kg, QCI_natural_loss_weight_kg, QCI_usable_weight_kg, QCI_actual_yield_pct, QCI_rejection_reason, QCI_inspector_comments, QCI_visual_record_url, QCI_destination)
+SELECT 'BCH_DM20KM300LS_96BF3A39', (SELECT USR_user_id FROM USERS WHERE USR_username = 'Nhung_Thủy' LIMIT 1), 2134.00, 0.00, 0.00, 100.00, 'Han gỉ', 'Seed source Hàng lỗihỏng:31', NULL, 'Kho Thành phẩm'
 WHERE NOT EXISTS (SELECT 1 FROM QC_INSPECTIONS WHERE QCI_batch_id = 'BCH_DM20KM300LS_96BF3A39' AND QCI_inspector_comments = 'Seed source Hàng lỗihỏng:31'); -- seed QC row 22
-INSERT INTO QC_INSPECTIONS (QCI_batch_id, QCI_user_id, QCI_rotten_weight_kg, QCI_natural_loss_weight_kg, QCI_usable_weight_kg, QCI_rejection_reason, QCI_inspector_comments, QCI_visual_record_url, QCI_destination)
-SELECT 'BCH_NGO15_230_5815495A', (SELECT USR_user_id FROM USERS WHERE USR_username = 'qc_op702' LIMIT 1), 412.00, 0.00, 0.00, 'Han gỉ', 'Seed source Hàng lỗihỏng:32', NULL, 'Kho Thành phẩm'
+INSERT INTO QC_INSPECTIONS (QCI_batch_id, QCI_user_id, QCI_rotten_weight_kg, QCI_natural_loss_weight_kg, QCI_usable_weight_kg, QCI_actual_yield_pct, QCI_rejection_reason, QCI_inspector_comments, QCI_visual_record_url, QCI_destination)
+SELECT 'BCH_NGO15_230_5815495A', (SELECT USR_user_id FROM USERS WHERE USR_username = 'Nhung_Thủy' LIMIT 1), 412.00, 0.00, 0.00, 100.00, 'Han gỉ', 'Seed source Hàng lỗihỏng:32', NULL, 'Kho Thành phẩm'
 WHERE NOT EXISTS (SELECT 1 FROM QC_INSPECTIONS WHERE QCI_batch_id = 'BCH_NGO15_230_5815495A' AND QCI_inspector_comments = 'Seed source Hàng lỗihỏng:32'); -- seed QC row 23
-INSERT INTO QC_INSPECTIONS (QCI_batch_id, QCI_user_id, QCI_rotten_weight_kg, QCI_natural_loss_weight_kg, QCI_usable_weight_kg, QCI_rejection_reason, QCI_inspector_comments, QCI_visual_record_url, QCI_destination)
-SELECT 'BCH_DM30DM490HS_143A4BAF', (SELECT USR_user_id FROM USERS WHERE USR_username = 'qc_op702' LIMIT 1), 66.00, 0.00, 0.00, 'Méo', 'Seed source Hàng lỗihỏng:34', NULL, 'Kho Thành phẩm'
+INSERT INTO QC_INSPECTIONS (QCI_batch_id, QCI_user_id, QCI_rotten_weight_kg, QCI_natural_loss_weight_kg, QCI_usable_weight_kg, QCI_actual_yield_pct, QCI_rejection_reason, QCI_inspector_comments, QCI_visual_record_url, QCI_destination)
+SELECT 'BCH_DM30DM490HS_143A4BAF', (SELECT USR_user_id FROM USERS WHERE USR_username = 'Nhung_Thủy' LIMIT 1), 66.00, 0.00, 0.00, 100.00, 'Méo', 'Seed source Hàng lỗihỏng:34', NULL, 'Kho Thành phẩm'
 WHERE NOT EXISTS (SELECT 1 FROM QC_INSPECTIONS WHERE QCI_batch_id = 'BCH_DM30DM490HS_143A4BAF' AND QCI_inspector_comments = 'Seed source Hàng lỗihỏng:34'); -- seed QC row 24
-INSERT INTO QC_INSPECTIONS (QCI_batch_id, QCI_user_id, QCI_rotten_weight_kg, QCI_natural_loss_weight_kg, QCI_usable_weight_kg, QCI_rejection_reason, QCI_inspector_comments, QCI_visual_record_url, QCI_destination)
-SELECT 'BCH_DMA10_1600LS_EFBA43FB', (SELECT USR_user_id FROM USERS WHERE USR_username = 'qc_op702' LIMIT 1), 57.00, 0.00, 0.00, 'Móp méo', 'Seed source Hàng lỗihỏng:37', NULL, 'Kho Thành phẩm'
+INSERT INTO QC_INSPECTIONS (QCI_batch_id, QCI_user_id, QCI_rotten_weight_kg, QCI_natural_loss_weight_kg, QCI_usable_weight_kg, QCI_actual_yield_pct, QCI_rejection_reason, QCI_inspector_comments, QCI_visual_record_url, QCI_destination)
+SELECT 'BCH_DMA10_1600LS_EFBA43FB', (SELECT USR_user_id FROM USERS WHERE USR_username = 'Nhung_Thủy' LIMIT 1), 57.00, 0.00, 0.00, 100.00, 'Móp méo', 'Seed source Hàng lỗihỏng:37', NULL, 'Kho Thành phẩm'
 WHERE NOT EXISTS (SELECT 1 FROM QC_INSPECTIONS WHERE QCI_batch_id = 'BCH_DMA10_1600LS_EFBA43FB' AND QCI_inspector_comments = 'Seed source Hàng lỗihỏng:37'); -- seed QC row 25
 
 -- 10. FINISHED_GOODS - packaging/finished goods seed records.
