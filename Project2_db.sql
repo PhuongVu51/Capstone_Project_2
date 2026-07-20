@@ -106,6 +106,7 @@ CREATE TABLE QC_INSPECTIONS (
     QCI_rotten_weight_kg DECIMAL(10,2) DEFAULT 0.00,
     QCI_natural_loss_weight_kg DECIMAL(10,2) DEFAULT 0.00,
     QCI_usable_weight_kg DECIMAL(10,2) NOT NULL,
+    QCI_actual_yield_pct DECIMAL(5,2) NOT NULL,
     QCI_rejection_reason VARCHAR(255), 
     QCI_inspector_comments TEXT,       
     QCI_visual_record_url VARCHAR(255),
@@ -128,6 +129,18 @@ CREATE TABLE FINISHED_GOODS (
     
     FOREIGN KEY (FGD_batch_id) REFERENCES BATCHES(BCH_batch_id) ON DELETE RESTRICT ON UPDATE CASCADE,
     FOREIGN KEY (FGD_shift_id) REFERENCES SHIFTS(SHF_shift_id) ON DELETE RESTRICT ON UPDATE CASCADE
+) ENGINE=InnoDB;
+
+CREATE TABLE SYSTEM_AUDIT_LOGS (
+    LOG_log_id INT AUTO_INCREMENT PRIMARY KEY,
+    LOG_user_id INT NOT NULL,
+    LOG_action VARCHAR(50) NOT NULL,
+    LOG_table_name VARCHAR(50) NOT NULL,
+    LOG_record_id VARCHAR(50) NOT NULL,
+    LOG_old_value TEXT,
+    LOG_new_value TEXT,
+    LOG_timestamp DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (LOG_user_id) REFERENCES USERS(USR_user_id) ON DELETE RESTRICT
 ) ENGINE=InnoDB;
 
 INSERT INTO USERS (USR_username, USR_password_hash, USR_role, USR_full_name, USR_is_active) VALUES
