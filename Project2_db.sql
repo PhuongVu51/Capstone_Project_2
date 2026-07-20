@@ -1,3 +1,4 @@
+SET NAMES utf8mb4;
 -- ==============================================================================
 -- 1. TẠO CÁC BẢNG MASTER
 -- ==============================================================================
@@ -24,7 +25,8 @@ CREATE TABLE PRODUCTS (
     PRD_material_grade VARCHAR(50), 
     PRD_unit_price DECIMAL(10,2) NOT NULL DEFAULT 0.00,
     PRD_expected_yield DECIMAL(5,2) NOT NULL, 
-    PRD_shelf_life_days INT NOT NULL
+    PRD_shelf_life_days INT NOT NULL,
+    PRD_image_url VARCHAR(255) DEFAULT NULL
 ) ENGINE=InnoDB;
 
 CREATE TABLE SHIFTS (
@@ -147,7 +149,7 @@ INSERT INTO USERS (USR_username, USR_password_hash, USR_role, USR_full_name, USR
 ('pm_alex', '$2y$10$nOUIs5kJ7naTuTFkMD1Ze.pRExhw0qEEyEHQ0QOczzN/z4N1iUOWK', 'Production_Manager', 'Alex Rivera', 1),
 ('pm_sarah', '$2y$10$nOUIs5kJ7naTuTFkMD1Ze.pRExhw0qEEyEHQ0QOczzN/z4N1iUOWK', 'Production_Manager', 'Sarah Connor', 1),
 ('pm_david', '$2y$10$nOUIs5kJ7naTuTFkMD1Ze.pRExhw0qEEyEHQ0QOczzN/z4N1iUOWK', 'Production_Manager', 'David Kim', 1),
-('qc_op702', '$2y$10$nOUIs5kJ7naTuTFkMD1Ze.pRExhw0qEEyEHQ0QOczzN/z4N1iUOWK', 'QC', 'Operator 702', 1),
+('nhung_thuy', '$2y$10$nOUIs5kJ7naTuTFkMD1Ze.pRExhw0qEEyEHQ0QOczzN/z4N1iUOWK', 'QC', 'Nhung Thủy', 1),
 ('qc_anna', '$2y$10$nOUIs5kJ7naTuTFkMD1Ze.pRExhw0qEEyEHQ0QOczzN/z4N1iUOWK', 'QC', 'Anna Smith', 1),
 ('qc_john', '$2y$10$nOUIs5kJ7naTuTFkMD1Ze.pRExhw0qEEyEHQ0QOczzN/z4N1iUOWK', 'QC', 'John Doe', 1),
 ('wh_admin04', '$2y$10$nOUIs5kJ7naTuTFkMD1Ze.pRExhw0qEEyEHQ0QOczzN/z4N1iUOWK', 'Warehouse_Staff', 'System Admin 04', 1),
