@@ -65,7 +65,9 @@ try {
             <a href="#" class="flex items-center gap-3 px-4 py-3 text-gray-400 hover:text-white rounded-md transition-colors">Reports</a>
         </nav>
         <div class="p-4 border-t border-[#1f2937]">
-            <a href="logout.php" class="flex items-center gap-3 px-4 py-2 text-gray-400 hover:text-red-400 transition-colors">Logout</a>
+            <a href="../backend/connection/logout.php" class="flex items-center gap-3 px-4 py-2 text-gray-400 hover:text-red-400 transition-colors">
+                Logout
+            </a>
         </div>
     </aside>
 
@@ -78,7 +80,7 @@ try {
 
             <div class="flex items-center gap-4">
                 <a href="export_report.php" class="inline-block bg-transparent border border-[#203434] text-[#cfeee0] px-4 py-2 rounded">Export Report</a>
-                <a href="log_batch.php" class="inline-block bg-[#10b981] text-gray-900 font-bold px-4 py-2 rounded">+ Log New Batch</a>
+                <a href="#" class="inline-block bg-[#10b981] text-gray-900 font-bold px-4 py-2 rounded">+ Log New Batch</a>
                 <div class="ml-4 text-right">
                     <p class="text-sm font-semibold text-white"><?= htmlspecialchars($_SESSION['full_name']) ?></p>
                     <p class="text-xs text-gray-400">Warehouse Staff</p>
@@ -87,20 +89,6 @@ try {
                     <?= htmlspecialchars(substr($_SESSION['full_name'],0,2)) ?></div>
             </div>
         </header>
-
-        <?php if (isset($_GET['success']) && $_GET['success'] == 'stock_in_ok'): ?>
-            <div class="mb-6 p-4 bg-[#0d3b2f] text-[#9ff1d1] rounded border border-[#10b981] font-medium">
-                ✅ Nhập kho lô hàng mới thành công!
-            </div>
-        <?php elseif (isset($_GET['success']) && $_GET['success'] == 'stock_out_ok'): ?>
-            <div class="mb-6 p-4 bg-[#0d3b2f] text-[#9ff1d1] rounded border border-[#10b981] font-medium">
-                ✅ Xuất kho thành công!
-            </div>
-        <?php elseif (isset($_GET['error'])): ?>
-            <div class="mb-6 p-4 bg-red-900 text-red-200 rounded border border-red-700 font-medium">
-                ❌ Có lỗi xảy ra: <?= htmlspecialchars($_GET['error']) ?>
-            </div>
-        <?php endif; ?>
 
         <div class="grid grid-cols-12 gap-6 mb-6">
             <div class="col-span-12 lg:col-span-4">
