@@ -3170,19 +3170,19 @@ INSERT INTO SHIFTS (SHF_shift_date, SHF_shift_type, SHF_worker_count, SHF_status
 SELECT '2026-07-09', 'Morning', 0, 'Closed'
 WHERE NOT EXISTS (SELECT 1 FROM SHIFTS WHERE SHF_shift_date = '2026-07-09' AND SHF_shift_type = 'Morning');
 INSERT INTO SHIFTS (SHF_shift_date, SHF_shift_type, SHF_worker_count, SHF_status)
-SELECT '2026-07-15', 'Morning', 0, 'Closed'
+SELECT '2026-07-15', 'Morning', 0, 'Open'
 WHERE NOT EXISTS (SELECT 1 FROM SHIFTS WHERE SHF_shift_date = '2026-07-15' AND SHF_shift_type = 'Morning');
 INSERT INTO SHIFTS (SHF_shift_date, SHF_shift_type, SHF_worker_count, SHF_status)
-SELECT '2026-07-16', 'Morning', 0, 'Closed'
+SELECT '2026-07-16', 'Morning', 0, 'Open'
 WHERE NOT EXISTS (SELECT 1 FROM SHIFTS WHERE SHF_shift_date = '2026-07-16' AND SHF_shift_type = 'Morning');
 INSERT INTO SHIFTS (SHF_shift_date, SHF_shift_type, SHF_worker_count, SHF_status)
-SELECT '2026-07-22', 'Morning', 0, 'Closed'
+SELECT '2026-07-22', 'Morning', 0, 'Open'
 WHERE NOT EXISTS (SELECT 1 FROM SHIFTS WHERE SHF_shift_date = '2026-07-22' AND SHF_shift_type = 'Morning');
 INSERT INTO SHIFTS (SHF_shift_date, SHF_shift_type, SHF_worker_count, SHF_status)
-SELECT '2026-11-20', 'Morning', 0, 'Closed'
+SELECT '2026-11-20', 'Morning', 0, 'Open'
 WHERE NOT EXISTS (SELECT 1 FROM SHIFTS WHERE SHF_shift_date = '2026-11-20' AND SHF_shift_type = 'Morning');
 INSERT INTO SHIFTS (SHF_shift_date, SHF_shift_type, SHF_worker_count, SHF_status)
-SELECT '2026-11-28', 'Morning', 0, 'Closed'
+SELECT '2026-11-28', 'Morning', 0, 'Open'
 WHERE NOT EXISTS (SELECT 1 FROM SHIFTS WHERE SHF_shift_date = '2026-11-28' AND SHF_shift_type = 'Morning');
 
 -- 5. STORAGE_ZONES - anonymized/simple warehouse zones from cleaned workbook.
