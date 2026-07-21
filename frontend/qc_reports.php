@@ -22,10 +22,11 @@ try {
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         body { background-color: #06121a; color: #d1d5db; font-family: 'Inter', sans-serif; }
-        ::-webkit-scrollbar { width: 6px; height: 6px; }
-        ::-webkit-scrollbar-track { background: #0f1722; }
-        ::-webkit-scrollbar-thumb { background: #1f2937; border-radius: 4px; }
-        ::-webkit-scrollbar-thumb:hover { background: #374151; }
+        /* Thanh cuộn mượt chìm chuẩn công nghiệp */
+        .custom-scrollbar::-webkit-scrollbar { width: 6px; height: 6px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: #0b121c; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #1f2937; border-radius: 4px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #374151; }
     </style>
 </head>
 <body class="min-h-screen overflow-x-hidden flex">
@@ -34,7 +35,6 @@ try {
 
     <main class="md:ml-64 p-6 md:p-8 pt-24 md:pt-8 w-full transition-all duration-300">
         
-        <!-- HEADER BÁO CÁO -->
         <header class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8 pb-4 border-b border-[#1f2937] gap-4">
             <div>
                 <h1 class="text-2xl font-bold text-white tracking-wide">Loss & Defect Reports</h1>
@@ -48,10 +48,9 @@ try {
             </div>
         </header>
 
-        <!-- KHỐI 4 THẺ KPI TỔNG QUAN -->
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 mb-8">
             <div class="bg-[#0f1722] p-5 rounded-lg border border-[#1f2937]">
-                <p class="text-[11px] text-gray-500 uppercase font-semibold tracking-wider">Total Inspected Volume</p>
+                <p class="text-[11px] text-gray-500 uppercase font-semibold tracking-wider">Total Inspected</p>
                 <h3 class="text-3xl font-bold text-white mt-2 font-mono"><?= $totalInspected ?> <span class="text-sm text-gray-500 font-normal">KG</span></h3>
             </div>
 
@@ -72,14 +71,15 @@ try {
             </div>
         </div>
 
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8 items-stretch">
             
-            <!-- BIỂU ĐỒ TRÒN PHÂN BỔ LỖI (Doughnut Chart) -->
-            <div class="bg-[#0f1722] rounded-lg border border-[#1f2937] p-5">
-                <h3 class="text-sm font-bold text-white uppercase tracking-wider mb-1">Defect Breakdown</h3>
-                <p class="text-xs text-gray-500 mb-6">Distribution of rejection reasons by weight (KG)</p>
+            <div class="bg-[#0f1722] rounded-lg border border-[#1f2937] p-5 flex flex-col justify-between">
+                <div>
+                    <h3 class="text-sm font-bold text-white uppercase tracking-wider mb-1">Defect Breakdown</h3>
+                    <p class="text-xs text-gray-500 mb-6">Distribution of rejection reasons by weight (KG)</p>
+                </div>
                 
-                <div class="relative h-[250px] w-full flex justify-center">
+                <div class="relative h-[240px] w-full flex justify-center items-center">
                     <?php if(empty($chartLabels)): ?>
                         <div class="flex items-center justify-center h-full w-full text-gray-600 text-sm italic">No defect data available.</div>
                     <?php else: ?>
@@ -88,46 +88,45 @@ try {
                 </div>
             </div>
 
-            <!-- BẢNG CHI TIẾT CÁC LÔ BỊ LOẠI BỎ NHIỀU NHẤT -->
-            <div class="lg:col-span-2 bg-[#0f1722] rounded-lg border border-[#1f2937] flex flex-col min-w-0 overflow-hidden">
-                <div class="p-5 border-b border-[#1f2937] bg-[#0b121c]">
+            <div class="lg:col-span-2 bg-[#0f1722] rounded-lg border border-[#1f2937] flex flex-col min-w-0 max-h-[346px]">
+                <div class="p-4 border-b border-[#1f2937] bg-[#0b121c] shrink-0">
                     <h3 class="text-sm font-bold text-white uppercase tracking-wider">Critical Loss Log</h3>
                 </div>
                 
-                <div class="overflow-x-auto flex-1 p-0">
-                    <table class="w-full text-left border-collapse">
-                        <thead class="text-gray-500 text-[10px] uppercase bg-[#0b121c] sticky top-0 z-10">
+                <div class="overflow-y-auto flex-1 p-0 custom-scrollbar bg-[#091018]">
+                    <table class="w-full text-left border-collapse layout-fixed">
+                        <thead class="text-gray-500 text-[10px] uppercase bg-[#0b121c] sticky top-0 z-10 shadow-[0_1px_0_#1f2937]">
                             <tr>
-                                <th class="py-3 px-4 font-semibold tracking-wider">Batch ID / Product</th>
-                                <th class="py-3 px-4 font-semibold tracking-wider">Supplier</th>
-                                <th class="py-3 px-4 font-semibold tracking-wider text-right">Rejected (KG)</th>
-                                <th class="py-3 px-4 font-semibold tracking-wider">Defect Reason</th>
-                                <th class="py-3 px-4 font-semibold tracking-wider text-right">Yield</th>
+                                <th class="py-3 pl-6 pr-2 font-semibold tracking-wider bg-[#0b121c] w-[28%]">Batch ID / Product</th>
+                                <th class="py-3 px-2 font-semibold tracking-wider bg-[#0b121c] w-[24%]">Supplier</th>
+                                <th class="py-3 px-2 font-semibold tracking-wider text-right bg-[#0b121c] w-[16%]">Rejected</th>
+                                <th class="py-3 px-2 font-semibold tracking-wider bg-[#0b121c] w-[20%]">Defect Reason</th>
+                                <th class="py-3 pl-2 pr-6 font-semibold tracking-wider text-right bg-[#0b121c] w-[12%]">Yield</th>
                             </tr>
                         </thead>
-                        <tbody class="text-sm divide-y divide-[#1f2937]">
+                        <tbody class="text-sm divide-y divide-[#1f2937]/50">
                             <?php if (empty($lossBatches)): ?>
                                 <tr><td colspan="5" class="p-8 text-center text-gray-600 italic">Excellent! No major material losses recorded.</td></tr>
                             <?php else: ?>
                                 <?php foreach ($lossBatches as $batch): ?>
                                     <tr class="hover:bg-[#131c26] transition-colors">
-                                        <td class="py-3 px-4">
+                                        <td class="py-3 Fraser pl-6 pr-2 vertical-top">
                                             <div class="text-[#10b981] font-mono font-bold text-xs mb-0.5">#<?= htmlspecialchars($batch['QCI_batch_id']) ?></div>
-                                            <div class="text-gray-300 text-[11px] truncate w-40"><?= htmlspecialchars($batch['PRD_product_name']) ?></div>
+                                            <div class="text-gray-300 text-[11px] whitespace-normal break-words leading-tight font-medium"><?= htmlspecialchars($batch['PRD_product_name']) ?></div>
                                         </td>
-                                        <td class="py-3 px-4 text-gray-400 text-xs"><?= htmlspecialchars($batch['SUP_supplier_name']) ?></td>
-                                        <td class="py-3 px-4 text-red-400 font-mono text-right font-bold"><?= number_format($batch['QCI_rotten_weight_kg'], 1) ?></td>
-                                        <td class="py-3 px-4">
-                                            <span class="bg-gray-800 text-gray-300 border border-gray-600 px-2 py-1 rounded text-[10px] uppercase font-bold tracking-wider">
+                                        <td class="py-3 px-2 text-gray-400 text-xs whitespace-normal break-words leading-tight vertical-top"><?= htmlspecialchars($batch['SUP_supplier_name']) ?></td>
+                                        <td class="py-3 px-2 text-red-400 font-mono text-right font-bold vertical-top"><?= number_format($batch['QCI_rotten_weight_kg'], 1) ?> <span class="text-[10px] text-gray-600 font-sans font-normal">kg</span></td>
+                                        <td class="py-3 px-2 vertical-top">
+                                            <span class="inline-block bg-gray-800/60 text-gray-300 border border-gray-700 px-2 py-0.5 rounded text-[10px] uppercase font-bold tracking-wider whitespace-normal break-words leading-normal max-w-full">
                                                 <?= htmlspecialchars($batch['QCI_rejection_reason']) ?>
                                             </span>
                                         </td>
-                                        <td class="py-3 px-4 text-right">
+                                        <td class="py-3 pl-2 pr-6 text-right vertical-top">
                                             <?php 
                                             $yield = $batch['QCI_actual_yield_pct']; 
                                             $yieldClass = $yield < 80 ? 'text-red-500' : 'text-[#10b981]';
                                             ?>
-                                            <span class="font-mono font-bold text-xs <?= $yieldClass ?>"><?= number_format($yield, 1) ?>%</span>
+                                            <span class="font-mono font-black text-xs <?= $yieldClass ?>"><?= number_format($yield, 1) ?>%</span>
                                         </td>
                                     </tr>
                                 <?php endforeach; ?>
@@ -136,10 +135,10 @@ try {
                     </table>
                 </div>
             </div>
+            
         </div>
     </main>
 
-    <!-- Kịch bản dựng Biểu đồ Chart.js -->
     <script>
         const chartLabels = <?= json_encode($chartLabels) ?>;
         const chartData = <?= json_encode($chartData) ?>;
@@ -156,11 +155,11 @@ try {
                     datasets: [{
                         data: chartData,
                         backgroundColor: [
-                            '#ef4444', // Đỏ rực
-                            '#f59e0b', // Vàng cam
-                            '#3b82f6', // Xanh dương
-                            '#8b5cf6', // Xanh dương nhạt
-                            '#6b7280'  // Xám
+                            '#ef4444', 
+                            '#f59e0b', 
+                            '#3b82f6', 
+                            '#8b5cf6', 
+                            '#6b7280'  
                         ],
                         borderColor: '#0f1722',
                         borderWidth: 2,
@@ -170,11 +169,11 @@ try {
                 options: {
                     responsive: true,
                     maintainAspectRatio: false,
-                    cutout: '70%', // Tạo lỗ rỗng ở giữa
+                    cutout: '72%', 
                     plugins: {
                         legend: {
                             position: 'right',
-                            labels: { boxWidth: 10, padding: 15, font: { size: 10 } }
+                            labels: { boxWidth: 10, padding: 12, font: { size: 10 } }
                         },
                         tooltip: {
                             backgroundColor: '#1f2937', titleColor: '#fff', bodyColor: '#d1d5db',
