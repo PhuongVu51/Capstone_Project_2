@@ -46,15 +46,6 @@ class StockModel extends BaseModel {
                 ':available_stock' => $initialVolume 
             ]);
 
-            if (!empty($supplierId) && $supplierId > 0) {
-                $sqlProductSupplier = "INSERT IGNORE INTO PRODUCT_SUPPLIERS (PSP_product_id, PSP_supplier_id)
-                                       VALUES (:product_id, :supplier_id)";
-                $stmtProductSupplier = $this->pdo->prepare($sqlProductSupplier);
-                $stmtProductSupplier->execute([
-                    ':product_id' => $productId,
-                    ':supplier_id' => $supplierId
-                ]);
-            }
 
             // 2. Ghi log vào STOCK_MOVEMENTS
             $referenceCode = 'IN_' . time() . '_' . rand(100, 999); // Sinh mã reference duy nhất
