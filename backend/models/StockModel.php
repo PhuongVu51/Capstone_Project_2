@@ -15,22 +15,12 @@ class StockModel extends BaseModel {
 
     public function getSuppliersByProduct($productId) {
         $productId = intval($productId);
-        $sql = "SELECT * FROM (
-                    SELECT DISTINCT s.SUP_supplier_id, s.SUP_supplier_name
-                    FROM SUPPLIERS s
-                    JOIN PRODUCT_SUPPLIERS ps ON s.SUP_supplier_id = ps.PSP_supplier_id
-                    WHERE ps.PSP_product_id = :product_id
-                      AND s.SUP_supplier_name NOT IN ('SUP_UNKNOWN', 'Unknown', 'unknown')
-                    UNION
-                    SELECT DISTINCT s2.SUP_supplier_id, s2.SUP_supplier_name
-                    FROM SUPPLIERS s2
-                    JOIN BATCHES b ON s2.SUP_supplier_id = b.BCH_supplier_id
-                    WHERE b.BCH_product_id = :product_id
-                      AND s2.SUP_supplier_name NOT IN ('SUP_UNKNOWN', 'Unknown', 'unknown')
-                 ) result
-                 ORDER BY SUP_supplier_name ASC";
+        $sql = "SELECT SUP_supplier_id, SUP_supplier_name 
+                FROM SUPPLIERS 
+                WHERE SUP_supplier_name NOT IN ('SUP_UNKNOWN', 'Unknown', 'unknown')
+                ORDER BY SUP_supplier_name ASC";
         $stmt = $this->pdo->prepare($sql);
-        $stmt->execute([':product_id' => $productId]);
+        $stmt->execute();
         return $stmt->fetchAll();
     }
 
@@ -56,15 +46,6 @@ class StockModel extends BaseModel {
                 ':available_stock' => $initialVolume 
             ]);
 
-            if (!empty($supplierId) && $supplierId > 0) {
-                $sqlProductSupplier = "INSERT IGNORE INTO PRODUCT_SUPPLIERS (PSP_product_id, PSP_supplier_id)
-                                       VALUES (:product_id, :supplier_id)";
-                $stmtProductSupplier = $this->pdo->prepare($sqlProductSupplier);
-                $stmtProductSupplier->execute([
-                    ':product_id' => $productId,
-                    ':supplier_id' => $supplierId
-                ]);
-            }
 
             // 2. Ghi log vào STOCK_MOVEMENTS
             $referenceCode = 'IN_' . time() . '_' . rand(100, 999); // Sinh mã reference duy nhất
