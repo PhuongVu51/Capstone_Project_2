@@ -4,7 +4,7 @@ require_role(['Warehouse_Staff']);
 require_once '../backend/connection/db_connect.php';
 
 try {
-    $products = $pdo->query("SELECT PRD_product_id, PRD_product_name FROM PRODUCTS")->fetchAll();
+    $products = $pdo->query("SELECT PRD_product_id, PRD_product_name, PRD_shelf_life_days FROM PRODUCTS")->fetchAll();
     $shifts = $pdo->query("SELECT SHF_shift_id, SHF_shift_date, SHF_shift_type FROM SHIFTS WHERE SHF_status = 'Open'")->fetchAll();
     $zones = $pdo->query("SELECT STZ_zone_id, STZ_zone_name FROM STORAGE_ZONES")->fetchAll();
 } catch (PDOException $e) {
@@ -40,12 +40,6 @@ try {
 
         <form action="../backend/controllers/StockController.php?action=stock_in" method="POST" class="space-y-4">
             
-            <div>
-                <label class="block text-sm font-medium text-gray-400 mb-1">Batch ID (Optional)</label>
-                <input type="text" name="batch_id" placeholder="Leave blank to auto-generate" 
-                       class="w-full bg-[#04121a] border border-[#1f2937] text-white rounded p-2 focus:border-[#10b981] focus:outline-none">
-            </div>
-
             <div class="grid grid-cols-2 gap-4">
                 <div>
                     <label class="block text-sm font-medium text-gray-400 mb-1">Product *</label>
@@ -84,7 +78,7 @@ try {
             <div class="grid grid-cols-2 gap-4">
                 <div>
                     <label class="block text-sm font-medium text-gray-400 mb-1">Shift</label>
-                    <select name="shift_id" class="w-full bg-[#04121a] border border-[#1f2937] text-white rounded p-2 focus:border-[#10b981] focus:outline-none">
+                    <select id="shift-select" name="shift_id" class="w-full bg-[#04121a] border border-[#1f2937] text-white rounded p-2 focus:border-[#10b981] focus:outline-none">
                         <option value="">Select Shift...</option>
                         <?php foreach($shifts as $sh): ?>
                             <option value="<?= $sh['SHF_shift_id'] ?>">
@@ -95,7 +89,7 @@ try {
                 </div>
                 <div>
                     <label class="block text-sm font-medium text-gray-400 mb-1">Expiry Date</label>
-                    <input type="datetime-local" name="expiry_date" 
+                    <input type="datetime-local" id="expiry-date-input" name="expiry_date" 
                            class="w-full bg-[#04121a] border border-[#1f2937] text-white rounded p-2 focus:border-[#10b981] focus:outline-none [color-scheme:dark]">
                 </div>
             </div>
@@ -112,6 +106,9 @@ try {
         document.addEventListener('DOMContentLoaded', function() {
             var productSelect = document.getElementById('product-select');
             var supplierSelect = document.getElementById('supplier-select');
+            var shiftSelect = document.getElementById('shift-select');
+            var expiryInput = document.getElementById('expiry-date-input');
+            var productShelfLifeMap = <?= json_encode(array_column($products, 'PRD_shelf_life_days', 'PRD_product_id')) ?>;
 
             function setSupplierOptions(suppliers) {
                 supplierSelect.innerHTML = '<option value="">Select Supplier...</option>';
@@ -156,9 +153,64 @@ try {
                 });
             }
 
+            function getShiftTypeByTime(date) {
+                var hour = date.getHours();
+                if (hour >= 6 && hour < 14) {
+                    return 'Morning';
+                }
+                if (hour >= 14 && hour < 22) {
+                    return 'Afternoon';
+                }
+                return 'Overtime';
+            }
+
+            function formatDateTimeLocal(date) {
+                var year = date.getFullYear();
+                var month = String(date.getMonth() + 1).padStart(2, '0');
+                var day = String(date.getDate()).padStart(2, '0');
+                var hours = String(date.getHours()).padStart(2, '0');
+                var minutes = String(date.getMinutes()).padStart(2, '0');
+                return year + '-' + month + '-' + day + 'T' + hours + ':' + minutes;
+            }
+
+            function autoFillShift() {
+                var today = new Date();
+                var dateString = today.getFullYear() + '-' + String(today.getMonth() + 1).padStart(2, '0') + '-' + String(today.getDate()).padStart(2, '0');
+                var shiftType = getShiftTypeByTime(today);
+                var expectedLabel = dateString + ' - ' + shiftType;
+                var matchedOption = Array.from(shiftSelect.options).find(function(option) {
+                    return option.textContent.trim() === expectedLabel;
+                });
+
+                if (matchedOption) {
+                    shiftSelect.value = matchedOption.value;
+                }
+            }
+
+            function autoFillExpiryDate(productId) {
+                if (!productId) {
+                    expiryInput.value = '';
+                    return;
+                }
+
+                var shelfLifeDays = Number(productShelfLifeMap[productId] || 0);
+                if (!shelfLifeDays) {
+                    expiryInput.value = '';
+                    return;
+                }
+
+                var expiryDate = new Date();
+                expiryDate.setDate(expiryDate.getDate() + shelfLifeDays);
+                expiryInput.value = formatDateTimeLocal(expiryDate);
+            }
+
             productSelect.addEventListener('change', function() {
                 fetchSuppliers(this.value);
+                autoFillExpiryDate(this.value);
             });
+
+            autoFillShift();
+            autoFillExpiryDate(productSelect.value);
 
             // initial reset to make sure no suppliers are shown until a product is selected
             supplierSelect.innerHTML = '<option value="">Select Supplier...</option>';
