@@ -40,31 +40,7 @@ try {
 <body class="min-h-screen flex overflow-x-hidden">
 
     <!-- SIDEBAR -->
-    <aside class="w-64 bg-[#0f1722] border-r border-[#1f2937] flex flex-col hidden md:flex shrink-0">
-        <div class="p-6 border-b border-[#1f2937]">
-            <h2 class="text-[#10b981] font-bold text-xl tracking-wide">
-                F&G FOOD
-            </h2>
-            <p class="text-xs text-gray-500 mt-1">Production Unit 04</p>
-        </div>
-        
-        <!-- THANH MENU ĐÃ ĐƯỢC KẾT NỐI ĐÚNG ĐƯỜNG DẪN -->
-        <nav class="flex-1 p-4 space-y-2">
-            <a href="dashboard_production.php" class="flex items-center gap-3 px-4 py-3 bg-[#10b981] text-gray-900 font-semibold rounded-md shadow-[0_0_10px_rgba(16,185,129,0.3)]">
-                Dashboard
-            </a>
-            <a href="#" class="flex items-center gap-3 px-4 py-3 text-gray-400 hover:text-white hover:bg-[#1f2937] rounded-md transition-colors">
-                Inventory
-            </a>
-            <a href="production_FEFO.php" class="flex items-center gap-3 px-4 py-3 text-gray-400 hover:text-white hover:bg-[#1f2937] rounded-md transition-colors">
-                FEFO Alerts
-            </a>
-        </nav>
-
-        <div class="p-4 border-t border-[#1f2937]">
-            <a href="../backend/connection/logout.php" class="flex items-center gap-3 px-4 py-2 text-gray-400 hover:text-red-400 transition-colors text-sm">Log Out</a>
-        </div>
-    </aside>
+    <?php include 'includes/sidebar.php'; ?>
 
     <!-- MAIN CONTENT -->
     <main class="flex-1 flex flex-col min-w-0">
