@@ -63,7 +63,7 @@ body{
 
 <body class="min-h-screen overflow-x-hidden flex">
 
-<?php include 'includes/warehouse_sidebar.php'; ?>
+<?php include 'includes/sidebar.php'; ?>
 
 <main class="md:ml-64 p-6 md:p-8 pt-24 md:pt-8 w-full">
 
