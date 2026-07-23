@@ -43,7 +43,7 @@ try {
     <?php include 'includes/sidebar.php'; ?>
 
     <!-- MAIN CONTENT -->
-    <main class="flex-1 flex flex-col min-w-0">
+    <main class="flex-1 flex flex-col min-w-0 md:ml-64">
         <header class="h-16 border-b border-[#1f2937] bg-[#0a1118] flex items-center justify-between px-8 sticky top-0 z-10">
             <h1 class="text-xl font-bold text-white">Dashboard Overview</h1>
             <div class="flex items-center gap-4">

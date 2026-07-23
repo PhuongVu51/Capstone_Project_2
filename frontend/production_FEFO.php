@@ -53,40 +53,10 @@ try {
 <body class="min-h-screen flex overflow-x-hidden">
 
     <!-- SIDEBAR -->
-    <aside class="w-64 bg-[#0f1722] border-r border-[#1f2937] flex flex-col hidden md:flex shrink-0">
-        <div class="p-6 border-b border-[#1f2937]">
-            <h2 class="text-[#10b981] font-bold text-xl tracking-wide flex items-center gap-2">
-                ProSync Industrial
-            </h2>
-        </div>
-        <nav class="flex-1 p-4 space-y-2">
-            <a href="dashboard_production.php" class="flex items-center gap-3 px-4 py-3 text-gray-400 hover:text-white hover:bg-[#1f2937] rounded-md transition-colors">
-                Dashboard
-            </a>
-            <a href="#" class="flex items-center gap-3 px-4 py-3 text-gray-400 hover:text-white hover:bg-[#1f2937] rounded-md transition-colors">
-                Inventory
-            </a>
-            <a href="production_FEFO.php" class="flex items-center gap-3 px-4 py-3 bg-[#10b981] text-gray-900 font-semibold rounded-md shadow-[0_0_10px_rgba(16,185,129,0.3)]">
-                FEFO Alerts
-            </a>
-            <a href="#" class="flex items-center gap-3 px-4 py-3 text-gray-400 hover:text-white hover:bg-[#1f2937] rounded-md transition-colors">
-                Production Flow
-            </a>
-            <a href="#" class="flex items-center gap-3 px-4 py-3 text-gray-400 hover:text-white hover:bg-[#1f2937] rounded-md transition-colors">
-                Analytics
-            </a>
-        </nav>
-        <div class="p-4">
-            <button onclick="alert('Select a batch from the list first.')" class="w-full bg-[#10b981] hover:bg-[#059669] text-gray-900 font-bold py-3 rounded mb-4 transition">
-                Allocate Batch
-            </button>
-            <a href="#" class="flex items-center gap-3 px-4 py-2 text-gray-400 hover:text-white transition-colors mb-2">Support</a>
-            <a href="../backend/connection/logout.php" class="flex items-center gap-3 px-4 py-2 text-gray-400 hover:text-red-400 transition-colors">Log Out</a>
-        </div>
-    </aside>
+    <?php include 'includes/sidebar.php'; ?>
 
     <!-- MAIN CONTENT -->
-    <main class="flex-1 flex flex-col min-w-0">
+    <main class="flex-1 flex flex-col min-w-0 md:ml-64">
         <!-- TOP NAV -->
         <header class="h-16 border-b border-[#1f2937] bg-[#0a1118] flex items-center justify-between px-8 sticky top-0 z-10">
             <div class="flex-1 max-w-xl">
