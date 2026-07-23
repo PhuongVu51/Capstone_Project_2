@@ -2,6 +2,7 @@
 require_once '../backend/includes/auth.php';
 require_role(['Warehouse_Staff', 'Production_Manager', 'Director'], 'login.php');
 require_once '../backend/connection/db_connect.php';
+require_once '../backend/models/StockModel.php';
 
 $userRole = $_SESSION['role'] ?? 'Warehouse_Staff';
 $search = isset($_GET['search']) ? trim($_GET['search']) : '';
@@ -11,58 +12,16 @@ $perPage = 10;
 $offset = ($page - 1) * $perPage;
 
 $messages = [];
-
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_batch'])) {
-    if ($userRole !== 'Director' && $userRole !== 'Warehouse_Staff') {
-        $messages[] = 'You do not have permission to delete batches.';
-    } else {
-        $batchId = trim($_POST['batch_id'] ?? '');
-
-        if ($batchId === '') {
-            $messages[] = 'Batch ID is required.';
-        } else {
-            try {
-                $deleteStmt = $pdo->prepare('DELETE FROM BATCHES WHERE BCH_batch_id = :batch_id');
-                $deleteStmt->execute([':batch_id' => $batchId]);
-
-                if ($deleteStmt->rowCount() > 0) {
-                    $messages[] = 'Batch ' . htmlspecialchars($batchId) . ' deleted successfully.';
-                } else {
-                    $messages[] = 'No matching batch was found.';
-                }
-            } catch (PDOException $e) {
-                $messages[] = 'Unable to delete batch: ' . $e->getMessage();
-            }
-        }
-    }
+if (isset($_GET['success'])) {
+    if ($_GET['success'] === 'delete_ok') $messages[] = 'Batch deleted successfully.';
+}
+if (isset($_GET['error'])) {
+    if ($_GET['error'] === 'delete_failed') $messages[] = 'Failed to delete batch.';
+    if ($_GET['error'] === 'missing_batch_id') $messages[] = 'Batch ID is required.';
 }
 
-$conditions = [];
-$params = [];
-
-if ($search !== '') {
-    $conditions[] = '(b.BCH_batch_id LIKE :search OR p.PRD_product_name LIKE :search)';
-    $params[':search'] = '%' . $search . '%';
-}
-
-if ($statusFilter !== '') {
-    $conditions[] = "(CASE WHEN b.BCH_available_stock_kg <= 0 THEN 'Out of Stock' WHEN b.BCH_available_stock_kg < 100 THEN 'Low Stock' ELSE 'In Stock' END = :status)";
-    $params[':status'] = $statusFilter;
-}
-
-$whereSql = $conditions ? ' WHERE ' . implode(' AND ', $conditions) : '';
-
-$countSql = "SELECT COUNT(*) AS total
-    FROM BATCHES b
-    LEFT JOIN PRODUCTS p ON b.BCH_product_id = p.PRD_product_id
-    $whereSql";
-
-$countStmt = $pdo->prepare($countSql);
-foreach ($params as $key => $value) {
-    $countStmt->bindValue($key, $value);
-}
-$countStmt->execute();
-$totalRecords = (int) $countStmt->fetchColumn();
+$stockModel = new StockModel();
+$totalRecords = $stockModel->getInventoryCount($search, $statusFilter);
 $totalPages = max(1, (int) ceil($totalRecords / $perPage));
 
 if ($page > $totalPages) {
@@ -70,36 +29,7 @@ if ($page > $totalPages) {
     $offset = ($page - 1) * $perPage;
 }
 
-$sql = "SELECT b.BCH_batch_id,
-               p.PRD_product_name,
-               p.PRD_material_grade,
-               b.BCH_initial_volume_kg,
-               b.BCH_available_stock_kg,
-               b.BCH_current_stage,
-               b.BCH_health_status,
-               b.BCH_received_date,
-               b.BCH_expiry_date,
-               z.STZ_zone_name,
-               CASE
-                   WHEN b.BCH_available_stock_kg <= 0 THEN 'Out of Stock'
-                   WHEN b.BCH_available_stock_kg < 100 THEN 'Low Stock'
-                   ELSE 'In Stock'
-               END AS stock_status
-        FROM BATCHES b
-        LEFT JOIN PRODUCTS p ON b.BCH_product_id = p.PRD_product_id
-        LEFT JOIN STORAGE_ZONES z ON b.BCH_zone_id = z.STZ_zone_id
-        $whereSql
-        ORDER BY b.BCH_received_date DESC
-        LIMIT :offset, :perPage";
-
-$stmt = $pdo->prepare($sql);
-foreach ($params as $key => $value) {
-    $stmt->bindValue($key, $value);
-}
-$stmt->bindValue(':offset', $offset, PDO::PARAM_INT);
-$stmt->bindValue(':perPage', $perPage, PDO::PARAM_INT);
-$stmt->execute();
-$inventoryItems = $stmt->fetchAll();
+$inventoryItems = $stockModel->getInventoryList($search, $statusFilter, $offset, $perPage);
 
 $selectedBatch = null;
 if (isset($_GET['view_id']) && trim($_GET['view_id']) !== '') {
@@ -256,7 +186,7 @@ if (isset($_GET['view_id']) && trim($_GET['view_id']) !== '') {
                                                 <svg class="w-4 h-4 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg>
                                             </a>
                                             <?php if ($userRole === 'Production_Manager'): ?>
-                                                <a href="#" class="text-blue-400 hover:text-white transition-colors" title="Request material from this batch">
+                                                <a href="allocate_batch.php?batch_id=<?php echo urlencode($item['BCH_batch_id']); ?>" class="text-blue-400 hover:text-white transition-colors" title="Request material from this batch">
                                                     <svg class="w-4 h-4 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
                                                 </a>
                                             <?php elseif ($userRole === 'Director' || $userRole === 'Warehouse_Staff'): ?>
@@ -265,7 +195,7 @@ if (isset($_GET['view_id']) && trim($_GET['view_id']) !== '') {
                                                 </a>
                                             <?php endif; ?>
                                             <?php if ($userRole === 'Director' || $userRole === 'Warehouse_Staff'): ?>
-                                                <form method="POST" class="inline" onsubmit="return confirm('Delete this batch?');">
+                                                <form action="../backend/controllers/StockController.php?action=delete_batch" method="POST" class="inline" onsubmit="return confirm('Delete this batch?');">
                                                     <input type="hidden" name="delete_batch" value="1" />
                                                     <input type="hidden" name="batch_id" value="<?php echo htmlspecialchars($item['BCH_batch_id']); ?>" />
                                                     <button type="submit" class="text-red-400 hover:text-white transition-colors" title="Delete batch">
