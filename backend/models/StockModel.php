@@ -5,12 +5,101 @@ require_once __DIR__ . '/../core/BaseModel.php';
 
 class StockModel extends BaseModel {
     
-    // Ví dụ: Lấy danh sách tồn kho
-    public function getInventory() {
-        $sql = "SELECT * FROM BATCHES";
+    // Lấy danh sách tồn kho với phân trang và lọc
+    public function getInventoryList($search = '', $statusFilter = '', $offset = 0, $perPage = 10) {
+        $conditions = [];
+        $params = [];
+
+        if ($search !== '') {
+            $conditions[] = '(b.BCH_batch_id LIKE :search OR p.PRD_product_name LIKE :search)';
+            $params[':search'] = '%' . $search . '%';
+        }
+
+        if ($statusFilter !== '') {
+            $conditions[] = "(CASE WHEN b.BCH_available_stock_kg <= 0 THEN 'Out of Stock' WHEN b.BCH_available_stock_kg < 100 THEN 'Low Stock' ELSE 'In Stock' END = :status)";
+            $params[':status'] = $statusFilter;
+        }
+
+        $whereSql = $conditions ? ' WHERE ' . implode(' AND ', $conditions) : '';
+
+        $sql = "SELECT b.BCH_batch_id,
+                       p.PRD_product_name,
+                       p.PRD_material_grade,
+                       b.BCH_initial_volume_kg,
+                       b.BCH_available_stock_kg,
+                       b.BCH_current_stage,
+                       b.BCH_health_status,
+                       b.BCH_received_date,
+                       b.BCH_expiry_date,
+                       z.STZ_zone_name,
+                       CASE
+                           WHEN b.BCH_available_stock_kg <= 0 THEN 'Out of Stock'
+                           WHEN b.BCH_available_stock_kg < 100 THEN 'Low Stock'
+                           ELSE 'In Stock'
+                       END AS stock_status
+                FROM BATCHES b
+                LEFT JOIN PRODUCTS p ON b.BCH_product_id = p.PRD_product_id
+                LEFT JOIN STORAGE_ZONES z ON b.BCH_zone_id = z.STZ_zone_id
+                $whereSql
+                ORDER BY b.BCH_received_date DESC
+                LIMIT :offset, :perPage";
+
         $stmt = $this->pdo->prepare($sql);
+        foreach ($params as $key => $value) {
+            $stmt->bindValue($key, $value);
+        }
+        $stmt->bindValue(':offset', (int)$offset, PDO::PARAM_INT);
+        $stmt->bindValue(':perPage', (int)$perPage, PDO::PARAM_INT);
         $stmt->execute();
+        
         return $stmt->fetchAll();
+    }
+
+    public function getInventoryCount($search = '', $statusFilter = '') {
+        $conditions = [];
+        $params = [];
+
+        if ($search !== '') {
+            $conditions[] = '(b.BCH_batch_id LIKE :search OR p.PRD_product_name LIKE :search)';
+            $params[':search'] = '%' . $search . '%';
+        }
+
+        if ($statusFilter !== '') {
+            $conditions[] = "(CASE WHEN b.BCH_available_stock_kg <= 0 THEN 'Out of Stock' WHEN b.BCH_available_stock_kg < 100 THEN 'Low Stock' ELSE 'In Stock' END = :status)";
+            $params[':status'] = $statusFilter;
+        }
+
+        $whereSql = $conditions ? ' WHERE ' . implode(' AND ', $conditions) : '';
+        $sql = "SELECT COUNT(*) AS total FROM BATCHES b LEFT JOIN PRODUCTS p ON b.BCH_product_id = p.PRD_product_id $whereSql";
+        $stmt = $this->pdo->prepare($sql);
+        foreach ($params as $key => $value) {
+            $stmt->bindValue($key, $value);
+        }
+        $stmt->execute();
+        return (int) $stmt->fetchColumn();
+    }
+
+    public function deleteBatch($batchId) {
+        try {
+            $this->pdo->beginTransaction();
+
+            // Xóa các dữ liệu liên quan (Foreign Key constraints)
+            $this->pdo->prepare('DELETE FROM STOCK_MOVEMENTS WHERE STM_batch_id = :id')->execute([':id' => $batchId]);
+            $this->pdo->prepare('DELETE FROM QC_INSPECTIONS WHERE QCI_batch_id = :id')->execute([':id' => $batchId]);
+            $this->pdo->prepare('DELETE FROM MATERIAL_ALLOCATIONS WHERE ALC_batch_id = :id')->execute([':id' => $batchId]);
+            $this->pdo->prepare('DELETE FROM FINISHED_GOODS WHERE FGD_batch_id = :id')->execute([':id' => $batchId]);
+
+            // Xóa batch chính
+            $stmt = $this->pdo->prepare('DELETE FROM BATCHES WHERE BCH_batch_id = :batch_id');
+            $stmt->execute([':batch_id' => $batchId]);
+            $success = $stmt->rowCount() > 0;
+
+            $this->pdo->commit();
+            return $success;
+        } catch (Exception $e) {
+            $this->pdo->rollBack();
+            return false;
+        }
     }
 
     public function getSuppliersByProduct($productId) {

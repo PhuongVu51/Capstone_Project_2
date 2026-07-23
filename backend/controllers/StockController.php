@@ -116,6 +116,24 @@ class StockController {
             }
         }
     }
+
+    public function handleDeleteBatch() {
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            $batchId = trim($_POST['batch_id'] ?? '');
+            if (empty($batchId)) {
+                header("Location: ../../frontend/inventory.php?error=missing_batch_id");
+                exit();
+            }
+            $success = $this->stockModel->deleteBatch($batchId);
+            if ($success) {
+                header("Location: ../../frontend/inventory.php?success=delete_ok");
+                exit();
+            } else {
+                header("Location: ../../frontend/inventory.php?error=delete_failed");
+                exit();
+            }
+        }
+    }
 }
 
 // Xử lý định tuyến cơ bản (Router)
@@ -129,6 +147,8 @@ if (isset($_GET['action'])) {
         $controller->handleFetchSuppliers();
     } elseif ($_GET['action'] === 'update') {
         $controller->handleUpdateBatch();
+    } elseif ($_GET['action'] === 'delete_batch') {
+        $controller->handleDeleteBatch();
     }
 }
 ?>
