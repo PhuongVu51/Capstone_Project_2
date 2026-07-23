@@ -5,8 +5,9 @@ if (session_status() === PHP_SESSION_NONE) {
 
 $current_page = basename($_SERVER['PHP_SELF'] ?? '');
 $full_name = $_SESSION['full_name'] ?? 'Guest User';
-$role = $_SESSION['role'] ?? 'User';
+$role = $_SESSION['role'] ?? 'Warehouse_Staff'; // Mặc định nếu không có role
 
+// 1. CẤU HÌNH LABEL & MÀU SẮC THEO ROLE
 $role_label = match ($role) {
     'QC' => 'QC Operator',
     'Warehouse_Staff' => 'Warehouse Staff',
@@ -23,10 +24,8 @@ $role_badge = match ($role) {
     default => 'text-gray-400',
 };
 
-$qc_pages = ['qc_dashboard.php', 'qc_inspections.php', 'qc_perform_inspection.php', 'qc_reports.php'];
-$warehouse_pages = ['dashboard_warehouse.php', 'inventory.php', 'log_batch.php'];
-
-if (in_array($current_page, $qc_pages, true)) {
+// 2. LOGIC ĐIỀU HƯỚNG MENU THEO ROLE
+if ($role === 'QC') {
     $nav_items = [
         ['label' => 'Dashboard Overview', 'href' => 'qc_dashboard.php', 'page' => 'qc_dashboard.php'],
         ['label' => 'Inspection Log', 'href' => 'qc_inspections.php', 'page' => 'qc_inspections.php'],
@@ -34,18 +33,33 @@ if (in_array($current_page, $qc_pages, true)) {
     ];
     $sidebar_title = 'F&G FOOD QC';
     $sidebar_subtitle = 'Quality Control';
+
+} elseif ($role === 'Production_Manager' || $role === 'Director') {
+    // Menu chuẩn theo hình ảnh của Production
+    $nav_items = [
+        ['label' => 'Dashboard', 'href' => 'dashboard_production.php', 'page' => 'dashboard_production.php'],
+        ['label' => 'Inventory', 'href' => 'inventory.php', 'page' => 'inventory.php'],
+        ['label' => 'FEFO Alerts', 'href' => 'production_FEFO.php', 'page' => 'production_FEFO.php'],
+        ['label' => 'Production Flow', 'href' => 'production_flow.php', 'page' => 'production_flow.php'],
+        ['label' => 'Analytics', 'href' => 'production_analytics.php', 'page' => 'production_analytics.php'],
+    ];
+    $sidebar_title = 'Plant Alpha';
+    $sidebar_subtitle = 'Production Unit 04';
+
 } else {
+    // Mặc định là Warehouse
     $nav_items = [
         ['label' => 'Dashboard', 'href' => 'dashboard_warehouse.php', 'page' => 'dashboard_warehouse.php'],
         ['label' => 'Inventory', 'href' => 'inventory.php', 'page' => 'inventory.php'],
         ['label' => 'Log Batch', 'href' => 'log_batch.php', 'page' => 'log_batch.php'],
-        ['label' => 'Reports', 'href' => '#', 'page' => 'reports.php'],
+        ['label' => 'Reports', 'href' => 'warehouse_reports.php', 'page' => 'warehouse_reports.php'],
     ];
     $sidebar_title = 'F&G FOOD';
     $sidebar_subtitle = 'Warehouse Unit 04';
 }
 ?>
 
+<!-- MOBILE HEADER -->
 <div class="md:hidden w-full bg-[#0f1722] border-b border-[#1f2937] p-4 flex justify-between items-center fixed top-0 left-0 z-50 shadow-md">
     <h1 class="text-sm font-bold text-[#10b981] tracking-wider uppercase flex items-center gap-2">
         <img src="../image/353838036_746744254123717_8058064823033680293_n.jpg" alt="F&G FOOD" class="w-6 h-6 object-contain rounded-md border border-[#1f2937]" />
@@ -60,11 +74,12 @@ if (in_array($current_page, $qc_pages, true)) {
 
 <div id="sidebar-overlay" class="hidden fixed inset-0 bg-black/60 backdrop-blur-sm z-30 md:hidden transition-opacity duration-300"></div>
 
+<!-- SIDEBAR MAIN -->
 <aside id="main-sidebar" class="fixed inset-y-0 left-0 w-64 bg-[#0f1722] border-r border-[#1f2937] flex flex-col justify-between z-40 transform -translate-x-full md:translate-x-0 transition-transform duration-300 ease-in-out pt-16 md:pt-0">
     <div>
         <div class="p-6 border-b border-[#1f2937] hidden md:block">
             <h2 class="text-[#10b981] font-bold text-xl tracking-wide flex items-center gap-3">
-                <img src="../image/353838036_746744254123717_8058064823033680293_n.jpg" alt="F&G FOOD logo" class="w-8 h-8 object-contain rounded-md shadow-sm border border-[#1f2937]" />
+                <img src="../image/353838036_746744254123717_8058064823033680293_n.jpg" alt="Logo" class="w-8 h-8 object-contain rounded-md shadow-sm border border-[#1f2937]" />
                 <?= htmlspecialchars($sidebar_title) ?>
             </h2>
             <p class="text-xs text-gray-500 mt-2"><?= htmlspecialchars($sidebar_subtitle) ?></p>
@@ -81,6 +96,7 @@ if (in_array($current_page, $qc_pages, true)) {
         </nav>
     </div>
 
+    <!-- BOTTOM USER INFO -->
     <div class="p-5 border-t border-[#1f2937] bg-gradient-to-b from-[#0f1722] to-[#0a1118]">
         <div class="flex items-center gap-3 mb-4">
             <div class="w-10 h-10 rounded-full bg-[#1f2937] flex items-center justify-center border border-[#374151]">
