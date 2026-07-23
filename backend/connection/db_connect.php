@@ -1,6 +1,5 @@
 <?php
 $host = 'localhost';
-$port = '3307';
 $dbname = 'Project2_db';
 $username = 'root';
 $password = '';
