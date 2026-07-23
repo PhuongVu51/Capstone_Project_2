@@ -142,8 +142,8 @@ if (isset($_GET['view_id']) && trim($_GET['view_id']) !== '') {
                 <?php if ($userRole === 'Director' || $userRole === 'Warehouse_Staff'): ?>
                     <a href="log_batch.php" class="inline-block bg-[#10b981] text-gray-900 font-semibold px-4 py-2 rounded">+ Log New Batch</a>
                 <?php elseif ($userRole === 'Production_Manager'): ?>
-                    <a href="#" class="inline-block bg-[#60a5fa] text-gray-900 font-semibold px-4 py-2 rounded">Request Material</a>
-                    <a href="#" class="inline-block bg-[#10b981] text-gray-900 font-semibold px-4 py-2 rounded">Log Finished Goods</a>
+                    <a href="request_material.php" class="inline-block bg-[#60a5fa] text-gray-900 font-semibold px-4 py-2 rounded">Request Material</a>
+                    <a href="log_finished_goods.php" class="inline-block bg-[#10b981] text-gray-900 font-semibold px-4 py-2 rounded">Log Finished Goods</a>
                 <?php endif; ?>
                 <div class="text-right">
                     <p class="text-sm font-semibold text-white"><?php echo htmlspecialchars($_SESSION['full_name'] ?? 'User'); ?></p>
