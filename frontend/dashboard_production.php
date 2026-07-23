@@ -5,189 +5,138 @@ require_role(['Production_Manager', 'Director'], 'login.php');
 require_once '../backend/connection/db_connect.php';
 
 try {
-    // 1. TRUY VẤN YIELD ANALYTICS (Tỷ lệ thu hồi trung bình)
-    $stmtYield = $pdo->query("SELECT AVG(FGD_actual_yield_rate) as avg_yield FROM FINISHED_GOODS");
-    $yieldData = $stmtYield->fetch();
-    $avgYield = $yieldData['avg_yield'] ? number_format($yieldData['avg_yield'], 1) : '0.0';
+    // Lấy thông tin thống kê sơ bộ cho dashboard
+    $stmt = $pdo->query("SELECT COUNT(*) as count FROM BATCHES WHERE BCH_expiry_date <= DATE_ADD(NOW(), INTERVAL 48 HOUR) AND BCH_available_stock_kg > 0");
+    $expiringCount = $stmt->fetch()['count'] ?? 0;
 
-    // 2. TRUY VẤN FEFO ALERTS (Đếm số lô hàng sắp hỏng trong 48h tới)
-    $stmtFEFO = $pdo->query("SELECT COUNT(*) as alert_count FROM BATCHES WHERE BCH_available_stock_kg > 0 AND BCH_expiry_date <= DATE_ADD(NOW(), INTERVAL 48 HOUR)");
-    $fefoCount = $stmtFEFO->fetchColumn();
-    // Format thành 2 chữ số (VD: 08 thay vì 8)
-    $fefoDisplay = str_pad($fefoCount, 2, '0', STR_PAD_LEFT);
-
-    // 3. TRUY VẤN DANH SÁCH LÔ HÀNG ĐANG SẢN XUẤT / TỒN KHO
-    $stmtBatches = $pdo->query("
-        SELECT 
-            b.BCH_batch_id, 
-            p.PRD_product_name, 
-            b.BCH_available_stock_kg, 
-            b.BCH_expiry_date, 
-            b.BCH_current_stage
-        FROM BATCHES b
-        JOIN PRODUCTS p ON b.BCH_product_id = p.PRD_product_id
-        WHERE b.BCH_available_stock_kg > 0
-        ORDER BY b.BCH_expiry_date ASC
-        LIMIT 5
+    // Lấy danh sách lô hàng hiện tại
+    $batchesStmt = $pdo->query("
+        SELECT b.BCH_batch_id, p.PRD_product_name, b.BCH_available_stock_kg, b.BCH_expiry_date 
+        FROM BATCHES b 
+        JOIN PRODUCTS p ON b.BCH_product_id = p.PRD_product_id 
+        ORDER BY b.BCH_expiry_date ASC 
+        LIMIT 10
     ");
-    $activeBatches = $stmtBatches->fetchAll();
-
+    $batches = $batchesStmt->fetchAll();
 } catch (PDOException $e) {
-    die("Lỗi truy vấn cơ sở dữ liệu: " . $e->getMessage());
+    die("Lỗi kết nối CSDL: " . $e->getMessage());
 }
 ?>
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ProSync Industrial - Production Dashboard</title>
+    <title>Production Dashboard | ProSync Industrial</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         :root { --bg-dark: #0a1118; --bg-card: #0f1722; --accent-green: #10b981; --border-color: #1f2937; }
-        body { background-color: var(--bg-dark); font-family: 'Inter', sans-serif; }
-        /* Tùy chỉnh thanh cuộn cho mượt */
-        ::-webkit-scrollbar { width: 8px; }
+        body { background-color: var(--bg-dark); font-family: 'Inter', sans-serif; color: #d1d5db; }
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
         ::-webkit-scrollbar-track { background: var(--bg-dark); }
         ::-webkit-scrollbar-thumb { background: #1f2937; border-radius: 4px; }
     </style>
 </head>
-<body class="text-gray-300 min-h-screen flex">
+<body class="min-h-screen flex overflow-x-hidden">
 
-    <?php include 'includes/sidebar.php'; ?>
+    <!-- SIDEBAR -->
+    <aside class="w-64 bg-[#0f1722] border-r border-[#1f2937] flex flex-col hidden md:flex shrink-0">
+        <div class="p-6 border-b border-[#1f2937]">
+            <h2 class="text-[#10b981] font-bold text-xl tracking-wide">
+                F&G FOOD
+            </h2>
+            <p class="text-xs text-gray-500 mt-1">Production Unit 04</p>
+        </div>
+        
+        <!-- THANH MENU ĐÃ ĐƯỢC KẾT NỐI ĐÚNG ĐƯỜNG DẪN -->
+        <nav class="flex-1 p-4 space-y-2">
+            <a href="dashboard_production.php" class="flex items-center gap-3 px-4 py-3 bg-[#10b981] text-gray-900 font-semibold rounded-md shadow-[0_0_10px_rgba(16,185,129,0.3)]">
+                Dashboard
+            </a>
+            <a href="#" class="flex items-center gap-3 px-4 py-3 text-gray-400 hover:text-white hover:bg-[#1f2937] rounded-md transition-colors">
+                Inventory
+            </a>
+            <a href="production_FEFO.php" class="flex items-center gap-3 px-4 py-3 text-gray-400 hover:text-white hover:bg-[#1f2937] rounded-md transition-colors">
+                FEFO Alerts
+            </a>
+        </nav>
 
-    <main class="flex-1 p-8 md:ml-64 pt-24 md:pt-8">
-        <header class="flex justify-between items-center mb-8 pb-4 border-b border-[#1f2937]">
-            <h1 class="text-2xl font-bold text-[#10b981]">Dashboard Overview</h1>
+        <div class="p-4 border-t border-[#1f2937]">
+            <a href="../backend/connection/logout.php" class="flex items-center gap-3 px-4 py-2 text-gray-400 hover:text-red-400 transition-colors text-sm">Log Out</a>
+        </div>
+    </aside>
+
+    <!-- MAIN CONTENT -->
+    <main class="flex-1 flex flex-col min-w-0">
+        <header class="h-16 border-b border-[#1f2937] bg-[#0a1118] flex items-center justify-between px-8 sticky top-0 z-10">
+            <h1 class="text-xl font-bold text-white">Dashboard Overview</h1>
             <div class="flex items-center gap-4">
-                <div class="text-right">
-                    <p class="text-sm font-semibold text-white"><?= htmlspecialchars($_SESSION['full_name']) ?></p>
-                    <p class="text-xs text-gray-500">Production Manager</p>
-                </div>
-                <div class="w-10 h-10 rounded-full bg-gray-700 overflow-hidden border-2 border-[#1f2937]">
-                    <img src="https://ui-avatars.com/api/?name=<?= urlencode($_SESSION['full_name']) ?>&background=10b981&color=fff" alt="Avatar">
+                <div class="text-right hidden sm:block">
+                    <p class="text-sm font-semibold text-white"><?= htmlspecialchars($_SESSION['full_name'] ?? 'Production Manager') ?></p>
+                    <p class="text-[10px] text-[#10b981]">Production Manager</p>
                 </div>
             </div>
         </header>
 
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-            <div class="bg-[#0f1722] p-6 rounded-xl border border-[#1f2937]">
-                <p class="text-xs text-gray-400 uppercase font-semibold mb-2">Yield Analytics</p>
-                <div class="flex items-baseline gap-2">
-                    <h3 class="text-4xl font-bold text-white"><?= $avgYield ?>%</h3>
-                    <?php if ($avgYield > 0): ?>
-                        <span class="text-xs text-[#10b981] font-medium">Recorded</span>
-                    <?php else: ?>
-                        <span class="text-xs text-gray-500 font-medium">No Data Yet</span>
-                    <?php endif; ?>
+        <div class="p-8 overflow-y-auto">
+            <!-- KPI CARDS -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                <div class="bg-[#0f1722] p-6 rounded-lg border border-[#1f2937]">
+                    <p class="text-xs text-gray-500 uppercase font-semibold">Yield Analytics</p>
+                    <h3 class="text-3xl font-bold text-white mt-2 font-mono">0.0%</h3>
+                    <p class="text-xs text-gray-500 mt-1">No Data Yet</p>
                 </div>
+                <div class="bg-[#0f1722] p-6 rounded-lg border border-[#1f2937]">
+                    <p class="text-xs text-gray-500 uppercase font-semibold">Export Demand</p>
+                    <h3 class="text-3xl font-bold text-white mt-2 font-mono">0 <span class="text-sm text-gray-500 font-normal">units</span></h3>
+                    <p class="text-xs text-gray-500 mt-1">Awaiting new orders</p>
+                </div>
+                <!-- Thẻ cảnh báo trỏ trực tiếp sang trang FEFO khi bấm vào -->
+                <a href="production_FEFO.php" class="bg-[#b91c1c]/90 hover:bg-[#b91c1c] p-6 rounded-lg border border-red-500/50 transition-all shadow-[0_0_15px_rgba(220,38,38,0.2)] block group">
+                    <p class="text-xs text-red-200 uppercase font-semibold">Expiring Batches (48H)</p>
+                    <h3 class="text-3xl font-bold text-white mt-2 font-mono"><?= $expiringCount ?></h3>
+                    <p class="text-xs text-red-100 mt-1 font-medium group-hover:underline">IMMEDIATE FEFO ALLOCATION REQUIRED &rarr;</p>
+                </a>
             </div>
-            <div class="bg-[#0f1722] p-6 rounded-xl border border-[#1f2937]">
-                <p class="text-xs text-gray-400 uppercase font-semibold mb-2">Export Demand</p>
-                <h3 class="text-4xl font-bold text-white mb-1">0 <span class="text-sm text-gray-500">units</span></h3>
-                <p class="text-xs text-[#10b981]">Awaiting new orders</p>
-            </div>
-            <div class="bg-[#7f1d1d] p-6 rounded-xl border border-red-500 relative overflow-hidden">
-                <p class="text-xs text-red-200 uppercase font-semibold mb-2">Expiring Batches (48H)</p>
-                <h3 class="text-5xl font-black text-white text-center my-2"><?= $fefoDisplay ?></h3>
-                <p class="text-xs text-center text-red-100 mt-2 uppercase tracking-wide">
-                    <?= $fefoCount > 0 ? 'Immediate FEFO Allocation Required' : 'All Stock Optimal' ?>
-                </p>
-            </div>
-        </div>
 
-        <div class="bg-[#0f1722] rounded-xl border border-[#1f2937] overflow-hidden">
-            <div class="p-5 border-b border-[#1f2937] flex justify-between items-center">
-                <h3 class="text-lg font-semibold text-white flex items-center gap-2">
-                    <svg class="w-5 h-5 text-[#10b981]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 10h16M4 14h16M4 18h16"></path></svg>
-                    Current Production Status
-                </h3>
-                <button class="bg-[#10b981] hover:bg-[#059669] text-gray-900 text-sm font-bold py-2 px-4 rounded transition" 
-                        onclick="alert('Please select a specific batch from the list below to allocate.')">
-                    Allocate Batch
-                </button>
-            </div>
-            <div class="overflow-x-auto">
-                <table class="w-full text-left border-collapse">
-                    <thead>
-                        <tr class="bg-[#0a1118] text-xs uppercase text-gray-500 border-b border-[#1f2937]">
-                            <th class="p-4 font-semibold">Batch ID</th>
-                            <th class="p-4 font-semibold">Product Name</th>
-                            <th class="p-4 font-semibold">Volume (Available)</th>
-                            <th class="p-4 font-semibold">Expiry (FEFO)</th>
-                            <th class="p-4 font-semibold">Action</th>
-                        </tr>
-                    </thead>
-                    <tbody class="text-sm">
-                        <?php if (empty($activeBatches)): ?>
-                            <tr><td colspan="5" class="p-8 text-center text-gray-500">No Active Batches Found</td></tr>
-                        <?php else: ?>
-                            <?php foreach ($activeBatches as $batch): ?>
-                                <tr class="border-b border-[#1f2937] hover:bg-[#1f2937]/30 transition-colors">
-                                    <td class="p-4 font-mono text-[#10b981] text-xs"><?= htmlspecialchars($batch['BCH_batch_id']) ?></td>
-                                    <td class="p-4 text-white font-medium"><?= htmlspecialchars($batch['PRD_product_name']) ?></td>
-                                    <td class="p-4 text-gray-300"><?= number_format($batch['BCH_available_stock_kg'], 2) ?> kg</td>
-                                    <td class="p-4 text-gray-400"><?= date('Y-m-d', strtotime($batch['BCH_expiry_date'])) ?></td>
-                                    <td class="p-4">
-                                        <button onclick="openModal('<?= htmlspecialchars($batch['BCH_batch_id']) ?>', <?= $batch['BCH_available_stock_kg'] ?>)" 
-                                                class="bg-[#10b981] hover:bg-[#059669] text-gray-900 px-3 py-1 rounded text-xs font-bold transition">
-                                            Allocate
-                                        </button>
-                                    </td>
-                                </tr>
-                            <?php endforeach; ?>
-                        <?php endif; ?>
-                    </tbody>
-                </table>
+            <!-- TABLE -->
+            <div class="bg-[#0f1722] rounded-lg border border-[#1f2937] overflow-hidden">
+                <div class="p-5 border-b border-[#1f2937] flex justify-between items-center bg-[#0b121c]">
+                    <h3 class="text-sm font-bold text-white uppercase tracking-wider">Current Production Status</h3>
+                    <button onclick="window.location.href='production_FEFO.php'" class="bg-[#10b981] text-gray-900 text-xs font-bold px-4 py-2 rounded hover:bg-[#059669] transition">View FEFO Alerts</button>
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left border-collapse">
+                        <thead>
+                            <tr class="text-gray-500 text-[10px] uppercase bg-[#0a1118] border-b border-[#374151]">
+                                <th class="py-3 px-5">Batch ID</th>
+                                <th class="py-3 px-5">Product Name</th>
+                                <th class="py-3 px-5">Volume (Available)</th>
+                                <th class="py-3 px-5">Expiry (FEFO)</th>
+                                <th class="py-3 px-5 text-center">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody class="text-sm divide-y divide-[#1f2937]">
+                            <?php if (empty($batches)): ?>
+                                <tr><td colspan="5" class="p-6 text-center text-gray-500 italic">No production batches found.</td></tr>
+                            <?php else: ?>
+                                <?php foreach ($batches as $row): ?>
+                                    <tr class="hover:bg-[#131c26] transition-colors">
+                                        <td class="py-3 px-5 text-[#10b981] font-mono text-xs font-semibold"><?= htmlspecialchars($row['BCH_batch_id']) ?></td>
+                                        <td class="py-3 px-5 text-gray-200"><?= htmlspecialchars($row['PRD_product_name']) ?></td>
+                                        <td class="py-3 px-5 font-mono text-gray-300"><?= number_format($row['BCH_available_stock_kg'], 2) ?> kg</td>
+                                        <td class="py-3 px-5 font-mono text-red-400 text-xs"><?= htmlspecialchars($row['BCH_expiry_date']) ?></td>
+                                        <td class="py-3 px-5 text-center">
+                                            <a href="production_FEFO.php" class="bg-[#1f2937] border border-[#374151] text-gray-200 text-xs font-bold px-3 py-1.5 rounded hover:bg-[#10b981] hover:text-gray-900 transition">Allocate</a>
+                                        </td>
+                                    </tr>
+                                <?php endforeach; ?>
+                            <?php endif; ?>
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </div>
     </main>
-
-    <div id="allocationModal" class="fixed inset-0 z-50 hidden bg-black/70 flex items-center justify-center">
-        <div class="bg-[#0f1722] rounded-xl border border-[#1f2937] shadow-2xl w-full max-w-md overflow-hidden">
-            <div class="p-4 border-b border-[#1f2937] flex justify-between items-center bg-[#0a1118]">
-                <h3 class="text-white font-semibold">Confirm Material Allocation</h3>
-                <button type="button" onclick="closeModal()" class="text-gray-400 hover:text-white">✕</button>
-            </div>
-            <form action="../backend/connection/process_allocation.php" method="POST" class="p-6">
-                <input type="hidden" name="batch_id" id="modal_batch_id">
-                <div class="space-y-3 mb-6 text-sm">
-                    <div class="flex justify-between border-b border-[#1f2937] pb-2">
-                        <span class="text-gray-500">Selected Batch:</span>
-                        <span class="text-[#10b981] font-mono" id="display_batch_id">--</span>
-                    </div>
-                    <div class="flex justify-between border-b border-[#1f2937] pb-2">
-                        <span class="text-gray-500">Available Stock:</span>
-                        <span class="text-white font-semibold" id="display_max_stock">0.00 kg</span>
-                    </div>
-                </div>
-                <div class="mb-6">
-                    <label class="block text-xs text-[#10b981] uppercase mb-2 font-semibold">Allocation Quantity (kg)</label>
-                    <input type="number" step="0.01" name="allocate_qty" id="input_qty" required
-                        class="w-full bg-[#0a1118] border border-[#1f2937] text-white text-lg rounded p-3 focus:outline-none focus:border-[#10b981] text-right">
-                </div>
-                <div class="flex gap-3">
-                    <button type="button" onclick="closeModal()" class="flex-1 bg-transparent border border-[#1f2937] text-gray-300 py-3 rounded">CANCEL</button>
-                    <button type="submit" class="flex-1 bg-[#10b981] text-gray-900 font-bold py-3 rounded">ALLOCATE</button>
-                </div>
-            </form>
-        </div>
-    </div>
-
-    <script>
-        function openModal(batchId, availableStock) {
-            document.getElementById('modal_batch_id').value = batchId;
-            document.getElementById('display_batch_id').innerText = batchId;
-            document.getElementById('display_max_stock').innerText = parseFloat(availableStock).toFixed(2) + ' kg';
-            let inputQty = document.getElementById('input_qty');
-            inputQty.max = availableStock;
-            inputQty.min = 1;
-            document.getElementById('allocationModal').classList.remove('hidden');
-        }
-        function closeModal() {
-            document.getElementById('allocationModal').classList.add('hidden');
-        }
-    </script>
 </body>
 </html>
