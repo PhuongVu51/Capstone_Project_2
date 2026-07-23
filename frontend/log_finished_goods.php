@@ -4,6 +4,16 @@ require_once '../backend/includes/auth.php';
 require_role(['Production_Manager', 'Director'], 'login.php');
 require_once '../backend/connection/db_connect.php';
 
+// Truy vấn danh sách Thành phẩm từ bảng PRODUCTS
+try {
+    // Tùy vào cách bạn lưu, có thể cần thêm điều kiện WHERE PRD_category = 'Finished Good'
+    $stmt_products = $pdo->query("SELECT PRD_product_id, PRD_product_name FROM PRODUCTS");
+    $finished_goods = $stmt_products->fetchAll(PDO::FETCH_ASSOC);
+} catch (PDOException $e) {
+    $finished_goods = [];
+    // Có thể log lỗi ở đây nếu cần
+}
+
 // Tự động generate Batch ID gợi ý (Ví dụ: FG-YYYYMMDD-XXXX)
 $suggested_batch_id = 'FG-' . date('Ymd') . '-' . strtoupper(substr(uniqid(), -4));
 ?>
@@ -57,9 +67,11 @@ $suggested_batch_id = 'FG-' . date('Ymd') . '-' . strtoupper(substr(uniqid(), -4
                         <label class="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Finished Product</label>
                         <select name="product_id" required class="w-full bg-[#0a1118] border border-[#374151] text-white rounded p-3 focus:outline-none focus:border-[#10b981] transition-colors">
                             <option value="">-- Select Product --</option>
-                            <option value="FG01">DTLA20OZ - Dưa thái lát 20oz</option>
-                            <option value="FG02">BUOIDAXANH1 - Bưởi da xanh (1-1.2kg)</option>
-                            <option value="FG03">DM20DM340HS - Dứa miếng 20oz</option>
+                            <?php foreach ($finished_goods as $product): ?>
+                                <option value="<?= htmlspecialchars($product['PRD_product_id']) ?>">
+                                    <?= htmlspecialchars($product['PRD_product_name']) ?>
+                                </option>
+                            <?php endforeach; ?>
                         </select>
                     </div>
 

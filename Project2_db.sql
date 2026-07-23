@@ -153,6 +153,18 @@ CREATE TABLE SYSTEM_AUDIT_LOGS (
     FOREIGN KEY (LOG_user_id) REFERENCES USERS(USR_user_id) ON DELETE RESTRICT
 ) ENGINE=InnoDB;
 
+CREATE TABLE MATERIAL_REQUESTS (
+    REQ_id INT AUTO_INCREMENT PRIMARY KEY,
+    REQ_material_id VARCHAR(50) NOT NULL, -- Khớp với mã vật tư như 'RM01'
+    REQ_quantity DECIMAL(10,2) NOT NULL,
+    REQ_needed_date DATE NOT NULL,
+    REQ_priority VARCHAR(20) DEFAULT 'Normal',
+    REQ_notes TEXT,
+    REQ_status VARCHAR(20) DEFAULT 'Pending',
+    REQ_requested_by INT NOT NULL, -- Khớp với ID user đang đăng nhập
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
 INSERT INTO USERS (USR_username, USR_password_hash, USR_role, USR_full_name, USR_is_active) VALUES
 ('pm_alex', '$2y$10$nOUIs5kJ7naTuTFkMD1Ze.pRExhw0qEEyEHQ0QOczzN/z4N1iUOWK', 'Production_Manager', 'Alex Rivera', 1),
 ('pm_sarah', '$2y$10$nOUIs5kJ7naTuTFkMD1Ze.pRExhw0qEEyEHQ0QOczzN/z4N1iUOWK', 'Production_Manager', 'Sarah Connor', 1),

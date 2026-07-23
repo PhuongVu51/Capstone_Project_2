@@ -6,10 +6,12 @@ require_once '../backend/connection/db_connect.php';
 
 // (Tùy chọn) Lấy danh sách nguyên vật liệu từ database để đổ vào thẻ <select>
 try {
-    $stmt = $pdo->query("SELECT PRD_product_id, PRD_product_name FROM PRODUCTS WHERE PRD_category = 'Raw Material'");
+    // Sửa lại: Bỏ điều kiện WHERE PRD_category đi vì bảng không có cột này
+    $stmt = $pdo->query("SELECT PRD_product_id, PRD_product_name FROM PRODUCTS");
     $materials = $stmt->fetchAll();
 } catch (PDOException $e) {
-    $materials = [];
+    // Thêm dòng die này để lỡ có lỗi SQL nó sẽ báo ngay ra màn hình cho dễ sửa
+    die("Lỗi truy vấn SQL: " . $e->getMessage()); 
 }
 ?>
 <!DOCTYPE html>
@@ -48,14 +50,13 @@ try {
                         <label class="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Select Material</label>
                         <select name="material_id" required class="w-full bg-[#0a1118] border border-[#374151] text-white rounded p-3 focus:outline-none focus:border-[#3b82f6] transition-colors">
                             <option value="">-- Choose a material --</option>
+                            
                             <?php foreach ($materials as $mat): ?>
                                 <option value="<?= htmlspecialchars($mat['PRD_product_id']) ?>">
                                     <?= htmlspecialchars($mat['PRD_product_name']) ?>
                                 </option>
                             <?php endforeach; ?>
-                            <!-- Dữ liệu mẫu nếu DB trống -->
-                            <option value="RM01">MUCIN V4211 - Mực in</option>
-                            <option value="RM02">BANGTAI - Băng tải inox</option>
+                        
                         </select>
                     </div>
 
