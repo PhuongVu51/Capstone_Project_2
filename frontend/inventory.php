@@ -3,6 +3,7 @@ require_once '../backend/includes/auth.php';
 require_role(['Warehouse_Staff', 'Production_Manager', 'Director'], 'login.php');
 require_once '../backend/connection/db_connect.php';
 
+$userRole = $_SESSION['role'] ?? 'Warehouse_Staff';
 $search = isset($_GET['search']) ? trim($_GET['search']) : '';
 $statusFilter = isset($_GET['status']) ? trim($_GET['status']) : '';
 $page = max(1, intval($_GET['page'] ?? 1));
@@ -12,22 +13,26 @@ $offset = ($page - 1) * $perPage;
 $messages = [];
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_batch'])) {
-    $batchId = trim($_POST['batch_id'] ?? '');
-
-    if ($batchId === '') {
-        $messages[] = 'Batch ID is required.';
+    if ($userRole !== 'Director' && $userRole !== 'Warehouse_Staff') {
+        $messages[] = 'You do not have permission to delete batches.';
     } else {
-        try {
-            $deleteStmt = $pdo->prepare('DELETE FROM BATCHES WHERE BCH_batch_id = :batch_id');
-            $deleteStmt->execute([':batch_id' => $batchId]);
+        $batchId = trim($_POST['batch_id'] ?? '');
 
-            if ($deleteStmt->rowCount() > 0) {
-                $messages[] = 'Batch ' . htmlspecialchars($batchId) . ' deleted successfully.';
-            } else {
-                $messages[] = 'No matching batch was found.';
+        if ($batchId === '') {
+            $messages[] = 'Batch ID is required.';
+        } else {
+            try {
+                $deleteStmt = $pdo->prepare('DELETE FROM BATCHES WHERE BCH_batch_id = :batch_id');
+                $deleteStmt->execute([':batch_id' => $batchId]);
+
+                if ($deleteStmt->rowCount() > 0) {
+                    $messages[] = 'Batch ' . htmlspecialchars($batchId) . ' deleted successfully.';
+                } else {
+                    $messages[] = 'No matching batch was found.';
+                }
+            } catch (PDOException $e) {
+                $messages[] = 'Unable to delete batch: ' . $e->getMessage();
             }
-        } catch (PDOException $e) {
-            $messages[] = 'Unable to delete batch: ' . $e->getMessage();
         }
     }
 }
@@ -134,10 +139,15 @@ if (isset($_GET['view_id']) && trim($_GET['view_id']) !== '') {
                 <p class="text-sm text-gray-400 mt-1">Search, filter, and monitor batch inventory across the warehouse.</p>
             </div>
             <div class="flex items-center gap-3">
-                <a href="log_batch.php" class="inline-block bg-[#10b981] text-gray-900 font-semibold px-4 py-2 rounded">+ Log New Batch</a>
+                <?php if ($userRole === 'Director' || $userRole === 'Warehouse_Staff'): ?>
+                    <a href="log_batch.php" class="inline-block bg-[#10b981] text-gray-900 font-semibold px-4 py-2 rounded">+ Log New Batch</a>
+                <?php elseif ($userRole === 'Production_Manager'): ?>
+                    <a href="#" class="inline-block bg-[#60a5fa] text-gray-900 font-semibold px-4 py-2 rounded">Request Material</a>
+                    <a href="#" class="inline-block bg-[#10b981] text-gray-900 font-semibold px-4 py-2 rounded">Log Finished Goods</a>
+                <?php endif; ?>
                 <div class="text-right">
                     <p class="text-sm font-semibold text-white"><?php echo htmlspecialchars($_SESSION['full_name'] ?? 'User'); ?></p>
-                    <p class="text-xs text-gray-400">Warehouse Staff</p>
+                    <p class="text-xs text-gray-400"><?php echo htmlspecialchars($userRole); ?></p>
                 </div>
             </div>
         </header>
@@ -244,17 +254,25 @@ if (isset($_GET['view_id']) && trim($_GET['view_id']) !== '') {
                                         <div class="flex gap-4 items-center">
                                             <a href="inventory.php?view_id=<?php echo urlencode($item['BCH_batch_id']); ?>" class="text-[#10b981] hover:text-white transition-colors" title="View details">
                                                 <svg class="w-4 h-4 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg>
-                            </a>
-                                            <a href="log_batch.php?batch_id=<?php echo urlencode($item['BCH_batch_id']); ?>" class="text-blue-400 hover:text-white transition-colors" title="Edit batch">
-                                                <svg class="w-4 h-4 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
                                             </a>
-                                            <form method="POST" class="inline" onsubmit="return confirm('Delete this batch?');">
-                                                <input type="hidden" name="delete_batch" value="1" />
-                                                <input type="hidden" name="batch_id" value="<?php echo htmlspecialchars($item['BCH_batch_id']); ?>" />
-                                                <button type="submit" class="text-red-400 hover:text-white transition-colors" title="Delete batch">
-                                                    <svg class="w-4 h-4 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
-                                                </button>
-                                            </form>
+                                            <?php if ($userRole === 'Production_Manager'): ?>
+                                                <a href="#" class="text-blue-400 hover:text-white transition-colors" title="Request material from this batch">
+                                                    <svg class="w-4 h-4 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+                                                </a>
+                                            <?php elseif ($userRole === 'Director' || $userRole === 'Warehouse_Staff'): ?>
+                                                <a href="log_batch.php?batch_id=<?php echo urlencode($item['BCH_batch_id']); ?>" class="text-blue-400 hover:text-white transition-colors" title="Edit batch">
+                                                    <svg class="w-4 h-4 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
+                                                </a>
+                                            <?php endif; ?>
+                                            <?php if ($userRole === 'Director' || $userRole === 'Warehouse_Staff'): ?>
+                                                <form method="POST" class="inline" onsubmit="return confirm('Delete this batch?');">
+                                                    <input type="hidden" name="delete_batch" value="1" />
+                                                    <input type="hidden" name="batch_id" value="<?php echo htmlspecialchars($item['BCH_batch_id']); ?>" />
+                                                    <button type="submit" class="text-red-400 hover:text-white transition-colors" title="Delete batch">
+                                                        <svg class="w-4 h-4 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                                                    </button>
+                                                </form>
+                                            <?php endif; ?>
                                         </div>
                                     </td>
                                 </tr>
