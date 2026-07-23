@@ -21,7 +21,7 @@ extract($viewData);
 </head>
 <body class="min-h-screen overflow-x-hidden">
 
-    <?php include 'includes/qc_sidebar.php'; ?>
+    <?php include 'includes/sidebar.php'; ?>
 
     <main class="md:ml-64 p-6 md:p-8 pt-24 md:pt-8 w-full md:w-[calc(100%-256px)] flex flex-col justify-between min-h-screen">
         <div>
