@@ -27,9 +27,9 @@ $role_badge = match ($role) {
 // 2. LOGIC ĐIỀU HƯỚNG MENU THEO ROLE
 if ($role === 'QC') {
     $nav_items = [
-        ['label' => 'Dashboard Overview', 'href' => 'qc_dashboard.php', 'page' => 'qc_dashboard.php'],
-        ['label' => 'Inspection Log', 'href' => 'qc_inspections.php', 'page' => 'qc_inspections.php'],
-        ['label' => 'Reports', 'href' => 'qc_reports.php', 'page' => 'qc_reports.php'],
+        ['label' => __('dashboard'), 'href' => 'qc_dashboard.php', 'page' => 'qc_dashboard.php'],
+        ['label' => __('inspection_log'), 'href' => 'qc_inspections.php', 'page' => 'qc_inspections.php'],
+        ['label' => __('reports'), 'href' => 'qc_reports.php', 'page' => 'qc_reports.php'],
     ];
     $sidebar_title = 'F&G FOOD QC';
     $sidebar_subtitle = 'Quality Control';
@@ -37,11 +37,11 @@ if ($role === 'QC') {
 } elseif ($role === 'Production_Manager' || $role === 'Director') {
     // Menu chuẩn theo hình ảnh của Production
     $nav_items = [
-        ['label' => 'Dashboard', 'href' => 'dashboard_production.php', 'page' => 'dashboard_production.php'],
-        ['label' => 'Inventory', 'href' => 'inventory.php', 'page' => 'inventory.php'],
-        ['label' => 'FEFO Alerts', 'href' => 'production_FEFO.php', 'page' => 'production_FEFO.php'],
-        ['label' => 'Production Flow', 'href' => 'production_flow.php', 'page' => 'production_flow.php'],
-        ['label' => 'Analytics', 'href' => 'production_analytics.php', 'page' => 'production_analytics.php'],
+        ['label' => __('dashboard'), 'href' => 'dashboard_production.php', 'page' => 'dashboard_production.php'],
+        ['label' => __('inventory'), 'href' => 'inventory.php', 'page' => 'inventory.php'],
+        ['label' => __('fefo_alerts'), 'href' => 'production_FEFO.php', 'page' => 'production_FEFO.php'],
+        ['label' => __('production_flow'), 'href' => 'production_flow.php', 'page' => 'production_flow.php'],
+        ['label' => __('analytics'), 'href' => 'production_analytics.php', 'page' => 'production_analytics.php'],
     ];
     $sidebar_title = 'Plant Alpha';
     $sidebar_subtitle = 'Production Unit 04';
@@ -49,10 +49,10 @@ if ($role === 'QC') {
 } else {
     // Mặc định là Warehouse
     $nav_items = [
-        ['label' => 'Dashboard', 'href' => 'dashboard_warehouse.php', 'page' => 'dashboard_warehouse.php'],
-        ['label' => 'Inventory', 'href' => 'inventory.php', 'page' => 'inventory.php'],
-        ['label' => 'Log Batch', 'href' => 'log_batch.php', 'page' => 'log_batch.php'],
-        ['label' => 'Reports', 'href' => 'warehouse_reports.php', 'page' => 'warehouse_reports.php'],
+        ['label' => __('dashboard'), 'href' => 'dashboard_warehouse.php', 'page' => 'dashboard_warehouse.php'],
+        ['label' => __('inventory'), 'href' => 'inventory.php', 'page' => 'inventory.php'],
+        ['label' => __('log_batch'), 'href' => 'log_batch.php', 'page' => 'log_batch.php'],
+        ['label' => __('reports'), 'href' => 'warehouse_reports.php', 'page' => 'warehouse_reports.php'],
     ];
     $sidebar_title = 'F&G FOOD';
     $sidebar_subtitle = 'Warehouse Unit 04';
@@ -107,9 +107,19 @@ if ($role === 'QC') {
                 <p class="text-[11px] <?= $role_badge ?> uppercase tracking-wider font-semibold mt-0.5"><?= htmlspecialchars($role_label) ?></p>
             </div>
         </div>
+
+        <div class="flex items-center justify-center gap-4 mb-4">
+            <a href="?lang=vi" class="opacity-70 hover:opacity-100 transition-opacity <?= (isset($_SESSION['lang']) && $_SESSION['lang'] === 'vi') ? 'opacity-100 ring-2 ring-[#10b981] rounded' : '' ?>" title="Tiếng Việt">
+                <img src="https://flagcdn.com/w40/vn.png" alt="VN" class="w-7 h-5 object-cover rounded shadow-sm" />
+            </a>
+            <a href="?lang=en" class="opacity-70 hover:opacity-100 transition-opacity <?= (isset($_SESSION['lang']) && $_SESSION['lang'] === 'en') ? 'opacity-100 ring-2 ring-[#10b981] rounded' : '' ?>" title="English">
+                <img src="https://flagcdn.com/w40/gb.png" alt="EN" class="w-7 h-5 object-cover rounded shadow-sm" />
+            </a>
+        </div>
+
         <a href="../backend/connection/logout.php" class="flex items-center justify-center gap-2 w-full py-2.5 text-sm text-red-400 font-semibold border border-red-900/30 rounded-lg hover:bg-red-500 hover:text-white hover:border-red-500 transition-all shadow-sm">
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>
-            Logout
+            <?= __('logout') ?>
         </a>
     </div>
 </aside>

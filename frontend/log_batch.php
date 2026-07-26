@@ -4,7 +4,9 @@ require_role(['Warehouse_Staff']);
 require_once '../backend/connection/db_connect.php';
 
 try {
-    $products = $pdo->query("SELECT PRD_product_id, PRD_product_name, PRD_shelf_life_days FROM PRODUCTS")->fetchAll();
+    $lang = $_SESSION['lang'] ?? 'vi';
+    $productNameCol = ($lang === 'en') ? 'COALESCE(PRD_product_name_en, PRD_product_name)' : 'PRD_product_name';
+    $products = $pdo->query("SELECT PRD_product_id, $productNameCol AS PRD_product_name, PRD_shelf_life_days FROM PRODUCTS")->fetchAll();
     $shifts = $pdo->query("SELECT SHF_shift_id, SHF_shift_date, SHF_shift_type FROM SHIFTS WHERE SHF_status = 'Open'")->fetchAll();
     $zones = $pdo->query("SELECT STZ_zone_id, STZ_zone_name FROM STORAGE_ZONES")->fetchAll();
 } catch (PDOException $e) {
@@ -25,15 +27,15 @@ try {
 <body class="p-8">
     <div class="max-w-2xl mx-auto bg-[#07121a] p-8 rounded-lg border border-[#102027]">
         <div class="flex justify-between items-center mb-6">
-            <h1 class="text-2xl font-bold text-[#10b981]">Log New Batch (Stock-In)</h1>
-            <a href="dashboard_warehouse.php" class="text-sm text-gray-400 hover:text-white">← Back to Dashboard</a>
+            <h1 class="text-2xl font-bold text-[#10b981]"><?= __('log_new_batch_title') ?></h1>
+            <a href="dashboard_warehouse.php" class="text-sm text-gray-400 hover:text-white"><?= __('back_to_dashboard') ?></a>
         </div>
 
         <?php if (isset($_GET['error'])): ?>
             <div class="mb-4 p-3 bg-red-900 text-red-200 rounded border border-red-700">
                 <?php
-                    if ($_GET['error'] == 'missing_fields') echo "Vui lòng nhập đầy đủ các trường bắt buộc.";
-                    else if ($_GET['error'] == 'db_error') echo "Có lỗi xảy ra khi lưu vào cơ sở dữ liệu.";
+                    if ($_GET['error'] == 'missing_fields') echo __('error_missing_fields');
+                    else if ($_GET['error'] == 'db_error') echo __('error_db');
                 ?>
             </div>
         <?php endif; ?>
@@ -42,32 +44,32 @@ try {
             
             <div class="grid grid-cols-2 gap-4">
                 <div>
-                    <label class="block text-sm font-medium text-gray-400 mb-1">Product *</label>
+                    <label class="block text-sm font-medium text-gray-400 mb-1"><?= __('product_asterisk') ?></label>
                     <select id="product-select" name="product_id" required class="w-full bg-[#04121a] border border-[#1f2937] text-white rounded p-2 focus:border-[#10b981] focus:outline-none">
-                        <option value="">Select Product...</option>
+                        <option value=""><?= __('select_product') ?></option>
                         <?php foreach($products as $p): ?>
                             <option value="<?= intval($p['PRD_product_id']) ?>"><?= '[' . intval($p['PRD_product_id']) . '] ' . htmlspecialchars($p['PRD_product_name']) ?></option>
                         <?php endforeach; ?>
                     </select>
                 </div>
                 <div>
-                    <label class="block text-sm font-medium text-gray-400 mb-1">Supplier</label>
+                    <label class="block text-sm font-medium text-gray-400 mb-1"><?= __('supplier') ?></label>
                     <select id="supplier-select" name="supplier_id" class="w-full bg-[#04121a] border border-[#1f2937] text-white rounded p-2 focus:border-[#10b981] focus:outline-none">
-                        <option value="">Select Supplier...</option>
+                        <option value=""><?= __('select_supplier') ?></option>
                     </select>
                 </div>
             </div>
 
             <div class="grid grid-cols-2 gap-4">
                 <div>
-                    <label class="block text-sm font-medium text-gray-400 mb-1">Initial Volume (kg) *</label>
+                    <label class="block text-sm font-medium text-gray-400 mb-1"><?= __('initial_volume_asterisk') ?></label>
                     <input type="number" step="0.01" name="initial_volume" required 
                            class="w-full bg-[#04121a] border border-[#1f2937] text-white rounded p-2 focus:border-[#10b981] focus:outline-none">
                 </div>
                 <div>
-                    <label class="block text-sm font-medium text-gray-400 mb-1">Storage Zone *</label>
+                    <label class="block text-sm font-medium text-gray-400 mb-1"><?= __('storage_zone_asterisk') ?></label>
                     <select name="zone_id" required class="w-full bg-[#04121a] border border-[#1f2937] text-white rounded p-2 focus:border-[#10b981] focus:outline-none">
-                        <option value="">Select Zone...</option>
+                        <option value=""><?= __('select_zone') ?></option>
                         <?php foreach($zones as $z): ?>
                             <option value="<?= $z['STZ_zone_id'] ?>"><?= htmlspecialchars($z['STZ_zone_name']) ?></option>
                         <?php endforeach; ?>
@@ -77,9 +79,9 @@ try {
 
             <div class="grid grid-cols-2 gap-4">
                 <div>
-                    <label class="block text-sm font-medium text-gray-400 mb-1">Shift</label>
+                    <label class="block text-sm font-medium text-gray-400 mb-1"><?= __('shift') ?></label>
                     <select id="shift-select" name="shift_id" class="w-full bg-[#04121a] border border-[#1f2937] text-white rounded p-2 focus:border-[#10b981] focus:outline-none">
-                        <option value="">Select Shift...</option>
+                        <option value=""><?= __('select_shift') ?></option>
                         <?php foreach($shifts as $sh): ?>
                             <option value="<?= $sh['SHF_shift_id'] ?>">
                                 <?= htmlspecialchars($sh['SHF_shift_date'] . ' - ' . $sh['SHF_shift_type']) ?>
@@ -88,7 +90,7 @@ try {
                     </select>
                 </div>
                 <div>
-                    <label class="block text-sm font-medium text-gray-400 mb-1">Expiry Date</label>
+                    <label class="block text-sm font-medium text-gray-400 mb-1"><?= __('expiry_date') ?></label>
                     <input type="datetime-local" id="expiry-date-input" name="expiry_date" 
                            class="w-full bg-[#04121a] border border-[#1f2937] text-white rounded p-2 focus:border-[#10b981] focus:outline-none [color-scheme:dark]">
                 </div>
@@ -96,7 +98,7 @@ try {
 
             <div class="pt-4">
                 <button type="submit" class="w-full bg-[#10b981] text-gray-900 font-bold px-4 py-3 rounded hover:bg-[#0ea5e9] transition-colors">
-                    Confirm Stock-In
+                    <?= __('confirm_stock_in') ?>
                 </button>
             </div>
         </form>

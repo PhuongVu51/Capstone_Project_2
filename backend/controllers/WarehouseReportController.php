@@ -11,7 +11,7 @@ class WarehouseReportController
         $this->model = new WarehouseReportModel();
     }
 
-    public function loadReportData()
+    public function loadReportData($lang = 'vi')
     {
         $totalStock = $this->model->getTotalStock();
 
@@ -21,9 +21,9 @@ class WarehouseReportController
 
         $totalOutbound = $this->model->getTotalOutbound();
 
-        $stockData = $this->model->getStockByProduct();
+        $stockData = $this->model->getStockByProduct($lang);
 
-        $criticalBatches = $this->model->getCriticalBatches();
+        $criticalBatches = $this->model->getCriticalBatches($lang);
 
         $chartLabels = [];
         $chartData = [];

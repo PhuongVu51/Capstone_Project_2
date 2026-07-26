@@ -30,24 +30,28 @@ class QcReportModel extends BaseModel {
     }
 
     // Phân bổ nguyên nhân loại bỏ để vẽ Biểu đồ Tròn
-    public function getReasonBreakdown() {
+    public function getReasonBreakdown($lang = 'vi') {
+        $reasonCol = ($lang === 'en') ? 'COALESCE(QCI_rejection_reason_en, QCI_rejection_reason)' : 'QCI_rejection_reason';
         $stmt = $this->pdo->query("
-            SELECT QCI_rejection_reason AS reason, COUNT(*) AS count, SUM(QCI_rotten_weight_kg) AS total_kg
+            SELECT $reasonCol AS reason, COUNT(*) AS count, SUM(QCI_rotten_weight_kg) AS total_kg
             FROM QC_INSPECTIONS
             WHERE QCI_rejection_reason IS NOT NULL AND QCI_rejection_reason != 'None' AND QCI_rejection_reason != ''
-            GROUP BY QCI_rejection_reason
+            GROUP BY reason
             ORDER BY total_kg DESC
         ");
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
     // Danh sách các lô hàng có phế phẩm cao (Lớn hơn 0)
-    public function getHighLossBatches($limit = 15) {
+    public function getHighLossBatches($lang = 'vi', $limit = 15) {
         $limit = (int) $limit; // Ép kiểu thành số nguyên an toàn tuyệt đối
+        $productNameCol = ($lang === 'en') ? 'COALESCE(p.PRD_product_name_en, p.PRD_product_name)' : 'p.PRD_product_name';
+        $supplierNameCol = ($lang === 'en') ? 'COALESCE(s.SUP_supplier_name_en, s.SUP_supplier_name)' : 's.SUP_supplier_name';
         
-        $stmt = $this->pdo->query("
-            SELECT q.QCI_batch_id, p.PRD_product_name, s.SUP_supplier_name,
-                   q.QCI_rotten_weight_kg, q.QCI_rejection_reason, q.QCI_actual_yield_pct,
+        $reasonCol = ($lang === 'en') ? 'COALESCE(q.QCI_rejection_reason_en, q.QCI_rejection_reason)' : 'q.QCI_rejection_reason';
+        $sql = "
+            SELECT q.QCI_batch_id, $productNameCol AS PRD_product_name, $supplierNameCol AS SUP_supplier_name,
+                   q.QCI_rotten_weight_kg, $reasonCol AS QCI_rejection_reason, q.QCI_actual_yield_pct,
                    b.BCH_received_date
             FROM QC_INSPECTIONS q
             JOIN BATCHES b ON q.QCI_batch_id = b.BCH_batch_id
@@ -56,7 +60,8 @@ class QcReportModel extends BaseModel {
             WHERE q.QCI_rotten_weight_kg > 0
             ORDER BY q.QCI_rotten_weight_kg DESC
             LIMIT $limit
-        ");
+        ";
+        $stmt = $this->pdo->query($sql);
         
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }

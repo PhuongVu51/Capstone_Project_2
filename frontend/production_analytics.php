@@ -11,9 +11,10 @@ require_once '../backend/controllers/ProductionAnalyticsController.php';
 
 try{
 
+    $lang = $_SESSION['lang'] ?? 'vi';
     $controller = new ProductionAnalyticsController();
 
-    $data = $controller->loadAnalyticsData();
+    $data = $controller->loadAnalyticsData($lang);
 
     extract($data);
 
@@ -81,11 +82,11 @@ body{
         <div>
 
             <h1 class="text-2xl font-bold text-white tracking-wide">
-                Production Analytics
+                <?= __('production_analytics_title') ?>
             </h1>
 
             <p class="text-gray-500 text-sm mt-1">
-                Production Performance & Yield Monitoring
+                <?= __('production_analytics_desc') ?>
             </p>
 
         </div>
@@ -112,7 +113,7 @@ body{
 
             </svg>
 
-            Export PDF
+            <?= __('export_pdf') ?>
 
         </button>
 
@@ -125,7 +126,7 @@ body{
         <div class="bg-[#0f1722] p-5 rounded-lg border border-[#1f2937]">
 
             <p class="text-[11px] text-gray-500 uppercase font-semibold tracking-wider">
-                Total Production Output
+                <?= __('total_production_output') ?>
             </p>
 
             <h3 class="text-3xl font-bold text-white mt-2 font-mono">
@@ -137,7 +138,7 @@ body{
         <div class="bg-[#0f1722] p-5 rounded-lg border border-[#1f2937]">
 
             <p class="text-[11px] text-gray-500 uppercase font-semibold tracking-wider">
-                Average Yield
+                <?= __('average_yield') ?>
             </p>
 
             <h3 class="text-3xl font-bold text-green-400 mt-2 font-mono">
@@ -149,7 +150,7 @@ body{
         <div class="bg-[#0f1722] p-5 rounded-lg border border-[#1f2937]">
 
             <p class="text-[11px] text-gray-500 uppercase font-semibold tracking-wider">
-                Production Batches
+                <?= __('production_batches') ?>
             </p>
 
             <h3 class="text-3xl font-bold text-white mt-2 font-mono">
@@ -161,7 +162,7 @@ body{
         <div class="bg-[#2a2112] p-5 rounded-lg border border-yellow-800/30">
 
             <p class="text-[11px] text-yellow-400 uppercase font-semibold tracking-wider">
-                Quarantine Inventory
+                <?= __('quarantine_inventory') ?>
             </p>
 
             <h3 class="text-3xl font-bold text-yellow-400 mt-2 font-mono">
@@ -183,11 +184,11 @@ body{
             <div>
 
                 <h3 class="text-sm font-bold text-white uppercase tracking-wider mb-1">
-                    Production Output Trend
+                    <?= __('production_output_trend') ?>
                 </h3>
 
                 <p class="text-xs text-gray-500 mb-6">
-                    Latest production output by batch
+                    <?= __('latest_production_output_by_batch') ?>
                 </p>
 
             </div>
@@ -197,7 +198,7 @@ body{
                 <?php if(empty($chartLabels)): ?>
 
                     <div class="h-full flex items-center justify-center text-gray-600 italic text-sm">
-                        No production data available
+                        <?= __('no_production_data_available') ?>
                     </div>
 
                 <?php else: ?>
@@ -217,7 +218,7 @@ body{
             <div class="p-4 border-b border-[#1f2937] bg-[#0b121c]">
 
                 <h3 class="text-sm font-bold text-white uppercase tracking-wider">
-                    Production Performance Log
+                    <?= __('production_performance_log') ?>
                 </h3>
 
             </div>
@@ -229,17 +230,11 @@ body{
                     <thead class="sticky top-0 bg-[#0b121c] text-[10px] uppercase text-gray-500 z-10">
 
                     <tr>
-
-                        <th class="py-3 pl-6">Batch</th>
-
-                        <th class="py-3">Product</th>
-
-                        <th class="py-3 text-right">Output</th>
-
-                        <th class="py-3 text-right">Yield</th>
-
-                        <th class="py-3 pr-6">Status</th>
-
+                        <th class="py-3 pl-5 pr-3 w-48 text-left"><?= __('batch') ?></th>
+                        <th class="py-3 px-3 text-left"><?= __('product') ?></th>
+                        <th class="py-3 px-4 text-right whitespace-nowrap w-24"><?= __('output') ?></th>
+                        <th class="py-3 px-4 text-right whitespace-nowrap w-20"><?= __('yield') ?></th>
+                        <th class="py-3 pl-4 pr-5 whitespace-nowrap w-32"><?= __('status') ?></th>
                     </tr>
 
                     </thead>
@@ -253,7 +248,7 @@ body{
                             <td colspan="5"
                                 class="p-8 text-center text-gray-600 italic">
 
-                                No production records found.
+                                <?= __('no_production_records_found') ?>
 
                             </td>
 
@@ -265,51 +260,43 @@ body{
 
                             <tr class="hover:bg-[#131c26] transition-colors">
 
-                                <td class="py-3 pl-6">
+                            <td class="py-4 pl-5 pr-3 w-48">
+                                <span class="font-mono text-[#10b981] font-bold text-xs break-all">
+                                    #<?= htmlspecialchars($row['FGD_batch_id']) ?>
+                                </span>
+                            </td>
 
-                                    <span class="font-mono text-[#10b981] font-bold text-xs">
-                                        #<?= htmlspecialchars($row['FGD_batch_id']) ?>
+                            <td class="py-4 px-3 text-xs text-gray-300 max-w-[260px]">
+                                <?= htmlspecialchars($row['PRD_product_name']) ?>
+                            </td>
+
+                            <td class="py-4 px-4 text-right font-mono whitespace-nowrap w-24">
+                                <?= number_format($row['FGD_total_cans']) ?>
+                            </td>
+
+                            <td class="py-4 px-4 text-right font-mono text-green-400 whitespace-nowrap w-20">
+                                <?= number_format($row['FGD_actual_yield_rate'],1) ?>%
+                            </td>
+
+                            <td class="py-4 pl-4 pr-5 whitespace-nowrap w-32">
+
+                                <?php if($row['FGD_status']=='Ready_To_Export'): ?>
+                                    <span class="bg-green-500/20 text-green-400 border border-green-900/30 px-2 py-1 rounded text-[10px] uppercase font-bold">
+                                        <?= __('status_ready') ?>
                                     </span>
+                                <?php elseif($row['FGD_status']=='Exported'): ?>
+                                    <span class="bg-blue-500/20 text-blue-400 border border-blue-900/30 px-2 py-1 rounded text-[10px] uppercase font-bold">
+                                        <?= __('status_exported') ?>
+                                    </span>
+                                <?php else: ?>
+                                    <span class="bg-yellow-500/20 text-yellow-400 border border-yellow-900/30 px-2 py-1 rounded text-[10px] uppercase font-bold">
+                                        <?= __('status_quarantine') ?>
+                                    </span>
+                                <?php endif; ?>
 
-                                </td>
+                            </td>
 
-                                <td class="py-3 text-xs text-gray-300">
-                                    <?= htmlspecialchars($row['PRD_product_name']) ?>
-                                </td>
-
-                                <td class="py-3 text-right font-mono">
-                                    <?= number_format($row['FGD_total_cans']) ?>
-                                </td>
-
-                                <td class="py-3 text-right font-mono text-green-400">
-                                    <?= number_format($row['FGD_actual_yield_rate'],1) ?>%
-                                </td>
-
-                                <td class="py-3 pr-6">
-
-                                    <?php if($row['FGD_status']=='Ready_To_Export'): ?>
-
-                                        <span class="bg-green-500/20 text-green-400 border border-green-900/30 px-2 py-1 rounded text-[10px] uppercase font-bold">
-                                            Ready
-                                        </span>
-
-                                    <?php elseif($row['FGD_status']=='Exported'): ?>
-
-                                        <span class="bg-blue-500/20 text-blue-400 border border-blue-900/30 px-2 py-1 rounded text-[10px] uppercase font-bold">
-                                            Exported
-                                        </span>
-
-                                    <?php else: ?>
-
-                                        <span class="bg-yellow-500/20 text-yellow-400 border border-yellow-900/30 px-2 py-1 rounded text-[10px] uppercase font-bold">
-                                            Quarantine
-                                        </span>
-
-                                    <?php endif; ?>
-
-                                </td>
-
-                            </tr>
+                        </tr>
 
                         <?php endforeach; ?>
 
@@ -346,7 +333,7 @@ if(document.getElementById('productionChart') && chartLabels.length > 0){
 
                 datasets:[
                 {
-                    label:'Output (Cans)',
+                    label: '<?= __('output_cans') ?>',
                     data:chartData,
                     backgroundColor:'#10b981'
                 }]
@@ -357,14 +344,38 @@ if(document.getElementById('productionChart') && chartLabels.length > 0){
                 maintainAspectRatio:false,
 
                 plugins:{
-                    legend:{
-                        display:false
+                    legend:{ display:false },
+                    tooltip:{
+                        backgroundColor:'#1f2937',
+                        titleColor:'#fff',
+                        bodyColor:'#d1d5db',
+                        callbacks:{
+                            title: function(ctx) {
+                                // Show full label in tooltip
+                                return ctx[0].label;
+                            }
+                        }
                     }
                 },
 
                 scales:{
                     y:{
-                        beginAtZero:true
+                        beginAtZero:true,
+                        grid:{ color:'#1f2937' },
+                        ticks:{ color:'#9ca3af' }
+                    },
+                    x:{
+                        grid:{ display:false },
+                        ticks:{
+                            color:'#9ca3af',
+                            maxRotation: 0,
+                            maxTicksLimit: 8,
+                            callback: function(val, index) {
+                                // Truncate label to first 10 chars
+                                const label = this.getLabelForValue(val);
+                                return label.length > 12 ? label.substring(0, 12) + '…' : label;
+                            }
+                        }
                     }
                 }
             }

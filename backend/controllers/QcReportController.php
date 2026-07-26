@@ -9,10 +9,10 @@ class QcReportController {
         $this->model = new QcReportModel();
     }
 
-    public function loadReportData() {
+    public function loadReportData($lang = 'vi') {
         $summary = $this->model->getLossSummary();
-        $breakdown = $this->model->getReasonBreakdown();
-        $lossBatches = $this->model->getHighLossBatches();
+        $breakdown = $this->model->getReasonBreakdown($lang);
+        $lossBatches = $this->model->getHighLossBatches($lang);
 
         // Xử lý logic dữ liệu cho biểu đồ tròn (Doughnut Chart)
         $chartLabels = [];

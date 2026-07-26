@@ -87,7 +87,8 @@ class StockController {
             exit();
         }
 
-        $suppliers = $this->stockModel->getSuppliersByProduct($productId);
+        $lang = $_SESSION['lang'] ?? 'vi';
+        $suppliers = $this->stockModel->getSuppliersByProduct($productId, $lang);
         header('Content-Type: application/json');
         echo json_encode($suppliers);
         exit();
