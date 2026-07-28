@@ -10,8 +10,8 @@ class QcInspectionController {
     }
 
     // Xử lý nạp danh sách hàng chờ kiểm định
-    public function handleListQueue() {
-        $queue = $this->model->getPendingQueue();
+    public function handleListQueue($lang = 'vi') {
+        $queue = $this->model->getPendingQueue($lang);
         
         $activeQueueCount = count($queue);
         $highPriorityCount = 0;
@@ -38,8 +38,8 @@ class QcInspectionController {
     }
 
     // Xử lý chuẩn bị form thực thi ca kiểm định
-    public function handlePerformScreen($batch_id) {
-        $batch = $this->model->getBatchForInspection($batch_id);
+    public function handlePerformScreen($batch_id, $lang = 'vi') {
+        $batch = $this->model->getBatchForInspection($batch_id, $lang);
         if (!$batch) {
             header("Location: qc_inspections.php?error=batch_not_found");
             exit();

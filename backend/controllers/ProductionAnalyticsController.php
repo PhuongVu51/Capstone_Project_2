@@ -11,7 +11,7 @@ class ProductionAnalyticsController
         $this->model = new ProductionAnalyticsModel();
     }
 
-    public function loadAnalyticsData()
+    public function loadAnalyticsData($lang = 'vi')
     {
         $chartRows = $this->model->getProductionChart();
 
@@ -29,7 +29,7 @@ class ProductionAnalyticsController
             'averageYield' => $this->model->getAverageYield(),
             'productionBatches' => $this->model->getProductionBatches(),
             'quarantineCount' => $this->model->getQuarantineCount(),
-            'productionLog' => $this->model->getProductionLog(),
+            'productionLog' => $this->model->getProductionLog($lang),
             'chartLabels' => $chartLabels,
             'chartData' => $chartData
         ];

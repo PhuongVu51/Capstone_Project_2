@@ -5,9 +5,10 @@ require_once __DIR__ . '/../core/BaseModel.php';
 class QcInspectionModel extends BaseModel {
 
     // Lấy danh sách toàn bộ các lô hàng đang chờ QC kiểm định
-    public function getPendingQueue() {
+    public function getPendingQueue($lang = 'vi') {
+        $productNameCol = ($lang === 'en') ? 'COALESCE(p.PRD_product_name_en, p.PRD_product_name)' : 'p.PRD_product_name';
         $stmt = $this->pdo->query("
-            SELECT b.BCH_batch_id, p.PRD_product_name, b.BCH_received_date, 
+            SELECT b.BCH_batch_id, $productNameCol AS PRD_product_name, b.BCH_received_date, 
                    b.BCH_initial_volume_kg, b.BCH_priority
             FROM BATCHES b
             JOIN PRODUCTS p ON b.BCH_product_id = p.PRD_product_id
@@ -79,18 +80,21 @@ class QcInspectionModel extends BaseModel {
     }
 
     // Lấy chi tiết thông số nguồn gốc lô hàng khi bấm kiểm định
-    public function getBatchForInspection($batch_id) {
-        $stmt = $this->pdo->prepare("
-            SELECT b.BCH_batch_id, p.PRD_product_name, p.PRD_material_grade, 
-                   s.SUP_supplier_name, s.SUP_origin_facility,
+    public function getInspectionDetails($batchId, $lang = 'vi') {
+        $productNameCol = ($lang === 'en') ? 'COALESCE(p.PRD_product_name_en, p.PRD_product_name)' : 'p.PRD_product_name';
+        $supplierNameCol = ($lang === 'en') ? 'COALESCE(s.SUP_supplier_name_en, s.SUP_supplier_name)' : 's.SUP_supplier_name';
+
+        $sql = "SELECT b.BCH_batch_id, $productNameCol AS PRD_product_name, b.BCH_weight_kg, 
+                   $supplierNameCol AS SUP_supplier_name, s.SUP_origin_facility,
                    b.BCH_initial_volume_kg, b.BCH_received_date
             FROM BATCHES b
             JOIN PRODUCTS p ON b.BCH_product_id = p.PRD_product_id
             JOIN SUPPLIERS s ON b.BCH_supplier_id = s.SUP_supplier_id
             WHERE b.BCH_batch_id = ? AND b.BCH_current_stage = 'Pending_QC'
             LIMIT 1
-        ");
-        $stmt->execute([$batch_id]);
+        ";
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->execute([$batchId]);
         return $stmt->fetch(PDO::FETCH_ASSOC);
     }
 

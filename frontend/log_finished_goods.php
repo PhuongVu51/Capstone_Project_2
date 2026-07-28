@@ -7,7 +7,9 @@ require_once '../backend/connection/db_connect.php';
 // Truy vấn danh sách Thành phẩm từ bảng PRODUCTS
 try {
     // Tùy vào cách bạn lưu, có thể cần thêm điều kiện WHERE PRD_category = 'Finished Good'
-    $stmt_products = $pdo->query("SELECT PRD_product_id, PRD_product_name FROM PRODUCTS");
+    $lang = $_SESSION['lang'] ?? 'vi';
+    $productNameCol = ($lang === 'en') ? 'COALESCE(PRD_product_name_en, PRD_product_name)' : 'PRD_product_name';
+    $stmt_products = $pdo->query("SELECT PRD_product_id, $productNameCol AS PRD_product_name FROM PRODUCTS");
     $finished_goods = $stmt_products->fetchAll(PDO::FETCH_ASSOC);
 } catch (PDOException $e) {
     $finished_goods = [];

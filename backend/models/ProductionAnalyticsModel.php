@@ -59,12 +59,13 @@ class ProductionAnalyticsModel extends BaseModel
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
-    public function getProductionLog()
+    public function getProductionLog($lang = 'vi')
     {
+        $productNameCol = ($lang === 'en') ? 'COALESCE(p.PRD_product_name_en, p.PRD_product_name)' : 'p.PRD_product_name';
         $stmt = $this->pdo->query("
             SELECT
                 f.FGD_batch_id,
-                p.PRD_product_name,
+                $productNameCol AS PRD_product_name,
                 f.FGD_total_cans,
                 f.FGD_actual_yield_rate,
                 f.FGD_status

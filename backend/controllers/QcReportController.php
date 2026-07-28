@@ -9,10 +9,10 @@ class QcReportController {
         $this->model = new QcReportModel();
     }
 
-    public function loadReportData() {
+    public function loadReportData($lang = 'vi') {
         $summary = $this->model->getLossSummary();
-        $breakdown = $this->model->getReasonBreakdown();
-        $lossBatches = $this->model->getHighLossBatches();
+        $breakdown = $this->model->getReasonBreakdown($lang);
+        $lossBatches = $this->model->getHighLossBatches($lang);
 
         // Xử lý logic dữ liệu cho biểu đồ tròn (Doughnut Chart)
         $chartLabels = [];
@@ -30,33 +30,6 @@ class QcReportController {
             }
         }
 
-        // ============================================================
-        // WASTE COST ATTRIBUTION (mới)
-        // ============================================================
-        $costSummary   = $this->model->getWasteCostSummary();
-        $costByProduct = $this->model->getWasteCostByProduct();
-        $costTrend     = $this->model->getWasteCostTrend();
-
-        // Dữ liệu cho stacked bar chart (theo sản phẩm)
-        $costChartLabels   = [];
-        $costChartNatural  = [];
-        $costChartAbnormal = [];
-        foreach ($costByProduct as $row) {
-            $costChartLabels[]   = $row['PRD_product_name'];
-            $costChartNatural[]  = round((float) $row['natural_cost'], 0);
-            $costChartAbnormal[] = round((float) $row['abnormal_cost'], 0);
-        }
-
-        // Dữ liệu cho line chart xu hướng (theo ngày nhập hàng)
-        $trendLabels   = [];
-        $trendNatural  = [];
-        $trendAbnormal = [];
-        foreach ($costTrend as $row) {
-            $trendLabels[]   = date('d/m', strtotime($row['loss_date']));
-            $trendNatural[]  = round((float) $row['natural_cost'], 0);
-            $trendAbnormal[] = round((float) $row['abnormal_cost'], 0);
-        }
-
         return [
             'totalInspected' => number_format($summary['totalInspected'], 1),
             'totalLoss'      => number_format($summary['totalLoss'], 1),
@@ -65,18 +38,7 @@ class QcReportController {
             'topReasonKg'    => number_format((float)$topReasonKg, 1),
             'chartLabels'    => $chartLabels,
             'chartData'      => $chartData,
-            'lossBatches'    => $lossBatches,
-
-            // --- Waste Cost Attribution (mới) ---
-            'naturalCostTotal'    => number_format($costSummary['naturalCost'], 0, ',', '.'),
-            'abnormalCostTotal'   => number_format($costSummary['abnormalCost'], 0, ',', '.'),
-            'abnormalCostPercent' => number_format($costSummary['abnormalPercent'], 1),
-            'costChartLabels'     => $costChartLabels,
-            'costChartNatural'    => $costChartNatural,
-            'costChartAbnormal'   => $costChartAbnormal,
-            'trendLabels'         => $trendLabels,
-            'trendNatural'        => $trendNatural,
-            'trendAbnormal'       => $trendAbnormal,
+            'lossBatches'    => $lossBatches
         ];
     }
 }

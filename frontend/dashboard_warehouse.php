@@ -22,9 +22,12 @@ try {
     $capacityPercent = $capMax > 0 ? ($capCur / $capMax) * 100 : 0;
     $remainingUnits = $capMax > $capCur ? number_format(($capMax - $capCur)/5,1).' units' : '0 units';
 
+    $lang = $_SESSION['lang'] ?? 'vi';
+    $productNameCol = ($lang === 'en') ? 'COALESCE(p.PRD_product_name_en, p.PRD_product_name)' : 'p.PRD_product_name';
+
     // Recent movements
     $stmtMovements = $pdo->query(
-        "SELECT s.STM_reference_code, s.STM_quantity_kg, s.STM_movement_type, s.STM_timestamp, b.BCH_batch_id, p.PRD_product_name
+        "SELECT s.STM_reference_code, s.STM_quantity_kg, s.STM_movement_type, s.STM_timestamp, b.BCH_batch_id, $productNameCol AS PRD_product_name
          FROM STOCK_MOVEMENTS s
          JOIN BATCHES b ON s.STM_batch_id = b.BCH_batch_id
          LEFT JOIN PRODUCTS p ON b.BCH_product_id = p.PRD_product_id
@@ -55,16 +58,16 @@ try {
     <main class="flex-1 p-8 md:ml-64 pt-24 md:pt-8">
         <header class="flex justify-between items-start mb-8">
             <div>
-                <h1 class="text-3xl font-bold text-[#10b981]">Node 04 Operations</h1>
-                <p class="text-sm text-gray-400 mt-1">Live operational metrics and throughput tracking for current shift.</p>
+                <h1 class="text-3xl font-bold text-[#10b981]"><?= __('node_operations') ?></h1>
+                <p class="text-sm text-gray-400 mt-1"><?= __('node_operations_desc') ?></p>
             </div>
 
             <div class="flex items-center gap-4">
-                <a href="export_report.php" class="inline-block bg-transparent border border-[#203434] text-[#cfeee0] px-4 py-2 rounded">Export Report</a>
-                <a href="log_batch.php" class="inline-block bg-[#10b981] text-gray-900 font-bold px-4 py-2 rounded">+ Log New Batch</a>
+                <a href="export_report.php" class="inline-block bg-transparent border border-[#203434] text-[#cfeee0] px-4 py-2 rounded"><?= __('export_report') ?></a>
+                <a href="log_batch.php" class="inline-block bg-[#10b981] text-gray-900 font-bold px-4 py-2 rounded"><?= __('log_new_batch') ?></a>
                 <div class="ml-4 text-right">
                     <p class="text-sm font-semibold text-white"><?= htmlspecialchars($_SESSION['full_name']) ?></p>
-                    <p class="text-xs text-gray-400">Warehouse Staff</p>
+                    <p class="text-xs text-gray-400"><?= __('warehouse_staff') ?></p>
                 </div>
                 <div class="w-10 h-10 ml-2 rounded-full bg-[#0fd081] flex items-center justify-center font-bold text-black">
                     <?= htmlspecialchars(substr($_SESSION['full_name'],0,2)) ?></div>
@@ -75,17 +78,17 @@ try {
             <div class="col-span-12 lg:col-span-4">
                 <div class="grid grid-cols-1 gap-4">
                     <div class="bg-[#07121a] p-6 rounded-lg border border-[#102027]">
-                        <p class="text-xs text-gray-400 uppercase">Total Stock</p>
+                        <p class="text-xs text-gray-400 uppercase"><?= __('total_stock') ?></p>
                         <div class="flex items-baseline justify-between">
-                            <h3 class="text-3xl font-bold text-white mt-2"><?= $displayTotalUnits ?> <span class="text-sm text-gray-400">units</span></h3>
-                            <div class="text-xs text-green-400">+2.4% vs prev week</div>
+                            <h3 class="text-3xl font-bold text-white mt-2"><?= $displayTotalUnits ?> <span class="text-sm text-gray-400"><?= __('units') ?></span></h3>
+                            <div class="text-xs text-green-400"><?= __('vs_prev_week') ?></div>
                         </div>
                     </div>
 
                     <div class="bg-[#07121a] p-6 rounded-lg border border-[#102027]">
-                        <p class="text-xs text-gray-400 uppercase">Incoming Today</p>
-                        <h3 class="text-2xl font-bold text-white mt-2"><?= $incomingCount ?> <span class="text-sm text-gray-400">batches</span></h3>
-                        <p class="text-xs text-gray-400 mt-2"><?php $pending = $pdo->query("SELECT COUNT(*) FROM BATCHES WHERE BCH_current_stage = 'Pending_QC'")->fetchColumn(); ?><?= $pending ?> pending validation</p>
+                        <p class="text-xs text-gray-400 uppercase"><?= __('incoming_today') ?></p>
+                        <h3 class="text-2xl font-bold text-white mt-2"><?= $incomingCount ?> <span class="text-sm text-gray-400"><?= __('batches') ?></span></h3>
+                        <p class="text-xs text-gray-400 mt-2"><?php $pending = $pdo->query("SELECT COUNT(*) FROM BATCHES WHERE BCH_current_stage = 'Pending_QC'")->fetchColumn(); ?><?= $pending ?> <?= __('pending_validation') ?></p>
                     </div>
                 </div>
             </div>
@@ -94,15 +97,15 @@ try {
                 <div class="bg-[#07121a] p-6 rounded-lg border border-[#102027]">
                     <div class="flex justify-between items-center">
                         <div>
-                            <p class="text-xs text-gray-400 uppercase">Warehouse Capacity</p>
+                            <p class="text-xs text-gray-400 uppercase"><?= __('warehouse_capacity') ?></p>
                             <h3 class="text-2xl font-bold text-white mt-1"><?= number_format($capacityPercent,0) ?>%</h3>
                         </div>
-                        <div class="text-sm text-gray-400"><?= $remainingUnits ?> remaining</div>
+                        <div class="text-sm text-gray-400"><?= $remainingUnits ?> <?= __('remaining') ?></div>
                     </div>
                     <div class="mt-4 bg-[#04121a] rounded-full h-3 overflow-hidden border border-[#0f2b22]">
                         <div style="width:<?= min(100, $capacityPercent) ?>%" class="h-3 bg-gradient-to-r from-[#0fd081] to-[#10b981]"></div>
                     </div>
-                    <div class="flex justify-between text-xs text-gray-500 mt-2"><span>Critical at 95%</span><span>Optimal range</span></div>
+                    <div class="flex justify-between text-xs text-gray-500 mt-2"><span><?= __('critical_at_95') ?></span><span><?= __('optimal_range') ?></span></div>
                 </div>
             </div>
         </div>
@@ -111,7 +114,7 @@ try {
             <div class="col-span-12 lg:col-span-8">
                 <div class="bg-[#07121a] p-6 rounded-lg border border-[#102027]">
                     <div class="flex justify-between items-center mb-4">
-                        <h3 class="text-lg font-semibold text-white">Live Stock Movements</h3>
+                        <h3 class="text-lg font-semibold text-white"><?= __('live_stock_movements') ?></h3>
                         <div class="flex items-center gap-3 text-sm text-gray-400">
                             <button title="Refresh" class="p-2 bg-[#061b1a] rounded">↻</button>
                             <button title="Filter" class="p-2 bg-[#061b1a] rounded">☰</button>
@@ -120,11 +123,11 @@ try {
                     <div class="overflow-hidden">
                         <table class="w-full text-left">
                             <thead class="text-gray-400 text-xs uppercase bg-[#041a1a]">
-                                <tr><th class="p-3">Batch ID</th><th class="p-3">Commodity</th><th class="p-3">Quantity</th><th class="p-3">Status</th><th class="p-3">Time</th></tr>
+                                <tr><th class="p-3"><?= __('batch_id') ?></th><th class="p-3"><?= __('commodity') ?></th><th class="p-3"><?= __('quantity') ?></th><th class="p-3"><?= __('status') ?></th><th class="p-3"><?= __('time') ?></th></tr>
                             </thead>
                             <tbody>
                                 <?php if (empty($movements)): ?>
-                                    <tr><td colspan="5" class="p-6 text-center text-gray-500">No movements found.</td></tr>
+                                    <tr><td colspan="5" class="p-6 text-center text-gray-500"><?= __('no_movements_found') ?></td></tr>
                                 <?php else: ?>
                                     <?php foreach ($movements as $m): ?>
                                         <tr class="border-t border-[#0f2420]">
@@ -144,22 +147,22 @@ try {
 
             <div class="col-span-12 lg:col-span-4">
                 <div class="bg-[#07121a] p-6 rounded-lg border border-[#102027]">
-                    <h3 class="text-lg font-semibold text-white mb-4">Node Status</h3>
+                    <h3 class="text-lg font-semibold text-white mb-4"><?= __('node_status') ?></h3>
                     <div class="mb-4">
                         <img src="/assets/cam-placeholder.jpg" alt="Camera" class="w-full rounded-lg border border-[#09201b]"> 
                     </div>
                     <div class="space-y-3">
                         <div>
-                            <div class="flex justify-between text-sm text-gray-400"><span>Environmental Temp</span><span class="text-white"><?= isset($node['STZ_current_temp_c']) ? htmlspecialchars($node['STZ_current_temp_c']).'°C' : '—' ?></span></div>
+                            <div class="flex justify-between text-sm text-gray-400"><span><?= __('environmental_temp') ?></span><span class="text-white"><?= isset($node['STZ_current_temp_c']) ? htmlspecialchars($node['STZ_current_temp_c']).'°C' : '—' ?></span></div>
                             <div class="mt-2 bg-[#04121a] rounded-full h-2"><div style="width:<?= isset($node['STZ_current_temp_c']) ? min(100,($node['STZ_current_temp_c']+10)*2) : 0 ?>%" class="h-2 bg-[#10b981]"></div></div>
                         </div>
                         <div>
-                            <div class="flex justify-between text-sm text-gray-400"><span>Humidity Level</span><span class="text-white"><?= isset($node['STZ_current_humidity_pct']) ? htmlspecialchars($node['STZ_current_humidity_pct']).'%' : '—' ?></span></div>
+                            <div class="flex justify-between text-sm text-gray-400"><span><?= __('humidity_level') ?></span><span class="text-white"><?= isset($node['STZ_current_humidity_pct']) ? htmlspecialchars($node['STZ_current_humidity_pct']).'%' : '—' ?></span></div>
                             <div class="mt-2 bg-[#04121a] rounded-full h-2"><div style="width:<?= isset($node['STZ_current_humidity_pct']) ? min(100,$node['STZ_current_humidity_pct']) : 0 ?>%" class="h-2 bg-[#0fd081]"></div></div>
                         </div>
                         <div class="mt-4 p-3 bg-[#05171a] rounded border border-[#0f2923]">
-                            <p class="text-xs text-[#10b981]">● Systems Nominal</p>
-                            <p class="text-[12px] text-gray-400">All automation nodes reporting nominal performance.</p>
+                            <p class="text-xs text-[#10b981]"><?= __('systems_nominal') ?></p>
+                            <p class="text-[12px] text-gray-400"><?= __('systems_nominal_desc') ?></p>
                         </div>
                     </div>
                 </div>
