@@ -9,13 +9,17 @@ try {
     $productNameCol = ($lang === 'en') ? 'COALESCE(p.PRD_product_name_en, p.PRD_product_name)' : 'p.PRD_product_name';
 
     // Truy vấn các lô hàng sắp hết hạn trong 48h tới
+    $lang = $_SESSION['lang'] ?? 'vi';
+    $productNameCol = ($lang === 'en') ? 'COALESCE(p.PRD_product_name_en, p.PRD_product_name)' : 'p.PRD_product_name';
+    $zoneNameCol = ($lang === 'en') ? 'COALESCE(z.STZ_zone_name_en, z.STZ_zone_name)' : 'z.STZ_zone_name';
+
     $sql = "
         SELECT 
             b.BCH_batch_id, 
             $productNameCol AS PRD_product_name, 
             b.BCH_expiry_date, 
             b.BCH_available_stock_kg, 
-            z.STZ_zone_name, 
+            $zoneNameCol AS STZ_zone_name, 
             p.PRD_unit_price
         FROM BATCHES b
         JOIN PRODUCTS p ON b.BCH_product_id = p.PRD_product_id
@@ -23,6 +27,7 @@ try {
         WHERE b.BCH_available_stock_kg > 0 
         AND b.BCH_expiry_date <= DATE_ADD(NOW(), INTERVAL 48 HOUR)
         ORDER BY b.BCH_expiry_date ASC
+
     ";
     $stmt = $pdo->query($sql);
     $expiringBatches = $stmt->fetchAll();

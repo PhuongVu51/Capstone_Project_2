@@ -12,8 +12,9 @@ if (empty($batchId)) {
 try {
     $lang = $_SESSION['lang'] ?? 'vi';
     $productNameCol = ($lang === 'en') ? 'COALESCE(p.PRD_product_name_en, p.PRD_product_name)' : 'p.PRD_product_name';
+    $zoneNameCol = ($lang === 'en') ? 'COALESCE(z.STZ_zone_name_en, z.STZ_zone_name)' : 'z.STZ_zone_name';
 
-    $stmt = $pdo->prepare("SELECT b.*, $productNameCol AS PRD_product_name, z.STZ_zone_name 
+    $stmt = $pdo->prepare("SELECT b.*, $productNameCol AS PRD_product_name, $zoneNameCol AS STZ_zone_name 
                            FROM BATCHES b 
                            LEFT JOIN PRODUCTS p ON b.BCH_product_id = p.PRD_product_id 
                            LEFT JOIN STORAGE_ZONES z ON b.BCH_zone_id = z.STZ_zone_id 

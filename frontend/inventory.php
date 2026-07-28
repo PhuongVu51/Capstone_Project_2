@@ -35,10 +35,11 @@ $selectedBatch = null;
 if (isset($_GET['view_id']) && trim($_GET['view_id']) !== '') {
     $viewId = trim($_GET['view_id']);
     $productNameCol = ($lang === 'en') ? 'COALESCE(p.PRD_product_name_en, p.PRD_product_name)' : 'p.PRD_product_name';
+    $zoneNameCol = ($lang === 'en') ? 'COALESCE(z.STZ_zone_name_en, z.STZ_zone_name)' : 'z.STZ_zone_name';
     $detailStmt = $pdo->prepare(
         "SELECT b.BCH_batch_id, $productNameCol AS PRD_product_name, p.PRD_material_grade, b.BCH_initial_volume_kg,
                 b.BCH_available_stock_kg, b.BCH_current_stage, b.BCH_health_status,
-                b.BCH_received_date, b.BCH_expiry_date, z.STZ_zone_name
+                b.BCH_received_date, b.BCH_expiry_date, $zoneNameCol AS STZ_zone_name
          FROM BATCHES b
          LEFT JOIN PRODUCTS p ON b.BCH_product_id = p.PRD_product_id
          LEFT JOIN STORAGE_ZONES z ON b.BCH_zone_id = z.STZ_zone_id

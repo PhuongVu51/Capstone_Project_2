@@ -35,7 +35,7 @@ class QcInspectionModel extends BaseModel {
 
         // 3. Tính Average Lead Time thực tế (Phút) từ lúc nhận lô đến lúc QC
         $stmtLeadTime = $this->pdo->query("
-            SELECT AVG(TIMESTAMPDIFF(MINUTE, b.BCH_received_date, q.QCI_inspection_id)) AS avg_minutes
+            SELECT AVG(TIMESTAMPDIFF(MINUTE, b.BCH_received_date, NOW())) AS avg_minutes
             FROM QC_INSPECTIONS q
             JOIN BATCHES b ON q.QCI_batch_id = b.BCH_batch_id
             WHERE b.BCH_received_date IS NOT NULL
@@ -46,7 +46,7 @@ class QcInspectionModel extends BaseModel {
         // 4. Tính % chênh lệch Lead Time động so với ca liền trước
         $stmtShiftTrends = $this->pdo->query("
             SELECT s.SHF_shift_id, 
-                   AVG(TIMESTAMPDIFF(MINUTE, b.BCH_received_date, q.QCI_inspection_id)) AS shift_avg
+                   AVG(TIMESTAMPDIFF(MINUTE, b.BCH_received_date, NOW())) AS shift_avg
             FROM QC_INSPECTIONS q
             JOIN BATCHES b ON q.QCI_batch_id = b.BCH_batch_id
             JOIN SHIFTS s ON b.BCH_shift_id = s.SHF_shift_id

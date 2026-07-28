@@ -39,7 +39,7 @@ class QcInspectionController {
 
     // Xử lý chuẩn bị form thực thi ca kiểm định
     public function handlePerformScreen($batch_id, $lang = 'vi') {
-        $batch = $this->model->getBatchForInspection($batch_id, $lang);
+        $batch = $this->model->getInspectionDetails($batch_id, $lang);
         if (!$batch) {
             header("Location: qc_inspections.php?error=batch_not_found");
             exit();

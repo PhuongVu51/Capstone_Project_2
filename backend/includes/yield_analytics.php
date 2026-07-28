@@ -59,10 +59,11 @@ function getInventorySummary(PDO $pdo): array
 {
     $lang = $_SESSION['lang'] ?? 'vi';
     $productNameCol = ($lang === 'en') ? 'COALESCE(p.PRD_product_name_en, p.PRD_product_name)' : 'p.PRD_product_name';
+    $zoneNameCol = ($lang === 'en') ? 'COALESCE(z.STZ_zone_name_en, z.STZ_zone_name)' : 'z.STZ_zone_name';
     $sql = "
         SELECT
             $productNameCol AS PRD_product_name,
-            z.STZ_zone_name,
+            $zoneNameCol AS STZ_zone_name,
             COUNT(b.BCH_batch_id)                  AS total_batches,
             SUM(b.BCH_available_stock_kg)          AS total_available_kg,
             SUM(b.BCH_initial_volume_kg)            AS total_initial_kg,
@@ -73,8 +74,8 @@ function getInventorySummary(PDO $pdo): array
         JOIN PRODUCTS p        ON b.BCH_product_id = p.PRD_product_id
         JOIN STORAGE_ZONES z   ON b.BCH_zone_id     = z.STZ_zone_id
         WHERE b.BCH_available_stock_kg > 0
-        GROUP BY PRD_product_name, z.STZ_zone_name
-        ORDER BY PRD_product_name, z.STZ_zone_name
+        GROUP BY PRD_product_name, STZ_zone_name
+        ORDER BY PRD_product_name, STZ_zone_name
     ";
     return $pdo->query($sql)->fetchAll();
 }
@@ -119,10 +120,11 @@ function getExpiringFreshBatches(PDO $pdo, int $hours_threshold = 48): array
 {
     $lang = $_SESSION['lang'] ?? 'vi';
     $productNameCol = ($lang === 'en') ? 'COALESCE(p.PRD_product_name_en, p.PRD_product_name)' : 'p.PRD_product_name';
+    $zoneNameCol = ($lang === 'en') ? 'COALESCE(z.STZ_zone_name_en, z.STZ_zone_name)' : 'z.STZ_zone_name';
     $sql = "
         SELECT
             $productNameCol AS PRD_product_name,
-            z.STZ_zone_name,
+            $zoneNameCol AS STZ_zone_name,
             COUNT(b.BCH_batch_id)           AS expiring_batch_count,
             SUM(b.BCH_available_stock_kg)   AS expiring_total_kg,
             MIN(b.BCH_expiry_date)          AS nearest_expiry
@@ -131,7 +133,7 @@ function getExpiringFreshBatches(PDO $pdo, int $hours_threshold = 48): array
         JOIN STORAGE_ZONES z  ON b.BCH_zone_id     = z.STZ_zone_id
         WHERE b.BCH_available_stock_kg > 0
           AND b.BCH_expiry_date <= DATE_ADD(NOW(), INTERVAL :hours HOUR)
-        GROUP BY PRD_product_name, z.STZ_zone_name
+        GROUP BY PRD_product_name, STZ_zone_name
         ORDER BY nearest_expiry ASC
     ";
     $stmt = $pdo->prepare($sql);
