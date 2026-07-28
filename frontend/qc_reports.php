@@ -71,6 +71,29 @@ try {
             </div>
         </div>
 
+        <!-- ============================================================ -->
+        <!-- WASTE COST ATTRIBUTION (mới) — 3 card tổng quan chi phí hao hụt -->
+        <!-- ============================================================ -->
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-5 mb-8">
+            <div class="bg-[#0f1722] p-5 rounded-lg border border-[#1f2937]">
+                <p class="text-[11px] text-gray-500 uppercase font-semibold tracking-wider">Natural Loss Cost</p>
+                <h3 class="text-2xl font-bold text-white mt-2 font-mono"><?= $naturalCostTotal ?> <span class="text-sm text-gray-500 font-normal">₫</span></h3>
+                <p class="text-[11px] text-gray-500 mt-2">Expected loss (trimming, prep) — not a fault</p>
+            </div>
+
+            <div class="bg-[#2a1215] p-5 rounded-lg border border-red-900/30">
+                <p class="text-[11px] text-red-400 uppercase font-semibold tracking-wider">Abnormal Loss Cost</p>
+                <h3 class="text-2xl font-bold text-red-500 mt-2 font-mono"><?= $abnormalCostTotal ?> <span class="text-sm text-red-800 font-normal">₫</span></h3>
+                <p class="text-[11px] text-red-300/70 mt-2">Preventable loss — needs investigation</p>
+            </div>
+
+            <div class="bg-[#0f1722] p-5 rounded-lg border border-[#1f2937]">
+                <p class="text-[11px] text-gray-500 uppercase font-semibold tracking-wider">% Abnormal / Total Waste Cost</p>
+                <h3 class="text-3xl font-bold <?= $abnormalCostPercent > 50 ? 'text-red-500' : 'text-yellow-500' ?> mt-2 font-mono"><?= $abnormalCostPercent ?>%</h3>
+                <p class="text-[11px] text-gray-500 mt-2">Higher % = more waste is preventable</p>
+            </div>
+        </div>
+
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8 items-stretch">
             
             <div class="bg-[#0f1722] rounded-lg border border-[#1f2937] p-5 flex flex-col justify-between">
@@ -97,16 +120,17 @@ try {
                     <table class="w-full text-left border-collapse layout-fixed">
                         <thead class="text-gray-500 text-[10px] uppercase bg-[#0b121c] sticky top-0 z-10 shadow-[0_1px_0_#1f2937]">
                             <tr>
-                                <th class="py-3 pl-6 pr-2 font-semibold tracking-wider bg-[#0b121c] w-[28%]">Batch ID / Product</th>
-                                <th class="py-3 px-2 font-semibold tracking-wider bg-[#0b121c] w-[24%]">Supplier</th>
-                                <th class="py-3 px-2 font-semibold tracking-wider text-right bg-[#0b121c] w-[16%]">Rejected</th>
-                                <th class="py-3 px-2 font-semibold tracking-wider bg-[#0b121c] w-[20%]">Defect Reason</th>
-                                <th class="py-3 pl-2 pr-6 font-semibold tracking-wider text-right bg-[#0b121c] w-[12%]">Yield</th>
+                                <th class="py-3 pl-6 pr-2 font-semibold tracking-wider bg-[#0b121c] w-[22%]">Batch ID / Product</th>
+                                <th class="py-3 px-2 font-semibold tracking-wider bg-[#0b121c] w-[16%]">Supplier</th>
+                                <th class="py-3 px-2 font-semibold tracking-wider text-right bg-[#0b121c] w-[12%]">Rejected</th>
+                                <th class="py-3 px-2 font-semibold tracking-wider bg-[#0b121c] w-[15%]">Defect Reason</th>
+                                <th class="py-3 px-2 font-semibold tracking-wider text-right bg-[#0b121c] w-[16%]">Cost Impact</th>
+                                <th class="py-3 pl-2 pr-6 font-semibold tracking-wider text-right bg-[#0b121c] w-[9%]">Yield</th>
                             </tr>
                         </thead>
                         <tbody class="text-sm divide-y divide-[#1f2937]/50">
                             <?php if (empty($lossBatches)): ?>
-                                <tr><td colspan="5" class="p-8 text-center text-gray-600 italic">Excellent! No major material losses recorded.</td></tr>
+                                <tr><td colspan="6" class="p-8 text-center text-gray-600 italic">Excellent! No major material losses recorded.</td></tr>
                             <?php else: ?>
                                 <?php foreach ($lossBatches as $batch): ?>
                                     <tr class="hover:bg-[#131c26] transition-colors">
@@ -120,6 +144,9 @@ try {
                                             <span class="inline-block bg-gray-800/60 text-gray-300 border border-gray-700 px-2 py-0.5 rounded text-[10px] uppercase font-bold tracking-wider whitespace-normal break-words leading-normal max-w-full">
                                                 <?= htmlspecialchars($batch['QCI_rejection_reason']) ?>
                                             </span>
+                                        </td>
+                                        <td class="py-3 px-2 text-red-400 font-mono text-right font-bold vertical-top">
+                                            <?= number_format($batch['rotten_cost'], 0, ',', '.') ?> <span class="text-[10px] text-gray-600 font-sans font-normal">₫</span>
                                         </td>
                                         <td class="py-3 pl-2 pr-6 text-right vertical-top">
                                             <?php 
@@ -136,6 +163,35 @@ try {
                 </div>
             </div>
             
+        </div>
+
+        <!-- ============================================================ -->
+        <!-- WASTE COST ATTRIBUTION (mới) — biểu đồ theo sản phẩm + xu hướng -->
+        <!-- ============================================================ -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+            <div class="bg-[#0f1722] rounded-lg border border-[#1f2937] p-5">
+                <h3 class="text-sm font-bold text-white uppercase tracking-wider mb-1">Waste Cost by Product</h3>
+                <p class="text-xs text-gray-500 mb-6">Natural vs Abnormal loss cost (₫), stacked per product</p>
+                <div class="relative h-[260px] w-full">
+                    <?php if (empty($costChartLabels)): ?>
+                        <div class="flex items-center justify-center h-full w-full text-gray-600 text-sm italic">No cost data available.</div>
+                    <?php else: ?>
+                        <canvas id="costChart"></canvas>
+                    <?php endif; ?>
+                </div>
+            </div>
+
+            <div class="bg-[#0f1722] rounded-lg border border-[#1f2937] p-5">
+                <h3 class="text-sm font-bold text-white uppercase tracking-wider mb-1">Waste Cost Trend</h3>
+                <p class="text-xs text-gray-500 mb-6">Daily waste cost (₫) over the most recent receiving dates</p>
+                <div class="relative h-[260px] w-full">
+                    <?php if (empty($trendLabels)): ?>
+                        <div class="flex items-center justify-center h-full w-full text-gray-600 text-sm italic">No trend data available.</div>
+                    <?php else: ?>
+                        <canvas id="trendChart"></canvas>
+                    <?php endif; ?>
+                </div>
+            </div>
         </div>
     </main>
 
@@ -180,6 +236,82 @@ try {
                             borderColor: '#374151', borderWidth: 1, padding: 10,
                             callbacks: {
                                 label: function(context) { return ' ' + context.raw + ' KG'; }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        // ============================================================
+        // WASTE COST ATTRIBUTION (mới) — stacked bar theo sản phẩm
+        // ============================================================
+        const costChartLabels = <?= json_encode($costChartLabels) ?>;
+        const costChartNatural = <?= json_encode($costChartNatural) ?>;
+        const costChartAbnormal = <?= json_encode($costChartAbnormal) ?>;
+
+        if (document.getElementById('costChart') && costChartLabels.length > 0) {
+            new Chart(document.getElementById('costChart').getContext('2d'), {
+                type: 'bar',
+                data: {
+                    labels: costChartLabels,
+                    datasets: [
+                        { label: 'Natural Loss Cost (₫)', data: costChartNatural, backgroundColor: '#6b7280' },
+                        { label: 'Abnormal Loss Cost (₫)', data: costChartAbnormal, backgroundColor: '#ef4444' }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        x: { stacked: true, grid: { color: '#1f2937' } },
+                        y: { stacked: true, grid: { color: '#1f2937' }, ticks: { callback: v => v.toLocaleString('vi-VN') } }
+                    },
+                    plugins: {
+                        legend: { position: 'bottom', labels: { boxWidth: 10, padding: 12, font: { size: 10 } } },
+                        tooltip: {
+                            backgroundColor: '#1f2937', titleColor: '#fff', bodyColor: '#d1d5db',
+                            borderColor: '#374151', borderWidth: 1, padding: 10,
+                            callbacks: {
+                                label: function(context) { return ' ' + context.dataset.label + ': ' + Number(context.raw).toLocaleString('vi-VN') + ' ₫'; }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        // ============================================================
+        // WASTE COST ATTRIBUTION (mới) — xu hướng theo ngày
+        // ============================================================
+        const trendLabels = <?= json_encode($trendLabels) ?>;
+        const trendNatural = <?= json_encode($trendNatural) ?>;
+        const trendAbnormal = <?= json_encode($trendAbnormal) ?>;
+
+        if (document.getElementById('trendChart') && trendLabels.length > 0) {
+            new Chart(document.getElementById('trendChart').getContext('2d'), {
+                type: 'line',
+                data: {
+                    labels: trendLabels,
+                    datasets: [
+                        { label: 'Natural Cost', data: trendNatural, borderColor: '#6b7280', backgroundColor: 'transparent', tension: 0.3 },
+                        { label: 'Abnormal Cost', data: trendAbnormal, borderColor: '#ef4444', backgroundColor: 'transparent', tension: 0.3 }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        x: { grid: { color: '#1f2937' } },
+                        y: { grid: { color: '#1f2937' }, ticks: { callback: v => v.toLocaleString('vi-VN') } }
+                    },
+                    plugins: {
+                        legend: { position: 'bottom', labels: { boxWidth: 10, padding: 12, font: { size: 10 } } },
+                        tooltip: {
+                            backgroundColor: '#1f2937', titleColor: '#fff', bodyColor: '#d1d5db',
+                            borderColor: '#374151', borderWidth: 1, padding: 10,
+                            callbacks: {
+                                label: function(context) { return ' ' + context.dataset.label + ': ' + Number(context.raw).toLocaleString('vi-VN') + ' ₫'; }
                             }
                         }
                     }
