@@ -114,6 +114,8 @@ class QcInspectionModel extends BaseModel {
         $this->pdo->beginTransaction();
         try {
             $destination = ($actual_yield_pct >= 80) ? 'Production' : 'Rejected';
+            $newStage = ($actual_yield_pct >= 80) ? 'QC_Passed' : 'Rejected';
+
             $stmtInsert = $this->pdo->prepare("
                 INSERT INTO QC_INSPECTIONS 
                 (QCI_batch_id, QCI_user_id, QCI_usable_weight_kg, QCI_rotten_weight_kg, QCI_natural_loss_weight_kg, QCI_destination, QCI_actual_yield_pct)
@@ -121,8 +123,8 @@ class QcInspectionModel extends BaseModel {
             ");
             $stmtInsert->execute([$batch_id, $user_id, $usable_weight_final, $rejected_qty, $natural_loss, $destination, $actual_yield_pct]);
 
-            $stmtUpdateBatch = $this->pdo->prepare("UPDATE BATCHES SET BCH_current_stage = 'QC_Passed', BCH_available_stock_kg = ? WHERE BCH_batch_id = ?");
-            $stmtUpdateBatch->execute([$usable_weight_final, $batch_id]);
+            $stmtUpdateBatch = $this->pdo->prepare("UPDATE BATCHES SET BCH_current_stage = ?, BCH_available_stock_kg = ? WHERE BCH_batch_id = ?");
+            $stmtUpdateBatch->execute([$newStage, $usable_weight_final, $batch_id]);
 
             $this->pdo->commit();
             return true;
