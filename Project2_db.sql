@@ -14,14 +14,16 @@ CREATE TABLE USERS (
 
 CREATE TABLE SUPPLIERS (
     SUP_supplier_id INT AUTO_INCREMENT PRIMARY KEY,
-    SUP_supplier_name VARCHAR(150) NOT NULL,
+    SUP_supplier_name VARCHAR(255) NOT NULL,
+    SUP_supplier_name_en VARCHAR(255) DEFAULT NULL,
     SUP_contact_info VARCHAR(255),
     SUP_origin_facility VARCHAR(100)
 ) ENGINE=InnoDB;
 
 CREATE TABLE PRODUCTS (
     PRD_product_id INT AUTO_INCREMENT PRIMARY KEY,
-    PRD_product_name VARCHAR(100) NOT NULL,
+    PRD_product_name VARCHAR(255) NOT NULL,
+    PRD_product_name_en VARCHAR(255) DEFAULT NULL,
     PRD_material_grade VARCHAR(50), 
     PRD_unit_price DECIMAL(10,2) NOT NULL DEFAULT 0.00,
     PRD_expected_yield DECIMAL(5,2) NOT NULL, 
@@ -41,6 +43,7 @@ CREATE TABLE SHIFTS (
 CREATE TABLE STORAGE_ZONES (
     STZ_zone_id INT AUTO_INCREMENT PRIMARY KEY,
     STZ_zone_name VARCHAR(100) NOT NULL,
+    STZ_zone_name_en VARCHAR(100) DEFAULT NULL,
     STZ_max_capacity_kg DECIMAL(10,2) NOT NULL,
     STZ_current_load_kg DECIMAL(10,2) DEFAULT 0.00,
     STZ_current_temp_c DECIMAL(5,2),
@@ -117,7 +120,8 @@ CREATE TABLE QC_INSPECTIONS (
     QCI_natural_loss_weight_kg DECIMAL(10,2) DEFAULT 0.00,
     QCI_usable_weight_kg DECIMAL(10,2) NOT NULL,
     QCI_actual_yield_pct DECIMAL(5,2) NOT NULL,
-    QCI_rejection_reason VARCHAR(255), 
+    QCI_rejection_reason VARCHAR(255),
+    QCI_rejection_reason_en VARCHAR(255),
     QCI_inspector_comments TEXT,       
     QCI_visual_record_url VARCHAR(255),
     QCI_destination VARCHAR(100),      
