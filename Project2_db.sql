@@ -170,12 +170,12 @@ CREATE TABLE MATERIAL_REQUESTS (
 );
 
 INSERT INTO USERS (USR_username, USR_password_hash, USR_role, USR_full_name, USR_is_active) VALUES
-('pm_alex', '$2y$10$nOUIs5kJ7naTuTFkMD1Ze.pRExhw0qEEyEHQ0QOczzN/z4N1iUOWK', 'Production_Manager', 'Alex Rivera', 1),
-('pm_sarah', '$2y$10$nOUIs5kJ7naTuTFkMD1Ze.pRExhw0qEEyEHQ0QOczzN/z4N1iUOWK', 'Production_Manager', 'Sarah Connor', 1),
-('pm_david', '$2y$10$nOUIs5kJ7naTuTFkMD1Ze.pRExhw0qEEyEHQ0QOczzN/z4N1iUOWK', 'Production_Manager', 'David Kim', 1),
-('nhung_thuy', '$2y$10$nOUIs5kJ7naTuTFkMD1Ze.pRExhw0qEEyEHQ0QOczzN/z4N1iUOWK', 'QC', 'Nhung Thủy', 1),
-('qc_anna', '$2y$10$nOUIs5kJ7naTuTFkMD1Ze.pRExhw0qEEyEHQ0QOczzN/z4N1iUOWK', 'QC', 'Anna Smith', 1),
-('qc_john', '$2y$10$nOUIs5kJ7naTuTFkMD1Ze.pRExhw0qEEyEHQ0QOczzN/z4N1iUOWK', 'QC', 'John Doe', 1),
-('wh_admin04', '$2y$10$nOUIs5kJ7naTuTFkMD1Ze.pRExhw0qEEyEHQ0QOczzN/z4N1iUOWK', 'Warehouse_Staff', 'System Admin 04', 1),
-('wh_mike', '$2y$10$nOUIs5kJ7naTuTFkMD1Ze.pRExhw0qEEyEHQ0QOczzN/z4N1iUOWK', 'Warehouse_Staff', 'Mike Johnson', 1),
-('wh_lisa', '$2y$10$nOUIs5kJ7naTuTFkMD1Ze.pRExhw0qEEyEHQ0QOczzN/z4N1iUOWK', 'Warehouse_Staff', 'Lisa Wong', 1);
+('pm_alex', '$2y$10$nOUIs5kJ7naTuTFkMD1Ze//Q.YpVRsoZtDlowEgSq', 'Production_Manager', 'Alex Rivera', 1),
+('pm_sarah', '$2y$10$nOUIs5kJ7naTuTFkMD1Ze//Q.YpVRsoZtDlowEgSq', 'Production_Manager', 'Sarah Connor', 1),
+('pm_david', '$2y$10$nOUIs5kJ7naTuTFkMD1Ze//Q.YpVRsoZtDlowEgSq', 'Production_Manager', 'David Kim', 1),
+('nhung_thuy', '$2y$10$nOUIs5kJ7naTuTFkMD1Ze//Q.YpVRsoZtDlowEgSq', 'QC', 'Nhung Thủy', 1),
+('qc_anna', '$2y$10$nOUIs5kJ7naTuTFkMD1Ze//Q.YpVRsoZtDlowEgSq', 'QC', 'Anna Smith', 1),
+('qc_john', '$2y$10$nOUIs5kJ7naTuTFkMD1Ze//Q.YpVRsoZtDlowEgSq', 'QC', 'John Doe', 1),
+('wh_admin04', '$2y$10$nOUIs5kJ7naTuTFkMD1Ze//Q.YpVRsoZtDlowEgSq', 'Warehouse_Staff', 'System Admin 04', 1),
+('wh_mike', '$2y$10$nOUIs5kJ7naTuTFkMD1Ze//Q.YpVRsoZtDlowEgSq', 'Warehouse_Staff', 'Mike Johnson', 1),
+('wh_lisa', '$2y$10$nOUIs5kJ7naTuTFkMD1Ze//Q.YpVRsoZtDlowEgSq', 'Warehouse_Staff', 'Lisa Wong', 1);
