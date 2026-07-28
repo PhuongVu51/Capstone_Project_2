@@ -3,17 +3,23 @@ if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
+// Load Language
+require_once __DIR__ . '/../../backend/includes/language.php';
+switchLanguage();
+$lang = getTranslations();
+$currentLanguage = getCurrentLanguage();
+
+// Existing Variables
 $current_page = basename($_SERVER['PHP_SELF'] ?? '');
 $full_name = $_SESSION['full_name'] ?? 'Guest User';
-$role = $_SESSION['role'] ?? 'Warehouse_Staff'; // Mặc định nếu không có role
+$role = $_SESSION['role'] ?? 'Warehouse_Staff';
 
 // 1. CẤU HÌNH LABEL & MÀU SẮC THEO ROLE
 $role_label = match ($role) {
-    'QC' => 'QC Operator',
-    'Warehouse_Staff' => 'Warehouse Staff',
-    'Production_Manager' => 'Production Manager',
-    'Director' => 'Director',
-    default => 'Operator',
+    'QC' => $lang['qc_operator'],
+    'Warehouse_Staff' => $lang['warehouse_staff'],
+    'Production_Manager' => $lang['production_manager'],
+    default => $role,
 };
 
 $role_badge = match ($role) {
@@ -27,35 +33,82 @@ $role_badge = match ($role) {
 // 2. LOGIC ĐIỀU HƯỚNG MENU THEO ROLE
 if ($role === 'QC') {
     $nav_items = [
-        ['label' => 'Dashboard Overview', 'href' => 'qc_dashboard.php', 'page' => 'qc_dashboard.php'],
-        ['label' => 'Inspection Log', 'href' => 'qc_inspections.php', 'page' => 'qc_inspections.php'],
-        ['label' => 'Reports', 'href' => 'qc_reports.php', 'page' => 'qc_reports.php'],
+        ['label' => $lang['dashboard'], 'href' => 'qc_dashboard.php', 'page' => 'qc_dashboard.php'],
+        ['label' => $lang['inspection'], 'href' => 'qc_inspections.php', 'page' => 'qc_inspections.php'],
+        ['label' => $lang['reports'], 'href' => 'qc_reports.php', 'page' => 'qc_reports.php'],
     ];
     $sidebar_title = 'F&G FOOD QC';
-    $sidebar_subtitle = 'Quality Control';
+    $sidebar_subtitle = $lang['quality_control'];
 
 } elseif ($role === 'Production_Manager' || $role === 'Director') {
     // Menu chuẩn theo hình ảnh của Production
     $nav_items = [
-        ['label' => 'Dashboard', 'href' => 'dashboard_production.php', 'page' => 'dashboard_production.php'],
-        ['label' => 'Inventory', 'href' => 'inventory.php', 'page' => 'inventory.php'],
-        ['label' => 'FEFO Alerts', 'href' => 'production_FEFO.php', 'page' => 'production_FEFO.php'],
-        ['label' => 'Production Flow', 'href' => 'production_flow.php', 'page' => 'production_flow.php'],
-        ['label' => 'Analytics', 'href' => 'production_analytics.php', 'page' => 'production_analytics.php'],
+
+        [
+            'label' => $lang['dashboard'],
+            'href' => 'dashboard_production.php',
+            'page' => 'dashboard_production.php'
+        ],
+
+        [
+            'label' => $lang['inventory'],
+            'href' => 'inventory.php',
+            'page' => 'inventory.php'
+        ],
+
+        [
+            'label' => $lang['fefo_alert'],
+            'href' => 'production_FEFO.php',
+            'page' => 'production_FEFO.php'
+        ],
+
+        [
+            'label' => $lang['production_flow'],
+            'href' => 'production_flow.php',
+            'page' => 'production_flow.php'
+        ],
+
+        [
+            'label' => $lang['analytics'],
+            'href' => 'production_analytics.php',
+            'page' => 'production_analytics.php'
+        ],
+
     ];
     $sidebar_title = 'Plant Alpha';
-    $sidebar_subtitle = 'Production Unit 04';
+    $sidebar_subtitle = $lang['production_unit'];
 
 } else {
     // Mặc định là Warehouse
     $nav_items = [
-        ['label' => 'Dashboard', 'href' => 'dashboard_warehouse.php', 'page' => 'dashboard_warehouse.php'],
-        ['label' => 'Inventory', 'href' => 'inventory.php', 'page' => 'inventory.php'],
-        ['label' => 'Log Batch', 'href' => 'log_batch.php', 'page' => 'log_batch.php'],
-        ['label' => 'Reports', 'href' => 'warehouse_reports.php', 'page' => 'warehouse_reports.php'],
+
+        [
+            'label' => $lang['dashboard'],
+            'href' => 'dashboard_warehouse.php',
+            'page' => 'dashboard_warehouse.php'
+        ],
+
+        [
+            'label' => $lang['inventory'],
+            'href' => 'inventory.php',
+            'page' => 'inventory.php'
+        ],
+
+        [
+            'label' => $lang['log_batch'],
+            'href' => 'log_batch.php',
+            'page' => 'log_batch.php'
+        ],
+
+        [
+            'label' => $lang['reports'],
+            'href' => 'warehouse_reports.php',
+            'page' => 'warehouse_reports.php'
+        ],
+
     ];
     $sidebar_title = 'F&G FOOD';
-    $sidebar_subtitle = 'Warehouse Unit 04';
+    $sidebar_subtitle = $lang['warehouse_unit'];
 }
 ?>
 
@@ -83,6 +136,9 @@ if ($role === 'QC') {
                 <?= htmlspecialchars($sidebar_title) ?>
             </h2>
             <p class="text-xs text-gray-500 mt-2"><?= htmlspecialchars($sidebar_subtitle) ?></p>
+            <div class="mt-4">
+                <?php include __DIR__ . '/language_toggle.php'; ?>
+            </div>
         </div>
 
         <nav class="flex-1 p-4 space-y-2 mt-2">
@@ -109,7 +165,7 @@ if ($role === 'QC') {
         </div>
         <a href="../backend/connection/logout.php" class="flex items-center justify-center gap-2 w-full py-2.5 text-sm text-red-400 font-semibold border border-red-900/30 rounded-lg hover:bg-red-500 hover:text-white hover:border-red-500 transition-all shadow-sm">
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>
-            Logout
+            <?= htmlspecialchars($lang['logout']) ?>
         </a>
     </div>
 </aside>
