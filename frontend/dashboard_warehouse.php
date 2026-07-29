@@ -1,44 +1,15 @@
 <?php
 require_once '../backend/includes/auth.php';
 require_role(['Warehouse_Staff', 'Production_Manager', 'Director'], 'login.php');
-require_once '../backend/connection/db_connect.php';
+require_once '../backend/controllers/DashboardController.php';
 
 try {
-    // Total stock (use initial volume as requested)
-    $stmtTotal = $pdo->query("SELECT SUM(BCH_initial_volume_kg) as total_kg FROM BATCHES");
-    $totalKg = $stmtTotal->fetchColumn() ?? 0;
-    $totalUnitsRaw = $totalKg / 5; // 1 unit = 5kg assumption
-    $displayTotalUnits = $totalUnitsRaw >= 1000 ? number_format($totalUnitsRaw/1000,1)."k" : number_format($totalUnitsRaw,0);
-
-    // Incoming today
-    $stmtIncoming = $pdo->query("SELECT COUNT(*) FROM BATCHES WHERE DATE(BCH_received_date) = CURDATE()");
-    $incomingCount = $stmtIncoming->fetchColumn();
-
-    // Warehouse capacity across all zones
-    $stmtCap = $pdo->query("SELECT SUM(STZ_current_load_kg) as cur_load, SUM(STZ_max_capacity_kg) as max_cap FROM STORAGE_ZONES");
-    $cap = $stmtCap->fetch();
-    $capCur = floatval($cap['cur_load'] ?? 0);
-    $capMax = floatval($cap['max_cap'] ?? 0);
-    $capacityPercent = $capMax > 0 ? ($capCur / $capMax) * 100 : 0;
-    $remainingUnits = $capMax > $capCur ? number_format(($capMax - $capCur)/5,1).' units' : '0 units';
-
-    $lang = $_SESSION['lang'] ?? 'vi';
-    $productNameCol = ($lang === 'en') ? 'COALESCE(p.PRD_product_name_en, p.PRD_product_name)' : 'p.PRD_product_name';
-
-    // Recent movements
-    $stmtMovements = $pdo->query(
-        "SELECT s.STM_reference_code, s.STM_quantity_kg, s.STM_movement_type, s.STM_timestamp, b.BCH_batch_id, $productNameCol AS PRD_product_name
-         FROM STOCK_MOVEMENTS s
-         JOIN BATCHES b ON s.STM_batch_id = b.BCH_batch_id
-         LEFT JOIN PRODUCTS p ON b.BCH_product_id = p.PRD_product_id
-         ORDER BY s.STM_timestamp DESC LIMIT 5"
-    );
-    $movements = $stmtMovements->fetchAll();
-
-    // Node status for zone 1 (example)
-    $node = $pdo->query("SELECT STZ_current_temp_c, STZ_current_humidity_pct FROM STORAGE_ZONES WHERE STZ_zone_id = 1")->fetch();
-
-} catch (PDOException $e) { die("Error: " . $e->getMessage()); }
+    $controller = new DashboardController();
+    $data = $controller->getWarehouseDashboardData();
+    extract($data);
+} catch (Exception $e) { 
+    die("Error: " . $e->getMessage()); 
+}
 ?>
 
 <!DOCTYPE html>
@@ -63,6 +34,12 @@ try {
             </div>
 
             <div class="flex items-center gap-4">
+                <a href="shift_history.php" class="inline-block bg-[#0f1722] border border-[#374151] text-gray-300 px-4 py-2 rounded hover:border-[#10b981] hover:text-white transition-colors"><?= __('closed_shift_history') ?></a>
+                <?php if ($currentShift): ?>
+                    <a href="shift_close.php" class="inline-block bg-red-500 hover:bg-red-400 text-white font-bold px-4 py-2 rounded shadow-lg shadow-red-950/30 transition-colors"><?= __('close_shift') ?></a>
+                <?php else: ?>
+                    <span class="inline-block bg-[#1f2937] border border-[#374151] text-gray-500 px-4 py-2 rounded cursor-not-allowed"><?= __('close_shift') ?></span>
+                <?php endif; ?>
                 <a href="export_report.php" class="inline-block bg-transparent border border-[#203434] text-[#cfeee0] px-4 py-2 rounded"><?= __('export_report') ?></a>
                 <a href="log_batch.php" class="inline-block bg-[#10b981] text-gray-900 font-bold px-4 py-2 rounded"><?= __('log_new_batch') ?></a>
                 <div class="ml-4 text-right">
@@ -73,6 +50,38 @@ try {
                     <?= htmlspecialchars(substr($_SESSION['full_name'],0,2)) ?></div>
             </div>
         </header>
+
+        <?php if (!empty($closedShift)): ?>
+            <div class="mb-6 bg-[#07121a] border border-[#10b981] rounded-lg p-5">
+                <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                    <div>
+                        <h2 class="text-xl font-bold text-[#10b981] flex items-center gap-2">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                            <?= __('shift_closed_successfully') ?>
+                        </h2>
+                        <p class="text-sm text-gray-400 mt-1">
+                            <?= __('shift_closed_at') ?> 
+                            <span class="font-mono text-white"><?= date('H:i d/m/Y', strtotime($closedShift['SHF_closed_at'])) ?></span>
+                            - <?= htmlspecialchars($closedShift['SHF_shift_type']) ?>
+                        </p>
+                    </div>
+                    <div class="flex gap-4">
+                        <div class="bg-[#0f1722] border border-[#1f2937] p-3 rounded">
+                            <p class="text-[11px] text-gray-500 uppercase"><?= __('total_stock_in_kg') ?></p>
+                            <p class="text-lg font-bold text-white font-mono mt-1"><?= number_format((float) ($closedShiftSummary['total_in_kg'] ?? 0), 2) ?></p>
+                        </div>
+                        <div class="bg-[#0f1722] border border-[#1f2937] p-3 rounded">
+                            <p class="text-[11px] text-gray-500 uppercase"><?= __('batches_reviewed') ?></p>
+                            <p class="text-lg font-bold text-white font-mono mt-1"><?= number_format((int) ($closedShiftSummary['batch_count'] ?? 0)) ?></p>
+                        </div>
+                        <div class="bg-[#0f1722] border border-[#1f2937] p-3 rounded">
+                            <p class="text-[11px] text-gray-500 uppercase"><?= __('incidents_if_any') ?></p>
+                            <p class="text-lg font-bold text-white font-mono mt-1"><?= number_format((int) ($closedShiftSummary['incident_count'] ?? 0)) ?></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        <?php endif; ?>
 
         <div class="grid grid-cols-12 gap-6 mb-6">
             <div class="col-span-12 lg:col-span-4">

@@ -4,6 +4,76 @@
 require_once __DIR__ . '/../core/BaseModel.php';
 
 class StockModel extends BaseModel {
+    private function getCurrentShiftType() {
+        $hour = (int) date('G');
+
+        if ($hour >= 6 && $hour < 14) {
+            return 'Morning';
+        }
+
+        if ($hour >= 14 && $hour < 22) {
+            return 'Afternoon';
+        }
+
+        return 'Overtime';
+    }
+
+    private function getCurrentOpenShiftId() {
+        $stmt = $this->pdo->prepare(
+            "SELECT SHF_shift_id
+             FROM SHIFTS
+             WHERE SHF_status = 'Open'
+               AND SHF_shift_date = CURDATE()
+               AND SHF_shift_type = :shift_type
+             ORDER BY SHF_shift_id DESC
+             LIMIT 1"
+        );
+        $stmt->execute([':shift_type' => $this->getCurrentShiftType()]);
+        $shiftId = $stmt->fetchColumn();
+
+        if ($shiftId) {
+            return (int) $shiftId;
+        }
+
+        $stmt = $this->pdo->query(
+            "SELECT SHF_shift_id
+             FROM SHIFTS
+             WHERE SHF_status = 'Open'
+             ORDER BY SHF_shift_date DESC,
+                      FIELD(SHF_shift_type, 'Overtime', 'Afternoon', 'Morning'),
+                      SHF_shift_id DESC
+             LIMIT 1"
+        );
+        $shiftId = $stmt->fetchColumn();
+
+        return $shiftId ? (int) $shiftId : null;
+    }
+
+    private function isShiftOpen($shiftId) {
+        $stmt = $this->pdo->prepare(
+            "SELECT COUNT(*)
+             FROM SHIFTS
+             WHERE SHF_shift_id = :shift_id
+               AND SHF_status = 'Open'"
+        );
+        $stmt->execute([':shift_id' => (int) $shiftId]);
+
+        return (int) $stmt->fetchColumn() > 0;
+    }
+
+    private function batchHasClosedShiftMovement($batchId) {
+        $stmt = $this->pdo->prepare(
+            "SELECT COUNT(*)
+             FROM STOCK_MOVEMENTS sm
+             JOIN BATCHES b ON sm.STM_batch_id = b.BCH_batch_id
+             JOIN SHIFTS s ON s.SHF_shift_id = COALESCE(sm.STM_shift_id, b.BCH_shift_id)
+             WHERE sm.STM_batch_id = :batch_id
+               AND s.SHF_status = 'Closed'"
+        );
+        $stmt->execute([':batch_id' => $batchId]);
+
+        return (int) $stmt->fetchColumn() > 0;
+    }
     
     // Lấy danh sách tồn kho với phân trang và lọc
     public function getInventoryList($search = '', $statusFilter = '', $offset = 0, $perPage = 10) {
@@ -87,6 +157,11 @@ class StockModel extends BaseModel {
         try {
             $this->pdo->beginTransaction();
 
+            if ($this->batchHasClosedShiftMovement($batchId)) {
+                $this->pdo->rollBack();
+                return false;
+            }
+
             // Xóa các dữ liệu liên quan (Foreign Key constraints)
             $this->pdo->prepare('DELETE FROM STOCK_MOVEMENTS WHERE STM_batch_id = :id')->execute([':id' => $batchId]);
             $this->pdo->prepare('DELETE FROM QC_INSPECTIONS WHERE QCI_batch_id = :id')->execute([':id' => $batchId]);
@@ -124,6 +199,11 @@ class StockModel extends BaseModel {
             // Bắt đầu Transaction
             $this->pdo->beginTransaction();
 
+            if (!$this->isShiftOpen($shiftId)) {
+                $this->pdo->rollBack();
+                return false;
+            }
+
             // 1. Thêm vào BATCHES
             $sqlBatch = "INSERT INTO BATCHES (BCH_batch_id, BCH_product_id, BCH_supplier_id, BCH_shift_id, BCH_zone_id, BCH_received_date, BCH_expiry_date, BCH_initial_volume_kg, BCH_available_stock_kg)
                          VALUES (:batch_id, :product_id, :supplier_id, :shift_id, :zone_id, :received_date, :expiry_date, :initial_volume, :available_stock)";
@@ -143,12 +223,13 @@ class StockModel extends BaseModel {
 
             // 2. Ghi log vào STOCK_MOVEMENTS
             $referenceCode = 'IN_' . time() . '_' . rand(100, 999); // Sinh mã reference duy nhất
-            $sqlMove = "INSERT INTO STOCK_MOVEMENTS (STM_reference_code, STM_batch_id, STM_movement_type, STM_quantity_kg, STM_user_id)
-                        VALUES (:ref_code, :batch_id, 'IN', :quantity, :user_id)";
+            $sqlMove = "INSERT INTO STOCK_MOVEMENTS (STM_reference_code, STM_batch_id, STM_shift_id, STM_movement_type, STM_quantity_kg, STM_user_id)
+                        VALUES (:ref_code, :batch_id, :shift_id, 'IN', :quantity, :user_id)";
             $stmtMove = $this->pdo->prepare($sqlMove);
             $stmtMove->execute([
                 ':ref_code' => $referenceCode,
                 ':batch_id' => $batchId,
+                ':shift_id' => $shiftId,
                 ':quantity' => $initialVolume,
                 ':user_id' => $userId
             ]);
@@ -185,8 +266,9 @@ class StockModel extends BaseModel {
             $stmtCheck = $this->pdo->prepare($sqlCheck);
             $stmtCheck->execute([':batch_id' => $batchId]);
             $batch = $stmtCheck->fetch();
+            $shiftId = $this->getCurrentOpenShiftId();
 
-            if (!$batch || $batch['BCH_available_stock_kg'] < $outVolume) {
+            if (!$batch || !$shiftId || $batch['BCH_available_stock_kg'] < $outVolume) {
                 $this->pdo->rollBack();
                 return false; // Không đủ tồn kho hoặc không tìm thấy lô
             }
@@ -201,12 +283,13 @@ class StockModel extends BaseModel {
 
             // 3. Ghi log vào STOCK_MOVEMENTS
             $referenceCode = 'OUT_' . time() . '_' . rand(100, 999);
-            $sqlMove = "INSERT INTO STOCK_MOVEMENTS (STM_reference_code, STM_batch_id, STM_movement_type, STM_quantity_kg, STM_user_id)
-                        VALUES (:ref_code, :batch_id, 'OUT', :quantity, :user_id)";
+            $sqlMove = "INSERT INTO STOCK_MOVEMENTS (STM_reference_code, STM_batch_id, STM_shift_id, STM_movement_type, STM_quantity_kg, STM_user_id)
+                        VALUES (:ref_code, :batch_id, :shift_id, 'OUT', :quantity, :user_id)";
             $stmtMove = $this->pdo->prepare($sqlMove);
             $stmtMove->execute([
                 ':ref_code' => $referenceCode,
                 ':batch_id' => $batchId,
+                ':shift_id' => $shiftId,
                 ':quantity' => $outVolume,
                 ':user_id' => $userId
             ]);
@@ -259,13 +342,20 @@ class StockModel extends BaseModel {
                 $stmtAddNewZone->execute([':stock' => $stockVolume, ':new_zone' => $newZoneId]);
 
                 // Log vào hệ thống dưới dạng ADJUSTMENT
+                $shiftId = $this->getCurrentOpenShiftId();
+                if (!$shiftId) {
+                    $this->pdo->rollBack();
+                    return false;
+                }
+
                 $referenceCode = 'ADJ_' . time() . '_' . rand(100, 999);
-                $sqlMove = "INSERT INTO STOCK_MOVEMENTS (STM_reference_code, STM_batch_id, STM_movement_type, STM_quantity_kg, STM_user_id)
-                            VALUES (:ref_code, :batch_id, 'ADJUSTMENT', 0, :user_id)";
+                $sqlMove = "INSERT INTO STOCK_MOVEMENTS (STM_reference_code, STM_batch_id, STM_shift_id, STM_movement_type, STM_quantity_kg, STM_user_id)
+                            VALUES (:ref_code, :batch_id, :shift_id, 'ADJUSTMENT', 0, :user_id)";
                 $stmtMove = $this->pdo->prepare($sqlMove);
                 $stmtMove->execute([
                     ':ref_code' => $referenceCode,
                     ':batch_id' => $batchId,
+                    ':shift_id' => $shiftId,
                     ':user_id' => $userId
                 ]);
             }

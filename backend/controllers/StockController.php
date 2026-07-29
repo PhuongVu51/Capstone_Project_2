@@ -35,7 +35,7 @@ class StockController {
                 $batchId = 'BATCH_' . date('Ymd_His');
             }
 
-            if (empty($productId) || empty($initialVolume) || empty($zoneId)) {
+            if (empty($productId) || empty($initialVolume) || empty($zoneId) || empty($shiftId)) {
                 // Trở lại trang với thông báo lỗi
                 header("Location: ../../frontend/log_batch.php?error=missing_fields");
                 exit();

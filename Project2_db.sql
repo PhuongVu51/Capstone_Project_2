@@ -36,7 +36,10 @@ CREATE TABLE SHIFTS (
     SHF_shift_date DATE NOT NULL,
     SHF_shift_type ENUM('Morning', 'Afternoon', 'Overtime') NOT NULL,
     SHF_worker_count INT,
-    SHF_status ENUM('Open', 'Closed') DEFAULT 'Open'
+    SHF_status ENUM('Open', 'Closed') DEFAULT 'Open',
+    SHF_closed_at DATETIME DEFAULT NULL,
+    SHF_closed_by INT DEFAULT NULL,
+    FOREIGN KEY (SHF_closed_by) REFERENCES USERS(USR_user_id) ON DELETE SET NULL ON UPDATE CASCADE
 ) ENGINE=InnoDB;
 
 -- BẢNG MỚI: Quản lý sức chứa và môi trường kho (Từ UI Node Status)
@@ -91,12 +94,14 @@ CREATE TABLE STOCK_MOVEMENTS (
     STM_movement_id INT AUTO_INCREMENT PRIMARY KEY,
     STM_reference_code VARCHAR(100) UNIQUE, -- VD: STOCK_MVMT_44109
     STM_batch_id VARCHAR(50) NOT NULL,
+    STM_shift_id INT DEFAULT NULL,
     STM_movement_type ENUM('IN', 'OUT', 'ADJUSTMENT') NOT NULL,
     STM_quantity_kg DECIMAL(10,2) NOT NULL,
     STM_timestamp DATETIME DEFAULT CURRENT_TIMESTAMP,
     STM_user_id INT NOT NULL,
     
     FOREIGN KEY (STM_batch_id) REFERENCES BATCHES(BCH_batch_id) ON DELETE RESTRICT ON UPDATE CASCADE,
+    FOREIGN KEY (STM_shift_id) REFERENCES SHIFTS(SHF_shift_id) ON DELETE SET NULL ON UPDATE CASCADE,
     FOREIGN KEY (STM_user_id) REFERENCES USERS(USR_user_id) ON DELETE RESTRICT ON UPDATE CASCADE
 ) ENGINE=InnoDB;
 
@@ -179,3 +184,10 @@ INSERT INTO USERS (USR_username, USR_password_hash, USR_role, USR_full_name, USR
 ('wh_admin04', '$2y$10$nOUIs5kJ7naTuTFkMD1Ze//Q.YpVRsoZtDlowEgSq', 'Warehouse_Staff', 'System Admin 04', 1),
 ('wh_mike', '$2y$10$nOUIs5kJ7naTuTFkMD1Ze//Q.YpVRsoZtDlowEgSq', 'Warehouse_Staff', 'Mike Johnson', 1),
 ('wh_lisa', '$2y$10$nOUIs5kJ7naTuTFkMD1Ze//Q.YpVRsoZtDlowEgSq', 'Warehouse_Staff', 'Lisa Wong', 1);
+
+-- ==============================================================================
+-- 4. TẠO INDEX TỐI ƯU HIỆU SUẤT
+-- ==============================================================================
+CREATE INDEX idx_batches_received_date ON BATCHES(BCH_received_date);
+CREATE INDEX idx_batches_zone_id ON BATCHES(BCH_zone_id);
+
