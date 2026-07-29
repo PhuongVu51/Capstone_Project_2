@@ -43,7 +43,7 @@ if ($role === 'QC') {
         ['label' => 'Production Flow', 'href' => 'production_flow.php', 'page' => 'production_flow.php'],
         ['label' => 'Analytics', 'href' => 'production_analytics.php', 'page' => 'production_analytics.php'],
     ];
-    $sidebar_title = 'Plant Alpha';
+    $sidebar_title = 'F&G FOOD';
     $sidebar_subtitle = 'Production Unit 04';
 
 } else {
