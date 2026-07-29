@@ -1,70 +1,14 @@
 <?php
 require_once '../backend/includes/auth.php';
 require_role(['Warehouse_Staff', 'Production_Manager', 'Director'], 'login.php');
-require_once '../backend/connection/db_connect.php';
-require_once '../backend/models/StockModel.php';
+require_once '../backend/controllers/InventoryController.php';
 
-$userRole = $_SESSION['role'] ?? 'Warehouse_Staff';
-$lang = $_SESSION['lang'] ?? 'vi';
-$search = isset($_GET['search']) ? trim($_GET['search']) : '';
-$statusFilter = isset($_GET['status']) ? trim($_GET['status']) : '';
-$page = max(1, intval($_GET['page'] ?? 1));
-$perPage = 10;
-$offset = ($page - 1) * $perPage;
-
-$messages = [];
-if (isset($_GET['success'])) {
-    if ($_GET['success'] === 'delete_ok') $messages[] = 'Batch deleted successfully.';
-}
-if (isset($_GET['error'])) {
-    if ($_GET['error'] === 'delete_failed') $messages[] = 'Failed to delete batch.';
-    if ($_GET['error'] === 'missing_batch_id') $messages[] = 'Batch ID is required.';
-}
-
-$stockModel = new StockModel();
-$totalRecords = $stockModel->getInventoryCount($search, $statusFilter);
-$totalPages = max(1, (int) ceil($totalRecords / $perPage));
-
-if ($page > $totalPages) {
-    $page = $totalPages;
-    $offset = ($page - 1) * $perPage;
-}
-
-$inventoryItems = $stockModel->getInventoryList($search, $statusFilter, $offset, $perPage);
-
-$selectedBatch = null;
-if (isset($_GET['view_id']) && trim($_GET['view_id']) !== '') {
-    $viewId = trim($_GET['view_id']);
-    $productNameCol = ($lang === 'en') ? 'COALESCE(p.PRD_product_name_en, p.PRD_product_name)' : 'p.PRD_product_name';
-    $zoneNameCol = ($lang === 'en') ? 'COALESCE(z.STZ_zone_name_en, z.STZ_zone_name)' : 'z.STZ_zone_name';
-    $supplierNameCol = ($lang === 'en') ? 'COALESCE(sup.SUP_supplier_name_en, sup.SUP_supplier_name)' : 'sup.SUP_supplier_name';
-    
-    $detailStmt = $pdo->prepare(
-        "SELECT b.BCH_batch_id, $productNameCol AS PRD_product_name, p.PRD_material_grade, b.BCH_initial_volume_kg,
-                b.BCH_available_stock_kg, b.BCH_current_stage, b.BCH_health_status,
-                b.BCH_received_date, b.BCH_expiry_date, $zoneNameCol AS STZ_zone_name, $supplierNameCol AS SUP_supplier_name
-         FROM BATCHES b
-         LEFT JOIN PRODUCTS p ON b.BCH_product_id = p.PRD_product_id
-         LEFT JOIN STORAGE_ZONES z ON b.BCH_zone_id = z.STZ_zone_id
-         LEFT JOIN SUPPLIERS sup ON b.BCH_supplier_id = sup.SUP_supplier_id
-         WHERE b.BCH_batch_id = :batch_id OR b.BCH_batch_id LIKE :batch_like"
-    );
-    $detailStmt->execute([':batch_id' => $viewId, ':batch_like' => "%$viewId%"]);
-    $selectedBatch = $detailStmt->fetch();
-
-    if (!$selectedBatch) {
-        $selectedBatch = [
-            'BCH_batch_id' => $viewId,
-            'PRD_product_name' => 'Batch Item (' . $viewId . ')',
-            'STZ_zone_name' => 'Main Storage Zone',
-            'BCH_available_stock_kg' => 0.00,
-            'BCH_initial_volume_kg' => 0.00,
-            'BCH_current_stage' => 'Active Stock',
-            'BCH_received_date' => date('Y-m-d'),
-            'BCH_expiry_date' => date('Y-m-d', strtotime('+30 days')),
-            'SUP_supplier_name' => 'Standard Supplier'
-        ];
-    }
+try {
+    $controller = new InventoryController();
+    $data = $controller->getInventoryData();
+    extract($data);
+} catch (Exception $e) {
+    die("Error: " . $e->getMessage());
 }
 ?>
 

@@ -14,6 +14,43 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         // Bắt đầu Transaction (Đảm bảo an toàn dữ liệu, 1 bảng lỗi là rollback toàn bộ)
         $pdo->beginTransaction();
 
+        $hour = (int) date('G');
+        if ($hour >= 6 && $hour < 14) {
+            $shift_type = 'Morning';
+        } elseif ($hour >= 14 && $hour < 22) {
+            $shift_type = 'Afternoon';
+        } else {
+            $shift_type = 'Overtime';
+        }
+
+        $stmtShift = $pdo->prepare(
+            "SELECT SHF_shift_id
+             FROM SHIFTS
+             WHERE SHF_status = 'Open'
+               AND SHF_shift_date = CURDATE()
+               AND SHF_shift_type = :shift_type
+             ORDER BY SHF_shift_id DESC
+             LIMIT 1"
+        );
+        $stmtShift->execute([':shift_type' => $shift_type]);
+        $shift_id = $stmtShift->fetchColumn();
+
+        if (!$shift_id) {
+            $shift_id = $pdo->query(
+                "SELECT SHF_shift_id
+                 FROM SHIFTS
+                 WHERE SHF_status = 'Open'
+                 ORDER BY SHF_shift_date DESC,
+                          FIELD(SHF_shift_type, 'Overtime', 'Afternoon', 'Morning'),
+                          SHF_shift_id DESC
+                 LIMIT 1"
+            )->fetchColumn();
+        }
+
+        if (!$shift_id) {
+            throw new Exception("No open shift is available for this allocation.");
+        }
+
         // 1. Kiểm tra tồn kho thực tế xem có đủ để xuất không (chống submit 2 lần hoặc hack DOM)
         $stmtCheck = $pdo->prepare("SELECT BCH_available_stock_kg FROM BATCHES WHERE BCH_batch_id = :id FOR UPDATE");
         $stmtCheck->execute([':id' => $batch_id]);
@@ -48,10 +85,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         // 4. Ghi log Nhật ký kho vào bảng STOCK_MOVEMENTS
         // Tạo Reference Code duy nhất
         $ref_code = "ALLOC_" . time() . "_" . rand(100, 999); 
-        $stmtMvmt = $pdo->prepare("INSERT INTO STOCK_MOVEMENTS (STM_reference_code, STM_batch_id, STM_movement_type, STM_quantity_kg, STM_user_id) VALUES (:ref, :batch, 'OUT', :qty, :user)");
+        $stmtMvmt = $pdo->prepare("INSERT INTO STOCK_MOVEMENTS (STM_reference_code, STM_batch_id, STM_shift_id, STM_movement_type, STM_quantity_kg, STM_user_id) VALUES (:ref, :batch, :shift_id, 'OUT', :qty, :user)");
         $stmtMvmt->execute([
             ':ref' => $ref_code,
             ':batch' => $batch_id,
+            ':shift_id' => $shift_id,
             ':qty' => $allocate_qty,
             ':user' => $user_id
         ]);
