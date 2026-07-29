@@ -19,6 +19,7 @@ try {
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Inventory | F&G FOOD</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
     <style>
         body { background-color: #06121a; color: #e5e7eb; font-family: 'Inter', sans-serif; }
     </style>
@@ -91,22 +92,38 @@ try {
                     </a>
                 </div>
                 
-                <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mt-6 text-sm">
-                    <div class="bg-[#162232] rounded-lg p-4 border border-slate-800">
-                        <p class="text-xs text-gray-400 font-medium"><?= ($lang === 'en') ? 'Storage Zone' : 'Khu Vực Lưu Kho' ?></p>
-                        <p class="text-white font-semibold text-base mt-1"><?= htmlspecialchars($selectedBatch['STZ_zone_name'] ?? 'N/A'); ?></p>
+                <div class="flex flex-col lg:flex-row gap-6 mt-6">
+                    <div class="flex-1 grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+                        <div class="bg-[#162232] rounded-lg p-4 border border-slate-800">
+                            <p class="text-xs text-gray-400 font-medium"><?= ($lang === 'en') ? 'Storage Zone' : 'Khu Vực Lưu Kho' ?></p>
+                            <p class="text-white font-semibold text-base mt-1"><?= htmlspecialchars($selectedBatch['STZ_zone_name'] ?? 'N/A'); ?></p>
+                        </div>
+                        <div class="bg-[#162232] rounded-lg p-4 border border-slate-800">
+                            <p class="text-xs text-gray-400 font-medium"><?= ($lang === 'en') ? 'Available Stock' : 'Tồn Kho Khả Dụng' ?></p>
+                            <p class="text-emerald-400 font-bold text-base mt-1"><?= number_format((float) ($selectedBatch['BCH_available_stock_kg'] ?? 0), 2); ?> kg</p>
+                        </div>
+                        <div class="bg-[#162232] rounded-lg p-4 border border-slate-800">
+                            <p class="text-xs text-gray-400 font-medium"><?= ($lang === 'en') ? 'Stage / Status' : 'Trạng Thái' ?></p>
+                            <p class="text-amber-400 font-semibold text-base mt-1"><?= htmlspecialchars($selectedBatch['BCH_current_stage'] ?? 'In Stock'); ?></p>
+                        </div>
+                        <div class="bg-[#162232] rounded-lg p-4 border border-slate-800">
+                            <p class="text-xs text-gray-400 font-medium"><?= ($lang === 'en') ? 'Supplier' : 'Nhà Cung Cấp' ?></p>
+                            <p class="text-white font-semibold text-base mt-1"><?= htmlspecialchars($selectedBatch['SUP_supplier_name'] ?? 'N/A'); ?></p>
+                        </div>
                     </div>
-                    <div class="bg-[#162232] rounded-lg p-4 border border-slate-800">
-                        <p class="text-xs text-gray-400 font-medium"><?= ($lang === 'en') ? 'Available Stock' : 'Tồn Kho Khả Dụng' ?></p>
-                        <p class="text-emerald-400 font-bold text-base mt-1"><?= number_format((float) ($selectedBatch['BCH_available_stock_kg'] ?? 0), 2); ?> kg</p>
-                    </div>
-                    <div class="bg-[#162232] rounded-lg p-4 border border-slate-800">
-                        <p class="text-xs text-gray-400 font-medium"><?= ($lang === 'en') ? 'Stage / Status' : 'Trạng Thái' ?></p>
-                        <p class="text-amber-400 font-semibold text-base mt-1"><?= htmlspecialchars($selectedBatch['BCH_current_stage'] ?? 'In Stock'); ?></p>
-                    </div>
-                    <div class="bg-[#162232] rounded-lg p-4 border border-slate-800">
-                        <p class="text-xs text-gray-400 font-medium"><?= ($lang === 'en') ? 'Supplier' : 'Nhà Cung Cấp' ?></p>
-                        <p class="text-white font-semibold text-base mt-1"><?= htmlspecialchars($selectedBatch['SUP_supplier_name'] ?? 'N/A'); ?></p>
+                    
+                    <div class="bg-[#162232] rounded-lg p-4 border border-slate-800 flex flex-col items-center justify-center lg:w-64">
+                        <p class="text-xs font-bold text-emerald-400 uppercase tracking-widest mb-3">Traceability QR</p>
+                        <div id="qrcode-container" class="p-2 bg-white rounded flex-shrink-0"></div>
+                        <p id="qr-link-text" class="text-[10px] text-gray-400 mt-2 text-center break-all w-full font-mono"></p>
+                        <div class="flex gap-2 mt-4 w-full">
+                            <button onclick="downloadQR()" class="flex-1 bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 rounded py-1.5 text-xs font-semibold transition-colors">
+                                <?= ($lang === 'en') ? 'Download' : 'Tải QR' ?>
+                            </button>
+                            <button onclick="printQR()" class="flex-1 bg-slate-700 hover:bg-slate-600 text-white border border-slate-600 rounded py-1.5 text-xs font-semibold transition-colors">
+                                <?= ($lang === 'en') ? 'Print Label' : 'In nhãn' ?>
+                            </button>
+                        </div>
                     </div>
                 </div>
             </section>
@@ -203,5 +220,89 @@ try {
             </div>
         </div>
     </main>
+
+    <?php if ($selectedBatch): ?>
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            var batchId = "<?= addslashes($selectedBatch['BCH_batch_id']) ?>";
+            var url = window.location.origin + window.location.pathname.replace('inventory.php', 'track.php') + '?batch=' + encodeURIComponent(batchId);
+            
+            document.getElementById("qr-link-text").innerText = url;
+            
+            new QRCode(document.getElementById("qrcode-container"), {
+                text: url,
+                width: 128,
+                height: 128,
+                colorDark : "#000000",
+                colorLight : "#ffffff",
+                correctLevel : QRCode.CorrectLevel.M
+            });
+        });
+
+        function downloadQR() {
+            var img = document.querySelector('#qrcode-container img');
+            if (!img || !img.src) {
+                // Sometimes canvas is created instead of img depending on the library and browser
+                var canvas = document.querySelector('#qrcode-container canvas');
+                if (canvas) {
+                    var dataUrl = canvas.toDataURL("image/png");
+                    triggerDownload(dataUrl, "QR_<?= htmlspecialchars($selectedBatch['BCH_batch_id']) ?>.png");
+                }
+                return;
+            }
+            triggerDownload(img.src, "QR_<?= htmlspecialchars($selectedBatch['BCH_batch_id']) ?>.png");
+        }
+
+        function triggerDownload(dataUrl, filename) {
+            var a = document.createElement('a');
+            a.href = dataUrl;
+            a.download = filename;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+        }
+
+        function printQR() {
+            var qrImg = document.querySelector('#qrcode-container img');
+            var qrCanvas = document.querySelector('#qrcode-container canvas');
+            var imgSrc = "";
+            
+            if (qrImg && qrImg.src) {
+                imgSrc = qrImg.src;
+            } else if (qrCanvas) {
+                imgSrc = qrCanvas.toDataURL("image/png");
+            }
+            
+            if (!imgSrc) return;
+
+            var printWindow = window.open('', '', 'width=400,height=400');
+            printWindow.document.write(`
+                <html>
+                    <head>
+                        <title>Print QR Label</title>
+                        <style>
+                            body { font-family: sans-serif; text-align: center; padding: 20px; }
+                            .label { border: 1px solid #000; display: inline-block; padding: 20px; border-radius: 8px; }
+                            h2 { margin: 0 0 10px 0; font-size: 16px; }
+                            p { margin: 5px 0 0 0; font-size: 12px; }
+                            img { max-width: 150px; }
+                        </style>
+                    </head>
+                    <body>
+                        <div class="label">
+                            <h2>BATCH: <?= htmlspecialchars($selectedBatch['BCH_batch_id']) ?></h2>
+                            <img src="${imgSrc}" />
+                            <p><?= htmlspecialchars($selectedBatch['PRD_product_name'] ?? '') ?></p>
+                        </div>
+                        <script>
+                            window.onload = function() { window.print(); window.close(); }
+                        <\/script>
+                    </body>
+                </html>
+            `);
+            printWindow.document.close();
+        }
+    </script>
+    <?php endif; ?>
 </body>
 </html>
