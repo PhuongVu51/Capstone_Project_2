@@ -57,10 +57,13 @@ function calculateYieldRate(
 // Gom tồn kho khả dụng theo từng sản phẩm và khu vực kho -> phục vụ Production/Warehouse dashboard
 function getInventorySummary(PDO $pdo): array
 {
+    $lang = $_SESSION['lang'] ?? 'vi';
+    $productNameCol = ($lang === 'en') ? 'COALESCE(p.PRD_product_name_en, p.PRD_product_name)' : 'p.PRD_product_name';
+    $zoneNameCol = ($lang === 'en') ? 'COALESCE(z.STZ_zone_name_en, z.STZ_zone_name)' : 'z.STZ_zone_name';
     $sql = "
         SELECT
-            p.PRD_product_name,
-            z.STZ_zone_name,
+            $productNameCol AS PRD_product_name,
+            $zoneNameCol AS STZ_zone_name,
             COUNT(b.BCH_batch_id)                  AS total_batches,
             SUM(b.BCH_available_stock_kg)          AS total_available_kg,
             SUM(b.BCH_initial_volume_kg)            AS total_initial_kg,
@@ -71,8 +74,8 @@ function getInventorySummary(PDO $pdo): array
         JOIN PRODUCTS p        ON b.BCH_product_id = p.PRD_product_id
         JOIN STORAGE_ZONES z   ON b.BCH_zone_id     = z.STZ_zone_id
         WHERE b.BCH_available_stock_kg > 0
-        GROUP BY p.PRD_product_name, z.STZ_zone_name
-        ORDER BY p.PRD_product_name, z.STZ_zone_name
+        GROUP BY PRD_product_name, STZ_zone_name
+        ORDER BY PRD_product_name, STZ_zone_name
     ";
     return $pdo->query($sql)->fetchAll();
 }
@@ -87,9 +90,11 @@ function getInventorySummary(PDO $pdo): array
 // (FGD_status = 'Ready_To_Export') nhưng đã trễ quá X ngày (mặc định 3 ngày) mà vẫn chưa xuất.
 function getDelayedExportProxy(PDO $pdo, int $delay_threshold_days = 3): array
 {
+    $lang = $_SESSION['lang'] ?? 'vi';
+    $productNameCol = ($lang === 'en') ? 'COALESCE(p.PRD_product_name_en, p.PRD_product_name)' : 'p.PRD_product_name';
     $sql = "
         SELECT
-            p.PRD_product_name,
+            COALESCE($productNameCol, 'Unknown') AS PRD_product_name,
             COUNT(f.FGD_fg_id)                     AS delayed_batches_count,
             SUM(f.FGD_total_cans)                   AS total_cans_delayed,
             DATEDIFF(CURDATE(), f.FGD_quarantine_end_date) AS days_overdue
@@ -98,7 +103,7 @@ function getDelayedExportProxy(PDO $pdo, int $delay_threshold_days = 3): array
         JOIN PRODUCTS p  ON b.BCH_product_id = p.PRD_product_id
         WHERE f.FGD_status = 'Ready_To_Export'
           AND f.FGD_quarantine_end_date <= DATE_SUB(CURDATE(), INTERVAL :delay_days DAY)
-        GROUP BY p.PRD_product_name, f.FGD_quarantine_end_date
+        GROUP BY PRD_product_name, f.FGD_quarantine_end_date
         ORDER BY days_overdue DESC
     ";
     $stmt = $pdo->prepare($sql);
@@ -113,10 +118,13 @@ function getDelayedExportProxy(PDO $pdo, int $delay_threshold_days = 3): array
 // Đếm và tổng hợp theo sản phẩm các lô nguyên liệu tươi sắp hết hạn trong N giờ tới (mặc định 48h)
 function getExpiringFreshBatches(PDO $pdo, int $hours_threshold = 48): array
 {
+    $lang = $_SESSION['lang'] ?? 'vi';
+    $productNameCol = ($lang === 'en') ? 'COALESCE(p.PRD_product_name_en, p.PRD_product_name)' : 'p.PRD_product_name';
+    $zoneNameCol = ($lang === 'en') ? 'COALESCE(z.STZ_zone_name_en, z.STZ_zone_name)' : 'z.STZ_zone_name';
     $sql = "
         SELECT
-            p.PRD_product_name,
-            z.STZ_zone_name,
+            $productNameCol AS PRD_product_name,
+            $zoneNameCol AS STZ_zone_name,
             COUNT(b.BCH_batch_id)           AS expiring_batch_count,
             SUM(b.BCH_available_stock_kg)   AS expiring_total_kg,
             MIN(b.BCH_expiry_date)          AS nearest_expiry
@@ -125,7 +133,7 @@ function getExpiringFreshBatches(PDO $pdo, int $hours_threshold = 48): array
         JOIN STORAGE_ZONES z  ON b.BCH_zone_id     = z.STZ_zone_id
         WHERE b.BCH_available_stock_kg > 0
           AND b.BCH_expiry_date <= DATE_ADD(NOW(), INTERVAL :hours HOUR)
-        GROUP BY p.PRD_product_name, z.STZ_zone_name
+        GROUP BY PRD_product_name, STZ_zone_name
         ORDER BY nearest_expiry ASC
     ";
     $stmt = $pdo->prepare($sql);

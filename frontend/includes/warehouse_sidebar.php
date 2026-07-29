@@ -163,6 +163,15 @@ pt-16 md:pt-0">
 
         </div>
 
+        <div class="flex items-center justify-center gap-4 mb-4">
+            <a href="?lang=vi" class="opacity-70 hover:opacity-100 transition-opacity <?= (isset($_SESSION['lang']) && $_SESSION['lang'] === 'vi') ? 'opacity-100 ring-2 ring-white rounded' : '' ?>" title="Tiếng Việt">
+                <span class="text-2xl">🇻🇳</span>
+            </a>
+            <a href="?lang=en" class="opacity-70 hover:opacity-100 transition-opacity <?= (isset($_SESSION['lang']) && $_SESSION['lang'] === 'en') ? 'opacity-100 ring-2 ring-white rounded' : '' ?>" title="English">
+                <span class="text-2xl">🇬🇧</span>
+            </a>
+        </div>
+
         <a href="../backend/connection/logout.php"
            class="flex items-center justify-center gap-2 w-full py-2.5 text-sm
                   text-red-400 font-semibold border border-red-900/30 rounded-lg

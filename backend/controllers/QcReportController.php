@@ -9,10 +9,10 @@ class QcReportController {
         $this->model = new QcReportModel();
     }
 
-    public function loadReportData() {
+    public function loadReportData($lang = 'vi') {
         $summary = $this->model->getLossSummary();
-        $breakdown = $this->model->getReasonBreakdown();
-        $lossBatches = $this->model->getHighLossBatches();
+        $breakdown = $this->model->getReasonBreakdown($lang);
+        $lossBatches = $this->model->getHighLossBatches($lang);
 
         // Xử lý logic dữ liệu cho biểu đồ tròn (Doughnut Chart)
         $chartLabels = [];
@@ -21,12 +21,21 @@ class QcReportController {
         $topReasonKg = 0;
 
         if (!empty($breakdown)) {
-            $topReason = $breakdown[0]['reason'];
+            $topReason = ($lang === 'en') ? $this->translateReason($breakdown[0]['reason']) : $breakdown[0]['reason'];
             $topReasonKg = $breakdown[0]['total_kg'];
 
             foreach ($breakdown as $item) {
-                $chartLabels[] = $item['reason'];
+                $reasonText = ($lang === 'en') ? $this->translateReason($item['reason']) : $item['reason'];
+                $chartLabels[] = $reasonText;
                 $chartData[] = round($item['total_kg'], 1);
+            }
+        }
+
+        if ($lang === 'en' && !empty($lossBatches)) {
+            foreach ($lossBatches as &$b) {
+                $b['QCI_rejection_reason'] = $this->translateReason($b['QCI_rejection_reason']);
+                $b['PRD_product_name'] = $this->removeAccents($b['PRD_product_name']);
+                $b['SUP_supplier_name'] = $this->removeAccents($b['SUP_supplier_name']);
             }
         }
 
@@ -40,6 +49,52 @@ class QcReportController {
             'chartData'      => $chartData,
             'lossBatches'    => $lossBatches
         ];
+    }
+
+    private function translateReason($str) {
+        if (!$str || $str === 'N/A' || $str === 'None') return 'None';
+        
+        $r = strtolower($str);
+        if (str_contains($r, 'han') || str_contains($r, 'gỉ') || str_contains($r, 'gi') || str_contains($r, 'corrosion')) {
+            if (str_contains($r, 'ngoai') || str_contains($r, 'ngoài')) return 'External Rusty Cans (Internal Unverified)';
+            if (str_contains($r, 'hong') || str_contains($r, 'hỏng')) return 'Rust & Damaged Cans';
+            return 'Rust / Corrosion';
+        }
+        if (str_contains($r, '10') || str_contains($r, 'mop') || str_contains($r, 'móp')) {
+            if (str_contains($r, '10')) return 'Dented Cans (10 Units)';
+            if (str_contains($r, 'meo') || str_contains($r, 'méo')) return 'Dented & Deformed Cans';
+            return 'Dented Cans';
+        }
+        if (str_contains($r, 'meo') || str_contains($r, 'méo')) return 'Deformed Cans';
+        if (str_contains($r, 'cut') || str_contains($r, 'cắt')) return 'Miscut Specification Batch';
+        if (str_contains($r, 'tibit')) return 'Tibit Defect';
+        if (str_contains($r, '27') || str_contains($r, 'thung') || str_contains($r, 'thùng')) return '27 Cartons + 7 Cans (Severe Rust)';
+        if (str_contains($r, 'hong yen') || str_contains($r, 'hồng yên')) return 'Hong Yen Returned Batch';
+        if (str_contains($r, 'tra') || str_contains($r, 'kh')) return 'Customer Return (Canceled Label)';
+        if (str_contains($r, 'den') || str_contains($r, 'đen')) return 'Black Labeled Batch (VP)';
+        if (str_contains($r, 'trang') || str_contains($r, 'trắng')) return 'White Labeled Batch (VP)';
+        if (str_contains($r, 'damaged')) return 'Damaged Goods Seed Record';
+        
+        return $this->removeAccents($str);
+    }
+
+    private function removeAccents($str) {
+        if (!$str) return '';
+        $str = preg_replace("/(à|á|ạ|ả|ã|â|ầ|ấ|ậ|ẩ|ẫ|ă|ằ|ắ|ặ|ẳ|ẵ)/", "a", $str);
+        $str = preg_replace("/(è|é|ẹ|ẻ|ẽ|ê|ề|ế|ệ|ể|ễ)/", "e", $str);
+        $str = preg_replace("/(ì|í|ị|ỉ|ĩ)/", "i", $str);
+        $str = preg_replace("/(ò|ó|ọ|ỏ|õ|ô|ồ|ố|ộ|ổ|ỗ|ơ|ờ|ớ|ợ|ở|ỡ)/", "o", $str);
+        $str = preg_replace("/(ù|ú|ụ|ủ|ũ|ư|ừ|ứ|ự|ử|ữ)/", "u", $str);
+        $str = preg_replace("/(ỳ|ý|ỵ|ỷ|ỹ)/", "y", $str);
+        $str = preg_replace("/(đ)/", "d", $str);
+        $str = preg_replace("/(À|Á|Ạ|Ả|Ã|Â|Ầ|Ấ|Ậ|Ẩ|Ẫ|Ă|Ằ|Ắ|Ặ|Ẳ|Ẵ)/", "A", $str);
+        $str = preg_replace("/(È|É|Ẹ|Ẻ|Ẽ|Ê|Ề|Ế|Ệ|Ể|Ễ)/", "E", $str);
+        $str = preg_replace("/(Ì|Í|Ị|Ỉ|Ĩ)/", "I", $str);
+        $str = preg_replace("/(Ò|Ó|Ọ|Ỏ|Õ|Ô|Ồ|Ố|Ộ|Ổ|Ỗ|Ơ|Ờ|Ớ|Ợ|Ở|Ỡ)/", "O", $str);
+        $str = preg_replace("/(Ù|Ú|Ụ|Ủ|Ũ|Ư|Ừ|Ứ|Ự|Ử|Ữ)/", "U", $str);
+        $str = preg_replace("/(Ỳ|Ý|Ỵ|Ỷ|Ỹ)/", "Y", $str);
+        $str = preg_replace("/(Đ)/", "D", $str);
+        return $str;
     }
 }
 ?>

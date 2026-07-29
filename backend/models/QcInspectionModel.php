@@ -5,9 +5,10 @@ require_once __DIR__ . '/../core/BaseModel.php';
 class QcInspectionModel extends BaseModel {
 
     // Lấy danh sách toàn bộ các lô hàng đang chờ QC kiểm định
-    public function getPendingQueue() {
+    public function getPendingQueue($lang = 'vi') {
+        $productNameCol = ($lang === 'en') ? 'COALESCE(p.PRD_product_name_en, p.PRD_product_name)' : 'p.PRD_product_name';
         $stmt = $this->pdo->query("
-            SELECT b.BCH_batch_id, p.PRD_product_name, b.BCH_received_date, 
+            SELECT b.BCH_batch_id, $productNameCol AS PRD_product_name, b.BCH_received_date, 
                    b.BCH_initial_volume_kg, b.BCH_priority
             FROM BATCHES b
             JOIN PRODUCTS p ON b.BCH_product_id = p.PRD_product_id
@@ -34,7 +35,7 @@ class QcInspectionModel extends BaseModel {
 
         // 3. Tính Average Lead Time thực tế (Phút) từ lúc nhận lô đến lúc QC
         $stmtLeadTime = $this->pdo->query("
-            SELECT AVG(TIMESTAMPDIFF(MINUTE, b.BCH_received_date, q.QCI_inspection_id)) AS avg_minutes
+            SELECT AVG(TIMESTAMPDIFF(MINUTE, b.BCH_received_date, NOW())) AS avg_minutes
             FROM QC_INSPECTIONS q
             JOIN BATCHES b ON q.QCI_batch_id = b.BCH_batch_id
             WHERE b.BCH_received_date IS NOT NULL
@@ -45,7 +46,7 @@ class QcInspectionModel extends BaseModel {
         // 4. Tính % chênh lệch Lead Time động so với ca liền trước
         $stmtShiftTrends = $this->pdo->query("
             SELECT s.SHF_shift_id, 
-                   AVG(TIMESTAMPDIFF(MINUTE, b.BCH_received_date, q.QCI_inspection_id)) AS shift_avg
+                   AVG(TIMESTAMPDIFF(MINUTE, b.BCH_received_date, NOW())) AS shift_avg
             FROM QC_INSPECTIONS q
             JOIN BATCHES b ON q.QCI_batch_id = b.BCH_batch_id
             JOIN SHIFTS s ON b.BCH_shift_id = s.SHF_shift_id
@@ -79,18 +80,21 @@ class QcInspectionModel extends BaseModel {
     }
 
     // Lấy chi tiết thông số nguồn gốc lô hàng khi bấm kiểm định
-    public function getBatchForInspection($batch_id) {
-        $stmt = $this->pdo->prepare("
-            SELECT b.BCH_batch_id, p.PRD_product_name, p.PRD_material_grade, 
-                   s.SUP_supplier_name, s.SUP_origin_facility,
+    public function getInspectionDetails($batchId, $lang = 'vi') {
+        $productNameCol = ($lang === 'en') ? 'COALESCE(p.PRD_product_name_en, p.PRD_product_name)' : 'p.PRD_product_name';
+        $supplierNameCol = ($lang === 'en') ? 'COALESCE(s.SUP_supplier_name_en, s.SUP_supplier_name)' : 's.SUP_supplier_name';
+
+        $sql = "SELECT b.BCH_batch_id, $productNameCol AS PRD_product_name, b.BCH_weight_kg, 
+                   $supplierNameCol AS SUP_supplier_name, s.SUP_origin_facility,
                    b.BCH_initial_volume_kg, b.BCH_received_date
             FROM BATCHES b
             JOIN PRODUCTS p ON b.BCH_product_id = p.PRD_product_id
             JOIN SUPPLIERS s ON b.BCH_supplier_id = s.SUP_supplier_id
             WHERE b.BCH_batch_id = ? AND b.BCH_current_stage = 'Pending_QC'
             LIMIT 1
-        ");
-        $stmt->execute([$batch_id]);
+        ";
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->execute([$batchId]);
         return $stmt->fetch(PDO::FETCH_ASSOC);
     }
 
@@ -110,6 +114,8 @@ class QcInspectionModel extends BaseModel {
         $this->pdo->beginTransaction();
         try {
             $destination = ($actual_yield_pct >= 80) ? 'Production' : 'Rejected';
+            $newStage = ($actual_yield_pct >= 80) ? 'QC_Passed' : 'Rejected';
+
             $stmtInsert = $this->pdo->prepare("
                 INSERT INTO QC_INSPECTIONS 
                 (QCI_batch_id, QCI_user_id, QCI_usable_weight_kg, QCI_rotten_weight_kg, QCI_natural_loss_weight_kg, QCI_destination, QCI_actual_yield_pct)
@@ -117,8 +123,8 @@ class QcInspectionModel extends BaseModel {
             ");
             $stmtInsert->execute([$batch_id, $user_id, $usable_weight_final, $rejected_qty, $natural_loss, $destination, $actual_yield_pct]);
 
-            $stmtUpdateBatch = $this->pdo->prepare("UPDATE BATCHES SET BCH_current_stage = 'QC_Passed', BCH_available_stock_kg = ? WHERE BCH_batch_id = ?");
-            $stmtUpdateBatch->execute([$usable_weight_final, $batch_id]);
+            $stmtUpdateBatch = $this->pdo->prepare("UPDATE BATCHES SET BCH_current_stage = ?, BCH_available_stock_kg = ? WHERE BCH_batch_id = ?");
+            $stmtUpdateBatch->execute([$newStage, $usable_weight_final, $batch_id]);
 
             $this->pdo->commit();
             return true;

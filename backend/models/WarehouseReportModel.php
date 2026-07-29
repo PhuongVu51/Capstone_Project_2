@@ -47,11 +47,12 @@ class WarehouseReportModel extends BaseModel
         return (float)$stmt->fetchColumn();
     }
 
-    public function getStockByProduct()
+    public function getStockByProduct($lang = 'vi')
     {
+        $productNameCol = ($lang === 'en') ? 'COALESCE(p.PRD_product_name_en, p.PRD_product_name)' : 'p.PRD_product_name';
         $stmt = $this->pdo->query("
             SELECT
-                p.PRD_product_name,
+                $productNameCol AS PRD_product_name,
                 SUM(b.BCH_available_stock_kg) AS stock_kg
             FROM BATCHES b
             JOIN PRODUCTS p
@@ -63,13 +64,14 @@ class WarehouseReportModel extends BaseModel
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
-    public function getCriticalBatches()
+    public function getCriticalBatches($lang = 'vi')
     {
-        $stmt = $this->pdo->query("
-            SELECT
+        $productNameCol = ($lang === 'en') ? 'COALESCE(p.PRD_product_name_en, p.PRD_product_name)' : 'p.PRD_product_name';
+        $supplierNameCol = ($lang === 'en') ? 'COALESCE(s.SUP_supplier_name_en, s.SUP_supplier_name)' : 's.SUP_supplier_name';
+        $sql = "SELECT 
                 b.BCH_batch_id,
-                p.PRD_product_name,
-                s.SUP_supplier_name,
+                $productNameCol AS PRD_product_name,
+                $supplierNameCol AS SUP_supplier_name,
                 b.BCH_available_stock_kg,
                 b.BCH_expiry_date,
                 b.BCH_health_status
@@ -80,7 +82,8 @@ class WarehouseReportModel extends BaseModel
                 ON b.BCH_supplier_id = s.SUP_supplier_id
             WHERE b.BCH_health_status IN ('Warning','Critical')
             ORDER BY b.BCH_expiry_date ASC
-        ");
+        ";
+        $stmt = $this->pdo->query($sql);
 
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }

@@ -37,96 +37,102 @@ try {
     <main class="md:ml-64 p-6 md:p-8 pt-24 md:pt-8 transition-all duration-300 w-full md:w-[calc(100%-256px)]">
         
         <header class="flex flex-col lg:flex-row justify-between items-start lg:items-center mb-8 pb-4 border-b border-[#1f2937] gap-4">
-            <h1 class="text-2xl font-bold text-white whitespace-nowrap tracking-wide">QC Overview</h1>
+            <h1 class="text-2xl font-bold text-white whitespace-nowrap tracking-wide"><?= __('qc_overview') ?></h1>
             <div class="relative w-full lg:max-w-md flex-1">
-                <input type="text" id="searchInput" onkeyup="filterLogs()" placeholder="Search batch ID or sensor..." class="w-full bg-[#0f1722] border border-[#1f2937] text-sm text-gray-300 rounded py-2.5 pl-10 pr-4 focus:outline-none focus:border-[#10b981] transition-colors">
+                <input type="text" id="searchInput" onkeyup="filterLogs()" placeholder="<?= __('search_batch_or_sensor') ?>" class="w-full bg-[#0f1722] border border-[#1f2937] text-sm text-gray-300 rounded py-2.5 pl-10 pr-4 focus:outline-none focus:border-[#10b981] transition-colors">
                 <svg class="w-4 h-4 absolute left-3.5 top-3 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
             </div>
         </header>
 
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 mb-8">
             <div class="bg-[#0f1722] p-5 rounded-lg border border-[#1f2937] relative overflow-hidden">
-                <p class="text-[11px] text-gray-500 uppercase font-semibold tracking-wider">Quality Pass Rate</p>
+                <p class="text-[11px] text-gray-500 uppercase font-semibold tracking-wider"><?= __('quality_pass_rate') ?></p>
                 <h3 class="text-3xl font-bold text-white mt-2 font-mono"><?= $passRate ?>%</h3>
                 <div class="flex items-center gap-1 mt-2">
                     <svg class="w-3 h-3 text-[#10b981]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 10l7-7m0 0l7 7m-7-7v18"></path></svg>
-                    <p class="text-[11px] text-[#10b981] font-medium">2.4% since last shift</p>
+                    <p class="text-[11px] text-[#10b981] font-medium"><?= __('since_last_shift') ?></p>
                 </div>
             </div>
 
             <div class="bg-[#0f1722] p-5 rounded-lg border border-[#1f2937]">
-                <p class="text-[11px] text-gray-500 uppercase font-semibold tracking-wider">Pending Batch List</p>
+                <p class="text-[11px] text-gray-500 uppercase font-semibold tracking-wider"><?= __('pending_batch_list') ?></p>
                 <h3 class="text-3xl font-bold text-white mt-2 font-mono"><?= $pendingCount ?></h3>
-                <p class="text-[11px] text-yellow-500 mt-2 font-medium">+3 since previous hour</p>
+                <p class="text-[11px] text-yellow-500 mt-2 font-medium"><?= __('since_previous_hour') ?></p>
             </div>
 
             <div class="bg-[#0f1722] p-5 rounded-lg border border-[#1f2937] flex flex-col justify-between">
                 <div class="flex justify-between items-start">
-                    <p class="text-[11px] text-gray-500 uppercase font-semibold tracking-wider">Defect Ratio</p>
-                    <span class="bg-[#10b981]/20 text-[#10b981] text-[10px] px-2 py-0.5 rounded border border-[#10b981]/30 font-bold uppercase tracking-wide">Stable</span>
+                    <p class="text-[11px] text-gray-500 uppercase font-semibold tracking-wider"><?= __('defect_ratio') ?></p>
+                    <span class="bg-[#10b981]/20 text-[#10b981] text-[10px] px-2 py-0.5 rounded border border-[#10b981]/30 font-bold uppercase tracking-wide"><?= __('stable') ?></span>
                 </div>
                 <h3 class="text-3xl font-bold text-white mt-2 font-mono"><?= $defectRatio ?>%</h3>
-                <p class="text-[11px] text-gray-500 mt-2">Within acceptable range (< 5%)</p>
+                <p class="text-[11px] text-gray-500 mt-2"><?= __('within_acceptable_range') ?></p>
             </div>
 
             <div class="bg-[#0f1722] p-5 rounded-lg border border-[#1f2937]">
-                <p class="text-[11px] text-gray-500 uppercase font-semibold tracking-wider">Instrument Status</p>
+                <p class="text-[11px] text-gray-500 uppercase font-semibold tracking-wider"><?= __('instrument_status') ?></p>
                 <div class="flex items-center gap-2 mt-3">
                     <span class="relative flex h-3 w-3">
                       <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#10b981] opacity-75"></span>
                       <span class="relative inline-flex rounded-full h-3 w-3 bg-[#10b981]"></span>
                     </span>
-                    <h3 class="text-xl font-bold text-white">Active</h3>
+                    <h3 class="text-xl font-bold text-white"><?= __('active') ?></h3>
                 </div>
-                <p class="text-[11px] text-gray-500 mt-2">Last check: 10 mins ago</p>
+                <p class="text-[11px] text-gray-500 mt-2"><?= __('last_check_10_mins_ago') ?></p>
             </div>
         </div>
 
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
             <div class="lg:col-span-2 bg-[#0f1722] rounded-lg border border-[#1f2937] p-5 min-w-0">
                 <div class="flex justify-between items-center mb-1">
-                    <h3 class="text-base font-bold text-white">QC Pass/Fail Trends</h3>
+                    <h3 class="text-base font-bold text-white"><?= __('qc_pass_fail_trends') ?></h3>
                     <select class="bg-[#1f2937] border border-[#374151] text-xs text-gray-300 rounded px-2 py-1 outline-none focus:border-[#10b981]">
-                        <option>Today</option>
-                        <option selected>Last 7 Days</option>
-                        <option>This Month</option>
+                        <option><?= __('today') ?></option>
+                        <option selected><?= __('last_7_days') ?></option>
+                        <option><?= __('this_month') ?></option>
                     </select>
                 </div>
-                <p class="text-xs text-gray-500 mb-4">Hourly distribution across Shift Alpha</p>
+                <p class="text-xs text-gray-500 mb-4"><?= __('hourly_distribution_alpha') ?></p>
                 <div class="relative h-[240px] w-full"><canvas id="trendsChart"></canvas></div>
                 <div class="flex items-center justify-center gap-6 mt-4 text-xs font-medium text-gray-400">
-                    <span class="flex items-center gap-2"><span class="w-2.5 h-2.5 rounded-full bg-[#10b981]"></span>Pass Rate</span>
-                    <span class="flex items-center gap-2"><span class="w-2.5 h-2.5 rounded-full bg-[#ef4444]"></span>Defect Rate</span>
+                    <span class="flex items-center gap-2"><span class="w-2.5 h-2.5 rounded-full bg-[#10b981]"></span><?= __('pass_rate') ?></span>
+                    <span class="flex items-center gap-2"><span class="w-2.5 h-2.5 rounded-full bg-[#ef4444]"></span><?= __('defect_rate') ?></span>
                 </div>
             </div>
 
             <div class="bg-[#0f1722] rounded-lg border border-[#1f2937] overflow-hidden min-w-0 flex flex-col">
                 <div class="p-5 border-b border-[#1f2937]">
-                    <h3 class="text-base font-bold text-white">Recent Activity</h3>
-                    <p class="text-xs text-gray-500 mt-1">Latest inspection logs</p>
+                    <h3 class="text-base font-bold text-white"><?= __('recent_activity') ?></h3>
+                    <p class="text-xs text-gray-500 mt-1"><?= __('latest_inspection_logs') ?></p>
                 </div>
                 <div class="overflow-y-auto flex-1 p-0">
                     <table class="w-full text-left border-collapse" id="logsTable">
                         <thead class="text-gray-500 text-[10px] uppercase bg-[#0b121c] sticky top-0 z-10">
                             <tr>
-                                <th class="py-3 px-5 font-semibold tracking-wider">Batch ID</th>
-                                <th class="py-3 px-5 font-semibold tracking-wider text-right">Usable</th>
-                                <th class="py-3 px-5 font-semibold tracking-wider text-center">Status</th>
+                                <th class="py-3 px-5 font-semibold tracking-wider"><?= __('batch_id') ?></th>
+                                <th class="py-3 px-5 font-semibold tracking-wider text-right"><?= __('usable') ?></th>
+                                <th class="py-3 px-5 font-semibold tracking-wider text-center"><?= __('status') ?></th>
                             </tr>
                         </thead>
                         <tbody class="text-sm divide-y divide-[#1f2937]">
                             <?php if (empty($recentActivities)): ?>
-                                <tr><td colspan="3" class="p-5 text-center text-gray-600 text-xs italic">No logs found yet.</td></tr>
+                                <tr><td colspan="3" class="p-5 text-center text-gray-600 text-xs italic"><?= __('no_logs_found_yet') ?></td></tr>
                             <?php else: ?>
                                 <?php foreach ($recentActivities as $act): ?>
                                     <tr class="hover:bg-[#131c26] transition-colors log-row">
                                         <td class="py-3 px-5 text-[#10b981] font-mono text-xs font-semibold batch-id">#<?= htmlspecialchars($act['QCI_batch_id']) ?></td>
                                         <td class="py-3 px-5 text-gray-200 text-right font-mono text-xs"><?= number_format($act['QCI_usable_weight_kg'], 1) ?> kg</td>
                                         <td class="py-3 px-5 destination text-xs text-center">
-                                            <?php if(strtolower($act['QCI_destination']) == 'production'): ?>
-                                                <span class="text-[#10b981] bg-[#10b981]/10 px-2 py-1 rounded">Passed</span>
+                                            <?php 
+                                            $dest = strtolower(trim($act['QCI_destination'] ?? ''));
+                                            if ($dest === 'production'): ?>
+                                                <span class="text-[#10b981] bg-[#10b981]/10 px-2 py-1 rounded"><?= __('dest_production') ?></span>
+                                            <?php elseif ($dest === 'qc hold' || $dest === 'qc_hold'): ?>
+                                                <span class="text-yellow-400 bg-yellow-500/10 px-2 py-1 rounded"><?= __('dest_qc_hold') ?></span>
+                                            <?php elseif (str_contains($dest, 'th') || str_contains($dest, 'kho') || str_contains($dest, 'finished')): ?>
+                                                <span class="text-blue-400 bg-blue-500/10 px-2 py-1 rounded"><?= __('dest_finished_goods') ?></span>
                                             <?php else: ?>
-                                                <span class="text-gray-400"><?= htmlspecialchars($act['QCI_destination'] ?: 'Pending') ?></span>
+                                                <span class="text-gray-400"><?= htmlspecialchars($act['QCI_destination'] ?: __('pending')) ?></span>
                                             <?php endif; ?>
                                         </td>
                                     </tr>
@@ -136,7 +142,7 @@ try {
                     </table>
                 </div>
                 <div class="p-3 border-t border-[#1f2937] text-center bg-[#0b121c]">
-                    <a href="qc_inspections.php" class="text-xs text-[#10b981] hover:text-white font-semibold transition-colors">View All Inspections →</a>
+                    <a href="qc_inspections.php" class="text-xs text-[#10b981] hover:text-white font-semibold transition-colors"><?= __('view_all_inspections') ?></a>
                 </div>
             </div>
         </div>

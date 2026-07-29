@@ -10,8 +10,9 @@ require_role(
 require_once '../backend/controllers/WarehouseReportController.php';
 
 try{
+    $lang = $_SESSION['lang'] ?? 'vi';
     $controller = new WarehouseReportController();
-    $data = $controller->loadReportData();
+    $data = $controller->loadReportData($lang);
     extract($data);
 }catch(Exception $e){
     die("Error loading warehouse report: ".$e->getMessage());
@@ -73,11 +74,11 @@ body{
 
         <div>
             <h1 class="text-2xl font-bold text-white tracking-wide">
-                Warehouse Analytics
+                <?= __('warehouse_analytics_title') ?>
             </h1>
 
             <p class="text-gray-500 text-sm mt-1">
-                Inventory Monitoring & Warehouse Health Overview
+                <?= __('warehouse_analytics_desc') ?>
             </p>
         </div>
 
@@ -87,7 +88,7 @@ body{
                    text-gray-300 font-bold px-4 py-2 rounded text-sm
                    transition-colors">
 
-            Export PDF
+            <?= __('export_pdf') ?>
 
         </button>
 
@@ -99,20 +100,20 @@ body{
 
         <div class="bg-[#0f1722] p-5 rounded-lg border border-[#1f2937]">
             <p class="text-[11px] text-gray-500 uppercase font-semibold tracking-wider">
-                Total Stock
+                <?= __('total_stock') ?>
             </p>
 
             <h3 class="text-3xl font-bold text-white mt-2 font-mono">
                 <?= number_format($totalStock,1) ?>
                 <span class="text-sm text-gray-500">
-                    KG
+                    <?= __('unit_kg') ?>
                 </span>
             </h3>
         </div>
 
         <div class="bg-[#0f1722] p-5 rounded-lg border border-[#1f2937]">
             <p class="text-[11px] text-gray-500 uppercase font-semibold tracking-wider">
-                Active Batches
+                <?= __('active_batches') ?>
             </p>
 
             <h3 class="text-3xl font-bold text-white mt-2 font-mono">
@@ -122,7 +123,7 @@ body{
 
         <div class="bg-[#2a2112] p-5 rounded-lg border border-yellow-800/30">
             <p class="text-[11px] text-yellow-400 uppercase font-semibold tracking-wider">
-                Expiring Soon
+                <?= __('expiring_soon') ?>
             </p>
 
             <h3 class="text-3xl font-bold text-yellow-400 mt-2 font-mono">
@@ -132,14 +133,14 @@ body{
 
         <div class="bg-[#2a1215] p-5 rounded-lg border border-red-900/30">
             <p class="text-[11px] text-red-400 uppercase font-semibold tracking-wider">
-                Total Outbound
+                <?= __('total_outbound') ?>
             </p>
 
             <h3 class="text-3xl font-bold text-red-500 mt-2 font-mono">
                 <?= number_format($totalOutbound,1) ?>
 
                 <span class="text-sm text-red-800">
-                    KG
+                    <?= __('unit_kg') ?>
                 </span>
             </h3>
         </div>
@@ -156,11 +157,11 @@ body{
 
             <div>
                 <h3 class="text-sm font-bold text-white uppercase tracking-wider mb-1">
-                    Inventory Distribution
+                    <?= __('inventory_distribution') ?>
                 </h3>
 
                 <p class="text-xs text-gray-500 mb-6">
-                    Available stock by product
+                    <?= __('available_stock_by_product') ?>
                 </p>
             </div>
 
@@ -169,7 +170,7 @@ body{
                 <?php if(empty($chartLabels)): ?>
 
                     <div class="h-full flex items-center justify-center text-gray-600 italic text-sm">
-                        No inventory data available
+                        <?= __('no_inventory_data_available') ?>
                     </div>
 
                 <?php else: ?>
@@ -189,7 +190,7 @@ body{
             <div class="p-4 border-b border-[#1f2937] bg-[#0b121c] shrink-0">
 
                 <h3 class="text-sm font-bold text-white uppercase tracking-wider">
-                    Warehouse Alerts
+                    <?= __('warehouse_alerts') ?>
                 </h3>
 
             </div>
@@ -203,19 +204,19 @@ body{
                     <tr>
 
                         <th class="py-3 pl-6">
-                            Batch
+                            <?= __('batch') ?>
                         </th>
 
                         <th class="py-3">
-                            Product
+                            <?= __('product') ?>
                         </th>
 
                         <th class="py-3">
-                            Status
+                            <?= __('status') ?>
                         </th>
 
                         <th class="py-3 pr-6 text-right">
-                            Available Stock
+                            <?= __('available_stock') ?>
                         </th>
 
                     </tr>
@@ -230,7 +231,7 @@ body{
                             <td colspan="4"
                                 class="p-8 text-center text-gray-600 italic">
 
-                                No warehouse alerts detected.
+                                <?= __('no_warehouse_alerts_detected') ?>
 
                             </td>
                         </tr>
@@ -262,13 +263,13 @@ body{
                                     <?php if($batch['BCH_health_status']=='Critical'): ?>
 
                                         <span class="bg-red-500/20 text-red-400 border border-red-900/40 px-2 py-1 rounded text-[10px] uppercase font-bold">
-                                            Critical
+                                            <?= __('status_critical') ?>
                                         </span>
 
                                     <?php else: ?>
 
                                         <span class="bg-yellow-500/20 text-yellow-400 border border-yellow-900/40 px-2 py-1 rounded text-[10px] uppercase font-bold">
-                                            Warning
+                                            <?= __('status_warning') ?>
                                         </span>
 
                                     <?php endif; ?>
@@ -280,7 +281,7 @@ body{
                                     <?= number_format($batch['BCH_available_stock_kg'],1) ?>
 
                                     <span class="text-gray-500 text-xs">
-                                        kg
+                                        <?= __('unit_kg_lowercase') ?>
                                     </span>
 
                                 </td>

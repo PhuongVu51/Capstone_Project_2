@@ -20,10 +20,10 @@ START TRANSACTION;
 
 -- 1. USERS - role values match process_login.php.
 INSERT INTO USERS (USR_username, USR_password_hash, USR_role, USR_full_name, USR_is_active) VALUES
-('pm_alex', '$2y$10$nOUIs5kJ7naTuTFkMD1Ze.pRExhw0qEEyEHQ0QOczzN/z4N1iUOWK', 'Production_Manager', 'Alex Rivera', 1),
-('nhung_thuy', '$2y$10$nOUIs5kJ7naTuTFkMD1Ze.pRExhw0qEEyEHQ0QOczzN/z4N1iUOWK', 'QC', 'Nhung Thủy', 1),
-('wh_admin04', '$2y$10$nOUIs5kJ7naTuTFkMD1Ze.pRExhw0qEEyEHQ0QOczzN/z4N1iUOWK', 'Warehouse_Staff', 'System Admin 04', 1),
-('director_demo', '$2y$10$nOUIs5kJ7naTuTFkMD1Ze.pRExhw0qEEyEHQ0QOczzN/z4N1iUOWK', 'Director', 'Director Demo', 1)
+('pm_alex', '$2y$10$nOUIs5kJ7naTuTFkMD1Ze//Q.YpVRsoZtDlowEgSq', 'Production_Manager', 'Alex Rivera', 1),
+('nhung_thuy', '$2y$10$nOUIs5kJ7naTuTFkMD1Ze//Q.YpVRsoZtDlowEgSq', 'QC', 'Nhung Thủy', 1),
+('wh_admin04', '$2y$10$nOUIs5kJ7naTuTFkMD1Ze//Q.YpVRsoZtDlowEgSq', 'Warehouse_Staff', 'System Admin 04', 1),
+('director_demo', '$2y$10$nOUIs5kJ7naTuTFkMD1Ze//Q.YpVRsoZtDlowEgSq', 'Director', 'Director Demo', 1)
 ON DUPLICATE KEY UPDATE
     USR_role = VALUES(USR_role),
     USR_full_name = VALUES(USR_full_name),

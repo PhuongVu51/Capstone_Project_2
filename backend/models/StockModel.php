@@ -11,7 +11,7 @@ class StockModel extends BaseModel {
         $params = [];
 
         if ($search !== '') {
-            $conditions[] = '(b.BCH_batch_id LIKE :search OR p.PRD_product_name LIKE :search)';
+            $conditions[] = '(b.BCH_batch_id LIKE :search OR p.PRD_product_name LIKE :search OR p.PRD_product_name_en LIKE :search)';
             $params[':search'] = '%' . $search . '%';
         }
 
@@ -22,8 +22,12 @@ class StockModel extends BaseModel {
 
         $whereSql = $conditions ? ' WHERE ' . implode(' AND ', $conditions) : '';
 
+        $lang = $_SESSION['lang'] ?? 'vi';
+        $productNameCol = ($lang === 'en') ? 'COALESCE(p.PRD_product_name_en, p.PRD_product_name)' : 'p.PRD_product_name';
+        $zoneNameCol = ($lang === 'en') ? 'COALESCE(z.STZ_zone_name_en, z.STZ_zone_name)' : 'z.STZ_zone_name';
+
         $sql = "SELECT b.BCH_batch_id,
-                       p.PRD_product_name,
+                       $productNameCol AS PRD_product_name,
                        p.PRD_material_grade,
                        b.BCH_initial_volume_kg,
                        b.BCH_available_stock_kg,
@@ -31,7 +35,7 @@ class StockModel extends BaseModel {
                        b.BCH_health_status,
                        b.BCH_received_date,
                        b.BCH_expiry_date,
-                       z.STZ_zone_name,
+                       $zoneNameCol AS STZ_zone_name,
                        CASE
                            WHEN b.BCH_available_stock_kg <= 0 THEN 'Out of Stock'
                            WHEN b.BCH_available_stock_kg < 100 THEN 'Low Stock'
@@ -60,7 +64,7 @@ class StockModel extends BaseModel {
         $params = [];
 
         if ($search !== '') {
-            $conditions[] = '(b.BCH_batch_id LIKE :search OR p.PRD_product_name LIKE :search)';
+            $conditions[] = '(b.BCH_batch_id LIKE :search OR p.PRD_product_name LIKE :search OR p.PRD_product_name_en LIKE :search)';
             $params[':search'] = '%' . $search . '%';
         }
 
@@ -102,9 +106,10 @@ class StockModel extends BaseModel {
         }
     }
 
-    public function getSuppliersByProduct($productId) {
+    public function getSuppliersByProduct($productId, $lang = 'vi') {
         $productId = intval($productId);
-        $sql = "SELECT SUP_supplier_id, SUP_supplier_name 
+        $supplierNameCol = ($lang === 'en') ? 'COALESCE(SUP_supplier_name_en, SUP_supplier_name)' : 'SUP_supplier_name';
+        $sql = "SELECT SUP_supplier_id, $supplierNameCol AS SUP_supplier_name 
                 FROM SUPPLIERS 
                 WHERE SUP_supplier_name NOT IN ('SUP_UNKNOWN', 'Unknown', 'unknown')
                 ORDER BY SUP_supplier_name ASC";
