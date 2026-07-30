@@ -1,0 +1,39 @@
+<?php
+// backend/api/notifications.php
+
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+
+header('Content-Type: application/json; charset=utf-8');
+
+// Ensure user is authenticated
+if (!isset($_SESSION['user_id']) || !isset($_SESSION['role'])) {
+    echo json_encode(['status' => 'error', 'message' => 'Unauthorized', 'count' => 0, 'data' => []]);
+    exit;
+}
+
+require_once __DIR__ . '/../models/NotificationModel.php';
+
+try {
+    $notificationModel = new NotificationModel();
+    $role = $_SESSION['role'];
+    
+    // Fetch notifications
+    $notifications = $notificationModel->getAlertsByRole($role);
+    $count = count($notifications);
+    
+    echo json_encode([
+        'status' => 'success',
+        'count' => $count,
+        'data' => $notifications
+    ]);
+} catch (Exception $e) {
+    echo json_encode([
+        'status' => 'error',
+        'message' => 'Internal server error',
+        'count' => 0,
+        'data' => []
+    ]);
+}
+?>

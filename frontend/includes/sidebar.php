@@ -57,7 +57,44 @@ if ($role === 'QC') {
     $sidebar_title = 'F&G FOOD';
     $sidebar_subtitle = 'Warehouse Unit 04';
 }
+
+if (!function_exists('__')) {
+    function __($key, $default = '') { return $default ?: $key; }
+}
 ?>
+
+<!-- NOTIFICATION BELL (Shared across all pages) -->
+<div class="fixed top-4 right-4 md:right-8 z-50">
+    <div class="relative">
+        <!-- Bell Button -->
+        <button id="notification-bell-btn" class="relative p-2 text-gray-400 hover:text-white bg-[#0f1722]/80 backdrop-blur-sm hover:bg-[#1f2937] rounded-full border border-[#1f2937] transition-all shadow-lg focus:outline-none">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"></path>
+            </svg>
+            <!-- Badge -->
+            <span id="notification-badge" class="hidden absolute top-0 right-0 inline-flex items-center justify-center px-1.5 py-0.5 text-xs font-bold leading-none text-white transform translate-x-1/4 -translate-y-1/4 bg-red-500 rounded-full">
+                0
+            </span>
+        </button>
+
+        <!-- Dropdown Panel -->
+        <div id="notification-dropdown" class="hidden absolute right-0 mt-2 w-80 sm:w-96 bg-[#0f1722] border border-[#1f2937] rounded-xl shadow-2xl overflow-hidden transform opacity-0 scale-95 transition-all duration-200 origin-top-right">
+            <div class="p-4 border-b border-[#1f2937] flex justify-between items-center bg-[#07121a]">
+                <h3 class="text-sm font-bold text-white uppercase tracking-wider"><?= __('notifications', 'Thông báo') ?></h3>
+                <button id="mark-all-read-btn" class="hidden text-xs text-[#10b981] hover:text-[#059669] transition-colors">Đánh dấu đã đọc</button>
+            </div>
+            
+            <div id="notification-list-container" class="max-h-[60vh] overflow-y-auto">
+                <!-- Data will be injected here via JS AJAX Polling -->
+                <div class="p-8 text-center">
+                    <svg class="w-6 h-6 text-gray-600 animate-spin mx-auto mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
+                    <p class="text-sm text-gray-500">Loading...</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
 
 <!-- MOBILE HEADER -->
 <div class="md:hidden w-full bg-[#0f1722] border-b border-[#1f2937] p-4 flex justify-between items-center fixed top-0 left-0 z-50 shadow-md">
@@ -139,6 +176,113 @@ document.addEventListener('DOMContentLoaded', function() {
         overlay.addEventListener('click', function() {
             sidebar.classList.add('-translate-x-full');
             overlay.classList.add('hidden');
+        });
+    }
+
+    // Notification Logic (AJAX Polling)
+    const bellBtn = document.getElementById('notification-bell-btn');
+    const dropdown = document.getElementById('notification-dropdown');
+    const badge = document.getElementById('notification-badge');
+    const markReadBtn = document.getElementById('mark-all-read-btn');
+    const listContainer = document.getElementById('notification-list-container');
+    
+    const currentRole = '<?= htmlspecialchars($role) ?>';
+    const storageKey = 'fng_read_notifs_' + currentRole;
+    let serverNotifCount = 0;
+
+    function escapeHtml(unsafe) {
+        return (unsafe || '').toString()
+             .replace(/&/g, "&amp;")
+             .replace(/</g, "&lt;")
+             .replace(/>/g, "&gt;")
+             .replace(/"/g, "&quot;")
+             .replace(/'/g, "&#039;");
+    }
+
+    function fetchNotifications() {
+        fetch('../backend/api/notifications.php')
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    serverNotifCount = data.count;
+                    const lastReadCount = parseInt(localStorage.getItem(storageKey)) || 0;
+                    
+                    // Update Badge
+                    if (serverNotifCount > 0 && serverNotifCount !== lastReadCount) {
+                        badge.textContent = serverNotifCount;
+                        badge.classList.remove('hidden');
+                    } else {
+                        badge.classList.add('hidden');
+                    }
+
+                    // Render Dropdown Content
+                    if (serverNotifCount > 0) {
+                        markReadBtn.classList.remove('hidden');
+                        let html = '<ul class="divide-y divide-[#1f2937]">';
+                        data.data.forEach(notif => {
+                            html += `
+                            <li>
+                                <a href="${notif.link}" class="block p-4 hover:bg-[#1f2937]/50 transition-colors">
+                                    <div class="flex items-start gap-3">
+                                        <div class="flex-shrink-0 mt-1">
+                                            ${notif.icon}
+                                        </div>
+                                        <div class="flex-1 min-w-0">
+                                            <p class="text-sm font-semibold text-white mb-1">${escapeHtml(notif.title)}</p>
+                                            <p class="text-xs text-gray-400 truncate">${escapeHtml(notif.message)}</p>
+                                            <p class="text-[10px] text-gray-500 mt-1 uppercase tracking-wider">${escapeHtml(notif.time_desc)}</p>
+                                        </div>
+                                    </div>
+                                </a>
+                            </li>`;
+                        });
+                        html += '</ul>';
+                        listContainer.innerHTML = html;
+                    } else {
+                        markReadBtn.classList.add('hidden');
+                        listContainer.innerHTML = `
+                        <div class="p-8 text-center">
+                            <svg class="w-12 h-12 text-gray-600 mx-auto mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"></path></svg>
+                            <p class="text-sm text-gray-500">Không có thông báo mới</p>
+                        </div>`;
+                    }
+                }
+            })
+            .catch(error => console.error('Error fetching notifications:', error));
+    }
+
+    // Initial load & Setup Polling
+    fetchNotifications();
+    setInterval(fetchNotifications, 30000);
+
+    // Dropdown toggle logic
+    if (bellBtn && dropdown) {
+        bellBtn.addEventListener('click', function(e) {
+            e.stopPropagation();
+            dropdown.classList.toggle('hidden');
+            setTimeout(() => {
+                dropdown.classList.toggle('opacity-0');
+                dropdown.classList.toggle('scale-95');
+            }, 10);
+        });
+
+        document.addEventListener('click', function(e) {
+            if (!bellBtn.contains(e.target) && !dropdown.contains(e.target)) {
+                dropdown.classList.add('opacity-0', 'scale-95');
+                setTimeout(() => dropdown.classList.add('hidden'), 200);
+            }
+        });
+    }
+
+    // Mark as read logic
+    if (markReadBtn) {
+        markReadBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            localStorage.setItem(storageKey, serverNotifCount);
+            badge.classList.add('hidden');
+            dropdown.classList.add('opacity-0', 'scale-95');
+            setTimeout(() => dropdown.classList.add('hidden'), 200);
         });
     }
 });
