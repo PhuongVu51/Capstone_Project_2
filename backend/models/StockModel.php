@@ -153,6 +153,34 @@ class StockModel extends BaseModel {
         return (int) $stmt->fetchColumn();
     }
 
+    public function getBatchDetails($batchId, $lang = 'vi') {
+        $productNameCol = ($lang === 'en') ? 'COALESCE(p.PRD_product_name_en, p.PRD_product_name)' : 'p.PRD_product_name';
+        $zoneNameCol = ($lang === 'en') ? 'COALESCE(z.STZ_zone_name_en, z.STZ_zone_name)' : 'z.STZ_zone_name';
+        $supplierNameCol = ($lang === 'en') ? 'COALESCE(s.SUP_supplier_name_en, s.SUP_supplier_name)' : 's.SUP_supplier_name';
+        
+        $sql = "SELECT b.BCH_batch_id,
+                       $productNameCol AS PRD_product_name,
+                       p.PRD_material_grade,
+                       b.BCH_initial_volume_kg,
+                       b.BCH_available_stock_kg,
+                       b.BCH_current_stage,
+                       b.BCH_health_status,
+                       b.BCH_received_date,
+                       b.BCH_expiry_date,
+                       $zoneNameCol AS STZ_zone_name,
+                       $supplierNameCol AS SUP_supplier_name
+                FROM BATCHES b
+                LEFT JOIN PRODUCTS p ON b.BCH_product_id = p.PRD_product_id
+                LEFT JOIN STORAGE_ZONES z ON b.BCH_zone_id = z.STZ_zone_id
+                LEFT JOIN SUPPLIERS s ON b.BCH_supplier_id = s.SUP_supplier_id
+                WHERE b.BCH_batch_id = :batch_id
+                LIMIT 1";
+                
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->execute([':batch_id' => $batchId]);
+        return $stmt->fetch(PDO::FETCH_ASSOC) ?: null;
+    }
+
     public function deleteBatch($batchId) {
         try {
             $this->pdo->beginTransaction();
