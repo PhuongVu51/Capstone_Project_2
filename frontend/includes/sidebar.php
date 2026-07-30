@@ -200,7 +200,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     function fetchNotifications() {
-        fetch('../backend/api/notifications.php')
+        fetch('../backend/api/notifications.php?t=' + new Date().getTime())
             .then(response => response.json())
             .then(data => {
                 if (data.status === 'success') {

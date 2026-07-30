@@ -10,6 +10,28 @@ class NotificationModel extends BaseModel {
         $alerts = [];
         $lang = $_SESSION['lang'] ?? 'vi';
         
+        // Thông báo khi QC inspect thành công cho bên Warehouse (Ưu tiên hiện lên đầu)
+        $sqlQC = "SELECT b.BCH_batch_id, p.PRD_product_name 
+                  FROM BATCHES b
+                  JOIN PRODUCTS p ON b.BCH_product_id = p.PRD_product_id
+                  WHERE b.BCH_current_stage = 'QC_Passed'
+                  ORDER BY b.BCH_received_date DESC
+                  LIMIT 3"; // Limit to top 3 recent to avoid clutter
+        $stmtQC = $this->pdo->query($sqlQC);
+        $qcPassedBatches = $stmtQC->fetchAll(PDO::FETCH_ASSOC);
+
+        foreach ($qcPassedBatches as $batch) {
+            $alerts[] = [
+                'id' => 'qcpass_' . $batch['BCH_batch_id'],
+                'type' => 'qc_passed',
+                'icon' => '<svg class="w-5 h-5 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>',
+                'title' => ($lang === 'en') ? 'QC Passed' : 'QC Thành công',
+                'message' => "Lô " . htmlspecialchars($batch['BCH_batch_id']) . " (" . htmlspecialchars($batch['PRD_product_name']) . ") đã qua kiểm định.",
+                'time_desc' => ($lang === 'en') ? 'Ready for stock' : 'Đã sẵn sàng',
+                'link' => 'inventory.php'
+            ];
+        }
+        
         $sql = "SELECT b.BCH_batch_id, p.PRD_product_name, b.BCH_available_stock_kg
                 FROM BATCHES b
                 JOIN PRODUCTS p ON b.BCH_product_id = p.PRD_product_id
@@ -41,29 +63,6 @@ class NotificationModel extends BaseModel {
                     'link' => 'inventory.php'
                 ];
             }
-        }
-
-        // Thông báo khi QC inspect thành công cho bên Warehouse
-        $sqlQC = "SELECT b.BCH_batch_id, p.PRD_product_name 
-                  FROM BATCHES b
-                  JOIN PRODUCTS p ON b.BCH_product_id = p.PRD_product_id
-                  JOIN QC_INSPECTIONS q ON b.BCH_batch_id = q.QCI_batch_id
-                  WHERE b.BCH_current_stage = 'QC_Passed'
-                  ORDER BY q.QCI_inspection_id DESC
-                  LIMIT 3"; // Limit to top 3 recent to avoid clutter
-        $stmtQC = $this->pdo->query($sqlQC);
-        $qcPassedBatches = $stmtQC->fetchAll(PDO::FETCH_ASSOC);
-
-        foreach ($qcPassedBatches as $batch) {
-            $alerts[] = [
-                'id' => 'qcpass_' . $batch['BCH_batch_id'],
-                'type' => 'qc_passed',
-                'icon' => '<svg class="w-5 h-5 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>',
-                'title' => ($lang === 'en') ? 'QC Passed' : 'QC Thành công',
-                'message' => "Lô " . htmlspecialchars($batch['BCH_batch_id']) . " (" . htmlspecialchars($batch['PRD_product_name']) . ") đã qua kiểm định.",
-                'time_desc' => ($lang === 'en') ? 'Ready for stock' : 'Đã sẵn sàng',
-                'link' => 'inventory.php'
-            ];
         }
 
         return $alerts;

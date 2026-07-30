@@ -84,7 +84,7 @@ class QcInspectionModel extends BaseModel {
         $productNameCol = ($lang === 'en') ? 'COALESCE(p.PRD_product_name_en, p.PRD_product_name)' : 'p.PRD_product_name';
         $supplierNameCol = ($lang === 'en') ? 'COALESCE(s.SUP_supplier_name_en, s.SUP_supplier_name)' : 's.SUP_supplier_name';
 
-        $sql = "SELECT b.BCH_batch_id, $productNameCol AS PRD_product_name, b.BCH_weight_kg, 
+        $sql = "SELECT b.BCH_batch_id, $productNameCol AS PRD_product_name, 
                    $supplierNameCol AS SUP_supplier_name, s.SUP_origin_facility,
                    b.BCH_initial_volume_kg, b.BCH_received_date
             FROM BATCHES b

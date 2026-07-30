@@ -6,6 +6,9 @@ if (session_status() === PHP_SESSION_NONE) {
 }
 
 header('Content-Type: application/json; charset=utf-8');
+header('Cache-Control: no-cache, no-store, must-revalidate');
+header('Pragma: no-cache');
+header('Expires: 0');
 
 // Ensure user is authenticated
 if (!isset($_SESSION['user_id']) || !isset($_SESSION['role'])) {
