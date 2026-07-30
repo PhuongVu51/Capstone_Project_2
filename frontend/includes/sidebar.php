@@ -40,7 +40,6 @@ if ($role === 'QC') {
         ['label' => __('dashboard'), 'href' => 'dashboard_production.php', 'page' => 'dashboard_production.php'],
         ['label' => __('inventory'), 'href' => 'inventory.php', 'page' => 'inventory.php'],
         ['label' => __('fefo_alerts'), 'href' => 'production_FEFO.php', 'page' => 'production_FEFO.php'],
-        ['label' => __('production_flow'), 'href' => 'production_flow.php', 'page' => 'production_flow.php'],
         ['label' => __('analytics'), 'href' => 'production_analytics.php', 'page' => 'production_analytics.php'],
     ];
     $sidebar_title = 'Plant Alpha';
