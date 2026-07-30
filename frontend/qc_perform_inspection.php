@@ -20,6 +20,8 @@ try {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Execute Protocol #<?= htmlspecialchars($batch['BCH_batch_id']) ?> | ProSync</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="assets/css/searchable_select.css">
+    <script src="assets/js/searchable_select.js"></script>
     <style>
         body { background-color: #06121a; color: #d1d5db; font-family: 'Inter', sans-serif; }
     </style>
@@ -231,6 +233,14 @@ try {
                 display.className = "text-4xl font-mono font-black text-[#10b981] transition-colors duration-300";
             }
         }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            if (document.getElementById('rejection_reason')) {
+                new SearchableSelect('#rejection_reason', {
+                    placeholder: '<?= __('select_rejection_reason') ?>'
+                });
+            }
+        });
     </script>
 </body>
 </html>

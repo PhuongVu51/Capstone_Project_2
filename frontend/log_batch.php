@@ -21,6 +21,8 @@ try {
     <meta charset="UTF-8">
     <title>Log New Batch | F&G FOOD</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="assets/css/searchable_select.css">
+    <script src="assets/js/searchable_select.js"></script>
     <style>
         body { background-color: #06121a; color: #d1d5db; font-family: 'Inter', sans-serif; }
     </style>
@@ -53,6 +55,7 @@ try {
                     <?php
                         if ($_GET['error'] == 'missing_fields') echo __('error_missing_fields');
                         else if ($_GET['error'] == 'db_error') echo __('error_db');
+                        else if ($_GET['error'] == 'past_expiry_date') echo 'Lỗi thời gian: Ngày hết hạn không thể ở trong quá khứ hoặc nhỏ hơn thời gian thực tế!';
                     ?>
                     </span>
                 </div>
@@ -86,7 +89,7 @@ try {
                     </div>
                     <div>
                         <label class="block text-sm font-semibold text-gray-300 mb-2"><?= __('storage_zone_asterisk') ?></label>
-                        <select name="zone_id" required class="w-full bg-[#0b1722] border border-[#374151] text-white rounded-lg p-2.5 focus:border-[#10b981] focus:ring-1 focus:ring-[#10b981] focus:outline-none transition-colors">
+                        <select id="zone-select" name="zone_id" required class="w-full bg-[#0b1722] border border-[#374151] text-white rounded-lg p-2.5 focus:border-[#10b981] focus:ring-1 focus:ring-[#10b981] focus:outline-none transition-colors">
                             <option value=""><?= __('select_zone') ?></option>
                             <?php foreach($zones as $z): ?>
                                 <option value="<?= $z['STZ_zone_id'] ?>"><?= htmlspecialchars($z['STZ_zone_name']) ?></option>
@@ -107,10 +110,16 @@ try {
                             <?php endforeach; ?>
                         </select>
                     </div>
-                    <div>
-                        <label class="block text-sm font-semibold text-gray-300 mb-2"><?= __('expiry_date') ?></label>
-                        <input type="datetime-local" id="expiry-date-input" name="expiry_date" 
-                               class="w-full bg-[#0b1722] border border-[#374151] text-white rounded-lg p-2.5 focus:border-[#10b981] focus:ring-1 focus:ring-[#10b981] focus:outline-none transition-colors [color-scheme:dark]">
+                    <div class="flex items-center">
+                        <div class="w-full p-3 bg-[#07121a] rounded-lg border border-[#1f2937] flex items-center gap-3">
+                            <div class="p-2 bg-[#10b981]/10 rounded-full border border-[#10b981]/30 text-[#10b981] shrink-0">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                            </div>
+                            <div class="text-xs text-gray-400">
+                                <span class="font-bold text-gray-200 block mb-0.5">Tự động Quản lý Thời gian:</span>
+                                Thời gian nhập kho được ghi nhận <span class="text-[#10b981] font-semibold">Real-Time (NOW)</span>. Hạn sử dụng sẽ tự động tính theo Shelf Life của sản phẩm.
+                            </div>
+                        </div>
                     </div>
                 </div>
 
@@ -132,21 +141,41 @@ try {
             var expiryInput = document.getElementById('expiry-date-input');
             var productShelfLifeMap = <?= json_encode(array_column($products, 'PRD_shelf_life_days', 'PRD_product_id')) ?>;
 
+            var zoneSelect = document.getElementById('zone-select');
+
+            var searchableProduct = new SearchableSelect(productSelect, {
+                placeholder: '<?= __('select_product') ?>',
+                noResultsText: 'Không tìm thấy sản phẩm'
+            });
+            var searchableSupplier = new SearchableSelect(supplierSelect, {
+                placeholder: '<?= __('select_supplier') ?>',
+                noResultsText: 'Không tìm thấy nhà cung cấp'
+            });
+            var searchableZone = new SearchableSelect(zoneSelect, {
+                placeholder: '<?= __('select_zone') ?>',
+                noResultsText: 'Không tìm thấy khu vực kho'
+            });
+            var searchableShift = new SearchableSelect(shiftSelect, {
+                placeholder: '<?= __('select_shift') ?>',
+                noResultsText: 'Không tìm thấy ca làm việc'
+            });
+
             function setSupplierOptions(suppliers) {
                 supplierSelect.innerHTML = '<option value="">Select Supplier...</option>';
-                if (!Array.isArray(suppliers) || suppliers.length === 0) {
-                    return;
+                if (Array.isArray(suppliers) && suppliers.length > 0) {
+                    suppliers.forEach(function(supplier) {
+                        var option = document.createElement('option');
+                        option.value = supplier.SUP_supplier_id;
+                        option.textContent = supplier.SUP_supplier_name;
+                        supplierSelect.appendChild(option);
+                    });
                 }
-                suppliers.forEach(function(supplier) {
-                    var option = document.createElement('option');
-                    option.value = supplier.SUP_supplier_id;
-                    option.textContent = supplier.SUP_supplier_name;
-                    supplierSelect.appendChild(option);
-                });
+                if (searchableSupplier) searchableSupplier.refresh();
             }
 
             function fetchSuppliers(productId) {
                 supplierSelect.innerHTML = '<option value="">Loading suppliers...</option>';
+                if (searchableSupplier) searchableSupplier.refresh();
                 if (!productId) {
                     setSupplierOptions([]);
                     return;
@@ -173,6 +202,7 @@ try {
                 .catch(function(error) {
                     console.error('Error fetching suppliers:', error);
                     supplierSelect.innerHTML = '<option value="">Select Supplier...</option>';
+                    if (searchableSupplier) searchableSupplier.refresh();
                 });
             }
 
@@ -207,6 +237,7 @@ try {
 
                 if (matchedOption) {
                     shiftSelect.value = matchedOption.value;
+                    if (searchableShift) searchableShift.updateInputValueFromSelect();
                 }
             }
 
@@ -237,7 +268,53 @@ try {
 
             // initial reset to make sure no suppliers are shown until a product is selected
             supplierSelect.innerHTML = '<option value="">Select Supplier...</option>';
+            if (searchableSupplier) searchableSupplier.refresh();
+
+            // Client-side date validation
+            var batchForm = document.querySelector('form');
+            if (batchForm) {
+                batchForm.addEventListener('submit', function(e) {
+                    if (!expiryInput.value) return;
+                    var selectedDate = new Date(expiryInput.value);
+                    var now = new Date();
+                    if (selectedDate <= now) {
+                        e.preventDefault();
+                        var modal = document.getElementById('date-error-modal');
+                        var msg = document.getElementById('date-error-modal-msg');
+                        if (msg) {
+                            msg.innerHTML = 'Hệ thống chạy thời gian thực! Ngày hết hạn được chọn (<b>' + selectedDate.toLocaleDateString('vi-VN') + ' ' + selectedDate.toLocaleTimeString('vi-VN') + '</b>) thuộc về quá khứ hoặc nhỏ hơn thời gian hiện tại (<b>' + now.toLocaleDateString('vi-VN') + ' ' + now.toLocaleTimeString('vi-VN') + '</b>).<br><br><span class="text-red-400 font-semibold">Lô hàng này sẽ không được duyệt nhập kho! Vui lòng chọn lại ngày hết hạn hợp lệ.</span>';
+                        }
+                        if (modal) {
+                            modal.classList.remove('hidden');
+                        }
+                    }
+                });
+            }
         });
+
+        function closeDateErrorModal() {
+            var modal = document.getElementById('date-error-modal');
+            if (modal) modal.classList.add('hidden');
+        }
     </script>
+
+    <!-- Date Error Modal Popup -->
+    <div id="date-error-modal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center hidden transition-all duration-300">
+        <div class="bg-[#0e1b2a] border border-red-500/50 rounded-xl p-6 max-w-md w-full mx-4 shadow-2xl shadow-red-950/60">
+            <div class="flex items-start gap-4">
+                <div class="p-3 bg-red-500/10 rounded-full border border-red-500/30 text-red-400 shrink-0">
+                    <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
+                </div>
+                <div>
+                    <h3 class="text-lg font-bold text-white mb-2">Lỗi Không Hợp Thời Gian Thực!</h3>
+                    <p id="date-error-modal-msg" class="text-sm text-gray-300 leading-relaxed mb-5"></p>
+                    <button type="button" onclick="closeDateErrorModal()" class="w-full py-2.5 px-4 bg-gradient-to-r from-red-600 to-red-700 hover:from-red-500 hover:to-red-600 text-white font-bold rounded-lg shadow-lg shadow-red-950/50 transition-all flex items-center justify-center gap-2">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                        Đã hiểu & Chọn lại ngày
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
 </body>
 </html>

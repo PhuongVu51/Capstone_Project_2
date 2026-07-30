@@ -132,19 +132,49 @@ try {
                     <div class="overflow-hidden">
                         <table class="w-full text-left">
                             <thead class="text-gray-400 text-xs uppercase bg-[#041a1a]">
-                                <tr><th class="p-3"><?= __('batch_id') ?></th><th class="p-3"><?= __('commodity') ?></th><th class="p-3"><?= __('quantity') ?></th><th class="p-3"><?= __('status') ?></th><th class="p-3"><?= __('time') ?></th></tr>
+                                <tr>
+                                    <th class="p-3"><?= __('batch_id') ?></th>
+                                    <th class="p-3"><?= __('commodity') ?></th>
+                                    <th class="p-3"><?= __('quantity') ?></th>
+                                    <th class="p-3"><?= __('status') ?></th>
+                                    <th class="p-3"><?= __('time') ?></th>
+                                    <th class="p-3 text-right">Thao tác</th>
+                                </tr>
                             </thead>
                             <tbody>
                                 <?php if (empty($movements)): ?>
-                                    <tr><td colspan="5" class="p-6 text-center text-gray-500"><?= __('no_movements_found') ?></td></tr>
+                                    <tr><td colspan="6" class="p-6 text-center text-gray-500"><?= __('no_movements_found') ?></td></tr>
                                 <?php else: ?>
                                     <?php foreach ($movements as $m): ?>
-                                        <tr class="border-t border-[#0f2420]">
-                                            <td class="p-3 text-[#10b981] font-mono"><?= htmlspecialchars($m['BCH_batch_id'] ?? $m['STM_reference_code']) ?></td>
+                                        <?php $realBatchId = $m['BCH_batch_id'] ?? ''; ?>
+                                        <tr class="border-t border-[#0f2420] hover:bg-[#091e23] transition-colors">
+                                            <td class="p-3 text-[#10b981] font-mono font-bold">
+                                                <?php if ($realBatchId): ?>
+                                                    <button type="button" onclick="openBatchDetailModal('<?= htmlspecialchars($realBatchId) ?>')" class="hover:underline text-left">
+                                                        <?= htmlspecialchars($realBatchId) ?>
+                                                    </button>
+                                                <?php else: ?>
+                                                    <?= htmlspecialchars($m['STM_reference_code']) ?>
+                                                <?php endif; ?>
+                                            </td>
                                             <td class="p-3"><?= htmlspecialchars($m['PRD_product_name'] ?? '') ?></td>
-                                            <td class="p-3"><?= number_format($m['STM_quantity_kg'],0) ?> kg</td>
-                                            <td class="p-3"><span class="text-xs bg-[#0d3b2f] text-[#9ff1d1] px-2 py-1 rounded"><?= htmlspecialchars($m['STM_movement_type']) ?></span></td>
-                                            <td class="p-3 text-sm text-gray-400"><?= date('H:i:s', strtotime($m['STM_timestamp'])) ?></td>
+                                            <td class="p-3 font-mono font-bold"><?= number_format($m['STM_quantity_kg'],0) ?> kg</td>
+                                            <td class="p-3"><span class="text-xs bg-[#0d3b2f] text-[#9ff1d1] px-2.5 py-1 rounded font-bold"><?= htmlspecialchars($m['STM_movement_type']) ?></span></td>
+                                            <td class="p-3 text-sm text-gray-400 font-mono"><?= date('H:i:s', strtotime($m['STM_timestamp'])) ?></td>
+                                            <td class="p-3 text-right">
+                                                <?php if ($realBatchId): ?>
+                                                    <div class="flex justify-end gap-2 items-center">
+                                                        <button type="button" onclick="openBatchDetailModal('<?= htmlspecialchars($realBatchId) ?>')" title="Xem chi tiết lô hàng (Detail)" class="p-1.5 bg-[#0f2937] hover:bg-[#10b981]/20 text-[#10b981] rounded border border-[#10b981]/30 transition-all flex items-center gap-1 text-xs">
+                                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg>
+                                                        </button>
+                                                        <button type="button" onclick="openBatchEditModal('<?= htmlspecialchars($realBatchId) ?>', 'dashboard_warehouse.php')" title="Chỉnh sửa lô hàng" class="p-1.5 bg-[#0f2937] hover:bg-amber-500/20 text-amber-400 rounded border border-amber-500/30 transition-all flex items-center gap-1 text-xs">
+                                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
+                                                        </button>
+                                                    </div>
+                                                <?php else: ?>
+                                                    <span class="text-xs text-gray-500">-</span>
+                                                <?php endif; ?>
+                                            </td>
                                         </tr>
                                     <?php endforeach; ?>
                                 <?php endif; ?>
@@ -178,5 +208,6 @@ try {
             </div>
         </div>
     </main>
+    <?php include 'includes/batch_modal.php'; ?>
 </body>
 </html>

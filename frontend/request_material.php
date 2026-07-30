@@ -22,6 +22,8 @@ try {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Request Material | ProSync Industrial</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="assets/css/searchable_select.css">
+    <script src="assets/js/searchable_select.js"></script>
     <style>
         :root { --bg-dark: #0a1118; --bg-card: #0f1722; --accent-blue: #3b82f6; --border-color: #1f2937; }
         body { background-color: var(--bg-dark); font-family: 'Inter', sans-serif; color: #d1d5db; }
@@ -49,7 +51,7 @@ try {
                     <!-- Chọn vật tư -->
                     <div>
                         <label class="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2"><?= __('select_material') ?></label>
-                        <select name="material_id" required class="w-full bg-[#0a1118] border border-[#374151] text-white rounded p-3 focus:outline-none focus:border-[#3b82f6] transition-colors">
+                        <select id="material-select" name="material_id" required class="w-full bg-[#0a1118] border border-[#374151] text-white rounded p-3 focus:outline-none focus:border-[#3b82f6] transition-colors">
                             <option value=""><?= __('choose_a_material') ?></option>
                             
                             <?php foreach ($materials as $mat): ?>
@@ -103,5 +105,13 @@ try {
             </div>
         </div>
     </main>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            new SearchableSelect('#material-select', {
+                placeholder: '<?= __('choose_a_material') ?>'
+            });
+        });
+    </script>
 </body>
 </html>

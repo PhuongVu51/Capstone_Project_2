@@ -49,6 +49,13 @@ class StockModel extends BaseModel {
         return $shiftId ? (int) $shiftId : null;
     }
 
+    public function getProductShelfLife($productId) {
+        $stmt = $this->pdo->prepare("SELECT PRD_shelf_life_days FROM PRODUCTS WHERE PRD_product_id = :pid");
+        $stmt->execute([':pid' => (int) $productId]);
+        $days = $stmt->fetchColumn();
+        return ($days && intval($days) > 0) ? intval($days) : 180;
+    }
+
     private function isShiftOpen($shiftId) {
         $stmt = $this->pdo->prepare(
             "SELECT COUNT(*)
@@ -400,6 +407,116 @@ class StockModel extends BaseModel {
             $this->pdo->commit();
             return true;
 
+        } catch (Exception $e) {
+            $this->pdo->rollBack();
+            return false;
+        }
+    }
+
+    public function getBatchFullDetails($batchId, $lang = 'vi') {
+        $productNameCol = ($lang === 'en') ? 'COALESCE(p.PRD_product_name_en, p.PRD_product_name)' : 'p.PRD_product_name';
+        $zoneNameCol = ($lang === 'en') ? 'COALESCE(z.STZ_zone_name_en, z.STZ_zone_name)' : 'z.STZ_zone_name';
+        $supplierNameCol = ($lang === 'en') ? 'COALESCE(s.SUP_supplier_name_en, s.SUP_supplier_name)' : 's.SUP_supplier_name';
+        
+        $sql = "SELECT b.*,
+                       $productNameCol AS PRD_product_name,
+                       p.PRD_material_grade,
+                       p.PRD_unit_price,
+                       $zoneNameCol AS STZ_zone_name,
+                       $supplierNameCol AS SUP_supplier_name,
+                       sh.SHF_shift_date,
+                       sh.SHF_shift_type
+                FROM BATCHES b
+                LEFT JOIN PRODUCTS p ON b.BCH_product_id = p.PRD_product_id
+                LEFT JOIN STORAGE_ZONES z ON b.BCH_zone_id = z.STZ_zone_id
+                LEFT JOIN SUPPLIERS s ON b.BCH_supplier_id = s.SUP_supplier_id
+                LEFT JOIN SHIFTS sh ON b.BCH_shift_id = sh.SHF_shift_id
+                WHERE b.BCH_batch_id = :batch_id
+                LIMIT 1";
+                
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->execute([':batch_id' => $batchId]);
+        $batch = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        if (!$batch) return null;
+
+        $stmtMoves = $this->pdo->prepare("
+            SELECT m.*, u.USR_full_name 
+            FROM STOCK_MOVEMENTS m
+            LEFT JOIN USERS u ON m.STM_user_id = u.USR_user_id
+            WHERE m.STM_batch_id = :batch_id
+            ORDER BY m.STM_timestamp DESC
+        ");
+        $stmtMoves->execute([':batch_id' => $batchId]);
+        $batch['movements'] = $stmtMoves->fetchAll(PDO::FETCH_ASSOC);
+
+        return $batch;
+    }
+
+    public function updateBatchDetailsFull($batchId, $newZoneId, $newExpiryDate, $availableStock, $healthStatus, $userId) {
+        try {
+            $this->pdo->beginTransaction();
+
+            $sqlCheck = "SELECT * FROM BATCHES WHERE BCH_batch_id = :batch_id FOR UPDATE";
+            $stmtCheck = $this->pdo->prepare($sqlCheck);
+            $stmtCheck->execute([':batch_id' => $batchId]);
+            $batch = $stmtCheck->fetch(PDO::FETCH_ASSOC);
+
+            if (!$batch) {
+                $this->pdo->rollBack();
+                return false;
+            }
+
+            $oldZoneId = $batch['BCH_zone_id'];
+            $oldStock = floatval($batch['BCH_available_stock_kg']);
+            $newStock = floatval($availableStock);
+
+            if ($oldZoneId != $newZoneId) {
+                $stmtSub = $this->pdo->prepare("UPDATE STORAGE_ZONES SET STZ_current_load_kg = GREATEST(0, STZ_current_load_kg - :stock) WHERE STZ_zone_id = :old_zone");
+                $stmtSub->execute([':stock' => $oldStock, ':old_zone' => $oldZoneId]);
+
+                $stmtAdd = $this->pdo->prepare("UPDATE STORAGE_ZONES SET STZ_current_load_kg = STZ_current_load_kg + :stock WHERE STZ_zone_id = :new_zone");
+                $stmtAdd->execute([':stock' => $newStock, ':new_zone' => $newZoneId]);
+            } else if ($oldStock != $newStock) {
+                $diff = $newStock - $oldStock;
+                $stmtDiff = $this->pdo->prepare("UPDATE STORAGE_ZONES SET STZ_current_load_kg = GREATEST(0, STZ_current_load_kg + :diff) WHERE STZ_zone_id = :zone_id");
+                $stmtDiff->execute([':diff' => $diff, ':zone_id' => $newZoneId]);
+            }
+
+            $stmtUpdate = $this->pdo->prepare("
+                UPDATE BATCHES 
+                SET BCH_zone_id = :zone_id,
+                    BCH_expiry_date = :expiry_date,
+                    BCH_available_stock_kg = :stock,
+                    BCH_health_status = :health_status
+                WHERE BCH_batch_id = :batch_id
+            ");
+            $stmtUpdate->execute([
+                ':zone_id' => $newZoneId,
+                ':expiry_date' => $newExpiryDate,
+                ':stock' => $newStock,
+                ':health_status' => $healthStatus,
+                ':batch_id' => $batchId
+            ]);
+
+            $shiftId = $this->getCurrentOpenShiftId();
+            if ($shiftId) {
+                $ref = 'ADJ_' . time() . '_' . rand(100, 999);
+                $stmtMove = $this->pdo->prepare("
+                    INSERT INTO STOCK_MOVEMENTS (STM_reference_code, STM_batch_id, STM_shift_id, STM_movement_type, STM_quantity_kg, STM_user_id)
+                    VALUES (:ref_code, :batch_id, :shift_id, 'ADJUSTMENT', :quantity, :user_id)
+                ");
+                $stmtMove->execute([
+                    ':ref_code' => $ref,
+                    ':batch_id' => $batchId,
+                    ':shift_id' => $shiftId,
+                    ':quantity' => abs($newStock - $oldStock),
+                    ':user_id' => $userId
+                ]);
+            }
+
+            $this->pdo->commit();
+            return true;
         } catch (Exception $e) {
             $this->pdo->rollBack();
             return false;

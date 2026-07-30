@@ -41,6 +41,12 @@ class StockController {
                 exit();
             }
 
+            // Nếu không truyền Expiry Date, tự động tính theo Hạn sử dụng (Shelf Life Days) của sản phẩm
+            if (empty($expiryDate)) {
+                $shelfDays = $this->stockModel->getProductShelfLife($productId);
+                $expiryDate = date('Y-m-d H:i:s', strtotime("+$shelfDays days"));
+            }
+
             // Gọi Model để insert và cập nhật tồn kho an toàn
             $success = $this->stockModel->stockIn($batchId, $productId, $supplierId, $shiftId, $zoneId, $receivedDate, $expiryDate, $initialVolume, $userId);
 
@@ -49,6 +55,57 @@ class StockController {
                 exit();
             } else {
                 header("Location: ../../frontend/log_batch.php?error=db_error");
+                exit();
+            }
+        }
+    }
+
+    public function handleGetBatchDetail() {
+        $batchId = trim($_GET['batch_id'] ?? $_POST['batch_id'] ?? '');
+        if (empty($batchId)) {
+            http_response_code(400);
+            echo json_encode(['error' => 'batch_id_required']);
+            exit();
+        }
+
+        $lang = $_SESSION['lang'] ?? 'vi';
+        $details = $this->stockModel->getBatchFullDetails($batchId, $lang);
+        header('Content-Type: application/json');
+        if ($details) {
+            echo json_encode(['success' => true, 'data' => $details]);
+        } else {
+            echo json_encode(['success' => false, 'error' => 'batch_not_found']);
+        }
+        exit();
+    }
+
+    public function handleUpdateBatchFull() {
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            $batchId = trim($_POST['batch_id'] ?? '');
+            $zoneId = intval($_POST['zone_id'] ?? 0);
+            $expiryDate = $_POST['expiry_date'] ?? '';
+            $availableStock = floatval($_POST['available_stock'] ?? 0);
+            $healthStatus = $_POST['health_status'] ?? 'Good';
+            $userId = $_SESSION['user_id'];
+            $redirectPage = $_POST['redirect'] ?? 'dashboard_warehouse.php';
+
+            if (empty($batchId) || $zoneId <= 0 || empty($expiryDate) || $availableStock < 0) {
+                header("Location: ../../frontend/{$redirectPage}?error=invalid_update_data");
+                exit();
+            }
+
+            if (strtotime($expiryDate) <= time()) {
+                header("Location: ../../frontend/{$redirectPage}?error=past_expiry_date");
+                exit();
+            }
+
+            $success = $this->stockModel->updateBatchDetailsFull($batchId, $zoneId, $expiryDate, $availableStock, $healthStatus, $userId);
+
+            if ($success) {
+                header("Location: ../../frontend/{$redirectPage}?success=update_ok");
+                exit();
+            } else {
+                header("Location: ../../frontend/{$redirectPage}?error=update_failed");
                 exit();
             }
         }
@@ -150,6 +207,10 @@ if (isset($_GET['action'])) {
         $controller->handleUpdateBatch();
     } elseif ($_GET['action'] === 'delete_batch') {
         $controller->handleDeleteBatch();
+    } elseif ($_GET['action'] === 'get_batch_detail') {
+        $controller->handleGetBatchDetail();
+    } elseif ($_GET['action'] === 'update_batch_full') {
+        $controller->handleUpdateBatchFull();
     }
 }
 ?>

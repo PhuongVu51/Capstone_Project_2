@@ -27,30 +27,34 @@ class ShiftModel extends BaseModel
             }
         }
 
-        // 3. Truy vấn tìm ca hiện tại
-        $stmt = $this->pdo->prepare("SELECT * FROM SHIFTS WHERE SHF_shift_date = ? AND SHF_shift_type = ? LIMIT 1");
+        // 3. Tìm ca đang MỞ (Open) trùng ngày và khung giờ hiện tại
+        $stmt = $this->pdo->prepare("SELECT * FROM SHIFTS WHERE SHF_shift_date = ? AND SHF_shift_type = ? AND SHF_status = 'Open' ORDER BY SHF_shift_id DESC LIMIT 1");
         $stmt->execute([$currentDate, $shiftType]);
         $shift = $stmt->fetch(PDO::FETCH_ASSOC);
 
-        // 4. AUTO-CREATE: Nếu ca chưa tồn tại (chưa ai tạo), tự động Insert vào CSDL
-        if (!$shift) {
-            $insertStmt = $this->pdo->prepare("
-                INSERT INTO SHIFTS (SHF_shift_date, SHF_shift_type, SHF_worker_count, SHF_status) 
-                VALUES (?, ?, 0, 'Open')
-            ");
-            $insertStmt->execute([$currentDate, $shiftType]);
-            
-            // Lấy lại ca vừa tạo
-            $stmt->execute([$currentDate, $shiftType]);
-            $shift = $stmt->fetch(PDO::FETCH_ASSOC);
-        }
-
-        // 5. Trả dữ liệu về nếu ca còn đang Open
-        if ($shift && $shift['SHF_status'] === 'Open') {
+        if ($shift) {
             return $shift;
         }
 
-        return null; // Nếu ca đã bị đóng (Closed), trả về null
+        // 4. Nếu không có ca Open đúng khung giờ, tìm bất kỳ ca Open nào khác trong CSDL
+        $fallbackStmt = $this->pdo->query("SELECT * FROM SHIFTS WHERE SHF_status = 'Open' ORDER BY SHF_shift_date DESC, SHF_shift_id DESC LIMIT 1");
+        $fallbackShift = $fallbackStmt->fetch(PDO::FETCH_ASSOC);
+
+        if ($fallbackShift) {
+            return $fallbackShift;
+        }
+
+        // 5. AUTO-CREATE: Nếu tất cả các ca đều đã đóng (hoặc chưa từng tạo), tự động tạo Ca MỚI đang Open cho thời gian thực
+        $insertStmt = $this->pdo->prepare("
+            INSERT INTO SHIFTS (SHF_shift_date, SHF_shift_type, SHF_worker_count, SHF_status) 
+            VALUES (?, ?, 0, 'Open')
+        ");
+        $insertStmt->execute([$currentDate, $shiftType]);
+        
+        $newShiftId = $this->pdo->lastInsertId();
+        $stmt = $this->pdo->prepare("SELECT * FROM SHIFTS WHERE SHF_shift_id = ?");
+        $stmt->execute([$newShiftId]);
+        return $stmt->fetch(PDO::FETCH_ASSOC);
     }
 
     /**
@@ -125,6 +129,54 @@ class ShiftModel extends BaseModel
             WHERE SHF_shift_id = ?
         ");
         $stmt->execute([$userId, $shiftId]);
+    }
+
+    /**
+     * Lấy danh sách các ca làm việc đã đóng (Closed) kèm thông tin chi tiết người đóng và số liệu thống kê
+     */
+    public function getClosedShiftHistory($dateFilter = null)
+    {
+        $sql = "
+            SELECT s.*, u.USR_full_name AS closed_by_name
+            FROM SHIFTS s
+            LEFT JOIN USERS u ON s.SHF_closed_by = u.USR_user_id
+            WHERE s.SHF_status = 'Closed'
+        ";
+        $params = [];
+
+        if ($dateFilter) {
+            $sql .= " AND s.SHF_shift_date = ? ";
+            $params[] = $dateFilter;
+        }
+
+        $sql .= " ORDER BY s.SHF_shift_date DESC, s.SHF_closed_at DESC, s.SHF_shift_id DESC";
+
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->execute($params);
+        $shifts = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        foreach ($shifts as &$shift) {
+            $shift['summary'] = $this->getShiftSummary($shift['SHF_shift_id']);
+            $shift['movements'] = $this->getMovementsForShift($shift['SHF_shift_id']);
+        }
+
+        return $shifts;
+    }
+
+    /**
+     * Lấy thông tin chi tiết một ca theo ID
+     */
+    public function getShiftById($shiftId)
+    {
+        $stmt = $this->pdo->prepare("
+            SELECT s.*, u.USR_full_name AS closed_by_name
+            FROM SHIFTS s
+            LEFT JOIN USERS u ON s.SHF_closed_by = u.USR_user_id
+            WHERE s.SHF_shift_id = ?
+        ");
+        $stmt->execute([(int) $shiftId]);
+        $shift = $stmt->fetch(PDO::FETCH_ASSOC);
+        return $shift ?: null;
     }
 }
 ?>

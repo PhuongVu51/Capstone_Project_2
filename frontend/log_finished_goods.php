@@ -26,6 +26,8 @@ $suggested_batch_id = 'FG-' . date('Ymd') . '-' . strtoupper(substr(uniqid(), -4
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Log Finished Goods | ProSync Industrial</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="assets/css/searchable_select.css">
+    <script src="assets/js/searchable_select.js"></script>
     <style>
         :root { --bg-dark: #0a1118; --bg-card: #0f1722; --accent-green: #10b981; --border-color: #1f2937; }
         body { background-color: var(--bg-dark); font-family: 'Inter', sans-serif; color: #d1d5db; }
@@ -67,7 +69,7 @@ $suggested_batch_id = 'FG-' . date('Ymd') . '-' . strtoupper(substr(uniqid(), -4
                     <!-- Thành phẩm -->
                     <div>
                         <label class="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Finished Product</label>
-                        <select name="product_id" required class="w-full bg-[#0a1118] border border-[#374151] text-white rounded p-3 focus:outline-none focus:border-[#10b981] transition-colors">
+                        <select id="fg-product-select" name="product_id" required class="w-full bg-[#0a1118] border border-[#374151] text-white rounded p-3 focus:outline-none focus:border-[#10b981] transition-colors">
                             <option value="">-- Select Product --</option>
                             <?php foreach ($finished_goods as $product): ?>
                                 <option value="<?= htmlspecialchars($product['PRD_product_id']) ?>">
@@ -107,5 +109,13 @@ $suggested_batch_id = 'FG-' . date('Ymd') . '-' . strtoupper(substr(uniqid(), -4
             </div>
         </div>
     </main>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            new SearchableSelect('#fg-product-select', {
+                placeholder: '-- Select Product --'
+            });
+        });
+    </script>
 </body>
 </html>
