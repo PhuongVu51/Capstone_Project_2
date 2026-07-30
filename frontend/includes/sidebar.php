@@ -50,6 +50,8 @@ if ($role === 'QC') {
     $nav_items = [
         ['label' => __('dashboard'), 'href' => 'dashboard_warehouse.php', 'page' => 'dashboard_warehouse.php'],
         ['label' => __('inventory'), 'href' => 'inventory.php', 'page' => 'inventory.php'],
+        //manage request
+        ['label' => __('Manage requests'), 'href' => 'manage_requests.php', 'page' => 'manage_requests.php'],
         ['label' => __('log_batch'), 'href' => 'log_batch.php', 'page' => 'log_batch.php'],
         ['label' => __('reports'), 'href' => 'warehouse_reports.php', 'page' => 'warehouse_reports.php'],
     ];

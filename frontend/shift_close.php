@@ -5,7 +5,10 @@ require_once '../backend/models/ShiftModel.php';
 
 $shiftModel = new ShiftModel();
 $lang = $_SESSION['lang'] ?? 'vi';
-$currentShift = $shiftModel->getCurrentOpenShift();
+
+// ĐÃ SỬA: Thay vì lấy ca Open bất kỳ, hệ thống sẽ chốt chuẩn ca theo THỜI GIAN THỰC
+$currentShift = $shiftModel->getRealTimeShift();
+
 $movements = [];
 $summary = [
     'total_in_kg' => 0,
@@ -33,7 +36,6 @@ function shift_display_name($shift)
     if (!$shift) {
         return '';
     }
-
     return $shift['SHF_shift_date'] . ' - ' . $shift['SHF_shift_type'];
 }
 
@@ -42,7 +44,6 @@ function shift_format_dt($value)
     if (!$value) {
         return '-';
     }
-
     return date('H:i d/m/Y', strtotime($value));
 }
 ?>
@@ -205,6 +206,7 @@ function shift_format_dt($value)
                     <button type="button" onclick="closeCloseShiftModal()" class="px-5 py-2.5 rounded border border-[#374151] text-gray-300 hover:text-white hover:bg-[#1f2937] transition-colors font-semibold">
                         <?= __('cancel') ?>
                     </button>
+                    <!-- Tác vụ Submit được xử lý bởi file ShiftController.php -->
                     <form action="../backend/controllers/ShiftController.php?action=close" method="POST">
                         <input type="hidden" name="shift_id" value="<?= (int) $currentShift['SHF_shift_id'] ?>">
                         <button type="submit" class="w-full sm:w-auto px-5 py-2.5 rounded bg-red-500 hover:bg-red-400 text-white font-bold transition-colors">
