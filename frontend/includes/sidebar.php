@@ -40,10 +40,9 @@ if ($role === 'QC') {
         ['label' => __('dashboard'), 'href' => 'dashboard_production.php', 'page' => 'dashboard_production.php'],
         ['label' => __('inventory'), 'href' => 'inventory.php', 'page' => 'inventory.php'],
         ['label' => __('fefo_alerts'), 'href' => 'production_FEFO.php', 'page' => 'production_FEFO.php'],
-        ['label' => __('production_flow'), 'href' => 'production_flow.php', 'page' => 'production_flow.php'],
         ['label' => __('analytics'), 'href' => 'production_analytics.php', 'page' => 'production_analytics.php'],
     ];
-    $sidebar_title = 'Plant Alpha';
+    $sidebar_title = 'F&G FOOD';
     $sidebar_subtitle = 'Production Unit 04';
 
 } else {
@@ -51,6 +50,8 @@ if ($role === 'QC') {
     $nav_items = [
         ['label' => __('dashboard'), 'href' => 'dashboard_warehouse.php', 'page' => 'dashboard_warehouse.php'],
         ['label' => __('inventory'), 'href' => 'inventory.php', 'page' => 'inventory.php'],
+        //manage request
+        ['label' => __('Manage requests'), 'href' => 'manage_requests.php', 'page' => 'manage_requests.php'],
         ['label' => __('log_batch'), 'href' => 'log_batch.php', 'page' => 'log_batch.php'],
         ['label' => __('reports'), 'href' => 'warehouse_reports.php', 'page' => 'warehouse_reports.php'],
     ];

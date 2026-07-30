@@ -1,215 +1,130 @@
 <?php
+// Đường dẫn: backend/models/ShiftModel.php
 require_once __DIR__ . '/../core/BaseModel.php';
 
 class ShiftModel extends BaseModel
 {
-    private function getCurrentShiftType()
+    /**
+     * Tự động lấy hoặc tạo ca làm việc mới dựa trên THỜI GIAN THỰC
+     */
+    public function getRealTimeShift()
     {
-        $hour = (int) date('G');
-
+        // 1. Thiết lập múi giờ Việt Nam
+        date_default_timezone_set('Asia/Ho_Chi_Minh');
+        $hour = (int)date('H');
+        $currentDate = date('Y-m-d');
+        
+        // 2. Phân loại ca theo khung giờ công nghiệp
         if ($hour >= 6 && $hour < 14) {
-            return 'Morning';
+            $shiftType = 'Morning';
+        } elseif ($hour >= 14 && $hour < 22) {
+            $shiftType = 'Afternoon';
+        } else {
+            $shiftType = 'Overtime';
+            // Nếu qua 12h đêm (0h-5h sáng), tính là ca Overtime của ngày hôm trước
+            if ($hour < 6) {
+                $currentDate = date('Y-m-d', strtotime('-1 day'));
+            }
         }
 
-        if ($hour >= 14 && $hour < 22) {
-            return 'Afternoon';
+        // 3. Truy vấn tìm ca hiện tại
+        $stmt = $this->pdo->prepare("SELECT * FROM SHIFTS WHERE SHF_shift_date = ? AND SHF_shift_type = ? LIMIT 1");
+        $stmt->execute([$currentDate, $shiftType]);
+        $shift = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        // 4. AUTO-CREATE: Nếu ca chưa tồn tại (chưa ai tạo), tự động Insert vào CSDL
+        if (!$shift) {
+            $insertStmt = $this->pdo->prepare("
+                INSERT INTO SHIFTS (SHF_shift_date, SHF_shift_type, SHF_worker_count, SHF_status) 
+                VALUES (?, ?, 0, 'Open')
+            ");
+            $insertStmt->execute([$currentDate, $shiftType]);
+            
+            // Lấy lại ca vừa tạo
+            $stmt->execute([$currentDate, $shiftType]);
+            $shift = $stmt->fetch(PDO::FETCH_ASSOC);
         }
 
-        return 'Overtime';
-    }
-
-    public function getCurrentOpenShift()
-    {
-        $stmt = $this->pdo->prepare(
-            "SELECT *
-             FROM SHIFTS
-             WHERE SHF_status = 'Open'
-               AND SHF_shift_date = CURDATE()
-               AND SHF_shift_type = :shift_type
-             ORDER BY SHF_shift_id DESC
-             LIMIT 1"
-        );
-        $stmt->execute([':shift_type' => $this->getCurrentShiftType()]);
-        $shift = $stmt->fetch();
-
-        if ($shift) {
+        // 5. Trả dữ liệu về nếu ca còn đang Open
+        if ($shift && $shift['SHF_status'] === 'Open') {
             return $shift;
         }
 
-        $stmt = $this->pdo->query(
-            "SELECT *
-             FROM SHIFTS
-             WHERE SHF_status = 'Open'
-             ORDER BY SHF_shift_date DESC,
-                      FIELD(SHF_shift_type, 'Overtime', 'Afternoon', 'Morning'),
-                      SHF_shift_id DESC
-             LIMIT 1"
-        );
-
-        return $stmt->fetch();
+        return null; // Nếu ca đã bị đóng (Closed), trả về null
     }
 
-    public function getShiftById($shiftId)
+    /**
+     * Giữ lại hàm cũ phòng trường hợp các trang khác vẫn đang gọi tên hàm này
+     */
+    public function getCurrentOpenShift()
     {
-        $stmt = $this->pdo->prepare(
-            "SELECT s.*, u.USR_full_name AS closed_by_name
-             FROM SHIFTS s
-             LEFT JOIN USERS u ON s.SHF_closed_by = u.USR_user_id
-             WHERE s.SHF_shift_id = :shift_id
-             LIMIT 1"
-        );
-        $stmt->execute([':shift_id' => (int) $shiftId]);
-
-        return $stmt->fetch();
+        return $this->getRealTimeShift();
     }
 
+    /**
+     * Lấy danh sách lịch sử luân chuyển kho trong một ca cụ thể
+     */
     public function getMovementsForShift($shiftId)
     {
-        $stmt = $this->pdo->prepare(
-            "SELECT sm.STM_movement_id,
-                    sm.STM_reference_code,
-                    sm.STM_batch_id,
-                    sm.STM_movement_type,
-                    sm.STM_quantity_kg,
-                    sm.STM_timestamp,
-                    p.PRD_product_name,
-                    p.PRD_product_name_en,
-                    u.USR_full_name
-             FROM STOCK_MOVEMENTS sm
-             JOIN BATCHES b ON sm.STM_batch_id = b.BCH_batch_id
-             LEFT JOIN PRODUCTS p ON b.BCH_product_id = p.PRD_product_id
-             LEFT JOIN USERS u ON sm.STM_user_id = u.USR_user_id
-             WHERE sm.STM_shift_id = :shift_id
-                OR (sm.STM_shift_id IS NULL AND b.BCH_shift_id = :shift_id)
-             ORDER BY sm.STM_timestamp ASC, sm.STM_movement_id ASC"
-        );
-        $stmt->execute([':shift_id' => (int) $shiftId]);
-
-        return $stmt->fetchAll();
+        $stmt = $this->pdo->prepare("
+            SELECT m.STM_timestamp, m.STM_reference_code, m.STM_batch_id, 
+                   p.PRD_product_name, p.PRD_product_name_en, 
+                   m.STM_movement_type, m.STM_quantity_kg, 
+                   u.USR_full_name
+            FROM STOCK_MOVEMENTS m
+            LEFT JOIN BATCHES b ON m.STM_batch_id = b.BCH_batch_id
+            LEFT JOIN PRODUCTS p ON b.BCH_product_id = p.PRD_product_id
+            LEFT JOIN USERS u ON m.STM_user_id = u.USR_user_id
+            WHERE m.STM_shift_id = ?
+            ORDER BY m.STM_timestamp DESC
+        ");
+        $stmt->execute([$shiftId]);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
+    /**
+     * Lấy các số liệu thống kê tổng hợp để hiển thị ở màn hình Review
+     */
     public function getShiftSummary($shiftId)
     {
-        $stmt = $this->pdo->prepare(
-            "SELECT COALESCE(SUM(CASE WHEN sm.STM_movement_type = 'IN' THEN sm.STM_quantity_kg ELSE 0 END), 0) AS total_in_kg,
-                    COALESCE(SUM(CASE WHEN sm.STM_movement_type = 'OUT' THEN sm.STM_quantity_kg ELSE 0 END), 0) AS total_out_kg,
-                    COUNT(DISTINCT sm.STM_batch_id) AS batch_count,
-                    COUNT(sm.STM_movement_id) AS movement_count,
-                    COALESCE(SUM(CASE WHEN sm.STM_movement_type = 'ADJUSTMENT' THEN 1 ELSE 0 END), 0) AS incident_count
-             FROM STOCK_MOVEMENTS sm
-             JOIN BATCHES b ON sm.STM_batch_id = b.BCH_batch_id
-             WHERE sm.STM_shift_id = :shift_id
-                OR (sm.STM_shift_id IS NULL AND b.BCH_shift_id = :shift_id)"
-        );
-        $stmt->execute([':shift_id' => (int) $shiftId]);
-        $summary = $stmt->fetch();
-
-        return $summary ?: [
-            'total_in_kg' => 0,
-            'total_out_kg' => 0,
-            'batch_count' => 0,
-            'movement_count' => 0,
-            'incident_count' => 0,
-        ];
+        $stmt = $this->pdo->prepare("
+            SELECT 
+                COALESCE(SUM(CASE WHEN STM_movement_type = 'IN' THEN STM_quantity_kg ELSE 0 END), 0) AS total_in_kg,
+                COALESCE(SUM(CASE WHEN STM_movement_type = 'OUT' THEN STM_quantity_kg ELSE 0 END), 0) AS total_out_kg,
+                COUNT(DISTINCT STM_batch_id) AS batch_count,
+                COUNT(STM_movement_id) AS movement_count,
+                0 AS incident_count
+            FROM STOCK_MOVEMENTS
+            WHERE STM_shift_id = ?
+        ");
+        $stmt->execute([$shiftId]);
+        $res = $stmt->fetch(PDO::FETCH_ASSOC);
+        
+        if (!$res) {
+            return [
+                'total_in_kg' => 0,
+                'total_out_kg' => 0,
+                'batch_count' => 0,
+                'movement_count' => 0,
+                'incident_count' => 0
+            ];
+        }
+        return $res;
     }
 
+    /**
+     * Thực hiện khóa ca làm việc
+     */
     public function closeShift($shiftId, $userId)
     {
-        $this->pdo->beginTransaction();
-
-        try {
-            $stmt = $this->pdo->prepare(
-                "SELECT *
-                 FROM SHIFTS
-                 WHERE SHF_shift_id = :shift_id
-                 FOR UPDATE"
-            );
-            $stmt->execute([':shift_id' => (int) $shiftId]);
-            $shift = $stmt->fetch();
-
-            if (!$shift) {
-                throw new Exception('shift_not_found');
-            }
-
-            if ($shift['SHF_status'] === 'Closed') {
-                throw new Exception('shift_already_closed');
-            }
-
-            $summary = $this->getShiftSummary($shiftId);
-            $closedAt = date('Y-m-d H:i:s');
-
-            $stmt = $this->pdo->prepare(
-                "UPDATE SHIFTS
-                 SET SHF_status = 'Closed',
-                     SHF_closed_at = :closed_at,
-                     SHF_closed_by = :closed_by
-                 WHERE SHF_shift_id = :shift_id"
-            );
-            $stmt->execute([
-                ':closed_at' => $closedAt,
-                ':closed_by' => (int) $userId,
-                ':shift_id' => (int) $shiftId,
-            ]);
-
-            $audit = $this->pdo->prepare(
-                "INSERT INTO SYSTEM_AUDIT_LOGS
-                    (LOG_user_id, LOG_action, LOG_table_name, LOG_record_id, LOG_old_value, LOG_new_value)
-                 VALUES
-                    (:user_id, 'CLOSE_SHIFT', 'SHIFTS', :record_id, :old_value, :new_value)"
-            );
-            $audit->execute([
-                ':user_id' => (int) $userId,
-                ':record_id' => (string) $shiftId,
-                ':old_value' => 'Open',
-                ':new_value' => json_encode([
-                    'status' => 'Closed',
-                    'closed_at' => $closedAt,
-                    'summary' => $summary,
-                ]),
-            ]);
-
-            $this->pdo->commit();
-
-            $shift['SHF_status'] = 'Closed';
-            $shift['SHF_closed_at'] = $closedAt;
-            $shift['SHF_closed_by'] = (int) $userId;
-
-            return [
-                'shift' => $shift,
-                'summary' => $summary,
-            ];
-        } catch (Exception $e) {
-            $this->pdo->rollBack();
-            throw $e;
-        }
-    }
-
-    public function getClosedShiftHistory($date = null)
-    {
-        $params = [];
-        $where = "WHERE s.SHF_status = 'Closed'";
-
-        if ($date) {
-            $where .= " AND s.SHF_shift_date = :shift_date";
-            $params[':shift_date'] = $date;
-        }
-
-        $stmt = $this->pdo->prepare(
-            "SELECT s.*, u.USR_full_name AS closed_by_name
-             FROM SHIFTS s
-             LEFT JOIN USERS u ON s.SHF_closed_by = u.USR_user_id
-             $where
-             ORDER BY s.SHF_shift_date DESC, s.SHF_closed_at DESC, s.SHF_shift_id DESC
-             LIMIT 100"
-        );
-        $stmt->execute($params);
-        $shifts = $stmt->fetchAll();
-
-        foreach ($shifts as &$shift) {
-            $shift['summary'] = $this->getShiftSummary($shift['SHF_shift_id']);
-        }
-
-        return $shifts;
+        $stmt = $this->pdo->prepare("
+            UPDATE SHIFTS 
+            SET SHF_status = 'Closed', 
+                SHF_closed_by = ?, 
+                SHF_closed_at = NOW() 
+            WHERE SHF_shift_id = ?
+        ");
+        $stmt->execute([$userId, $shiftId]);
     }
 }
 ?>
