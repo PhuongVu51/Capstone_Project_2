@@ -13,6 +13,7 @@ class QcReportController {
         $summary = $this->model->getLossSummary();
         $breakdown = $this->model->getReasonBreakdown($lang);
         $lossBatches = $this->model->getHighLossBatches($lang);
+        $supplierScorecard = $this->model->getSupplierScorecard($lang);
 
         // Xử lý logic dữ liệu cho biểu đồ tròn (Doughnut Chart)
         $chartLabels = [];
@@ -47,7 +48,8 @@ class QcReportController {
             'topReasonKg'    => number_format((float)$topReasonKg, 1),
             'chartLabels'    => $chartLabels,
             'chartData'      => $chartData,
-            'lossBatches'    => $lossBatches
+            'lossBatches'    => $lossBatches,
+            'supplierScorecard' => $supplierScorecard
         ];
     }
 

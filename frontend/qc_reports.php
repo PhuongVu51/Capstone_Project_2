@@ -138,6 +138,112 @@ try {
             </div>
             
         </div>
+
+        <!-- Supplier Scorecard Section -->
+        <div class="mt-8 pt-8 border-t border-[#1f2937]">
+            <h2 class="text-xl font-bold text-white mb-6 uppercase tracking-wide">Supplier Scorecard</h2>
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <!-- Scorecard Table -->
+                <div class="lg:col-span-2 bg-[#0f1722] rounded-lg border border-[#1f2937] flex flex-col min-w-0 max-h-[400px]">
+                    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center px-4 py-3 border-b border-[#1f2937] bg-[#0b121c] shrink-0 gap-3">
+                        <h3 class="text-sm font-bold text-white uppercase tracking-wider"><?= __('supplier_scorecard', 'Bảng Xếp Hạng') ?></h3>
+                        <div class="flex gap-2 w-full sm:w-auto">
+                            <select id="scorecardStatusFilter" onchange="filterAndSortScorecard()" class="bg-[#1f2937] text-xs text-gray-300 border border-[#374151] rounded px-2 py-1.5 outline-none w-full sm:w-auto focus:border-blue-500 transition-colors">
+                                <option value="all"><?= __('all_statuses', 'Tất cả trạng thái') ?></option>
+                                <option value="Warning"><?= __('warning', 'Cảnh báo') ?></option>
+                                <option value="Monitor"><?= __('monitor', 'Cần theo dõi') ?></option>
+                                <option value="Good">Good</option>
+                                <option value="Insufficient Data"><?= __('insufficient_data', 'Chưa đủ dữ liệu') ?></option>
+                            </select>
+                            <select id="scorecardSort" onchange="filterAndSortScorecard()" class="bg-[#1f2937] text-xs text-gray-300 border border-[#374151] rounded px-2 py-1.5 outline-none w-full sm:w-auto focus:border-blue-500 transition-colors">
+                                <option value="desc"><?= __('sort_desc', 'Hao hụt giảm dần') ?></option>
+                                <option value="asc"><?= __('sort_asc', 'Hao hụt tăng dần') ?></option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="overflow-y-auto flex-1 p-0 custom-scrollbar bg-[#091018]">
+                        <table class="w-full text-left border-collapse">
+                            <thead class="text-gray-500 text-[10px] uppercase bg-[#0b121c] sticky top-0 z-10 shadow-[0_1px_0_#1f2937]">
+                                <tr>
+                                    <th class="py-3 px-4 font-semibold tracking-wider bg-[#0b121c]"><?= __('supplier_name', 'Tên NCC') ?></th>
+                                    <th class="py-3 px-4 font-semibold tracking-wider text-right bg-[#0b121c]"><?= __('total_supplied', 'Tổng Cung Cấp') ?></th>
+                                    <th class="py-3 px-4 font-semibold tracking-wider text-center bg-[#0b121c]"><?= __('waste_rate', 'Tỷ lệ Hao hụt') ?></th>
+                                    <th class="py-3 px-4 font-semibold tracking-wider text-right bg-[#0b121c]"><?= __('waste_cost', 'Chi phí Hao hụt') ?></th>
+                                    <th class="py-3 px-4 font-semibold tracking-wider text-center bg-[#0b121c]"><?= __('trend_30d', 'Xu hướng (30d)') ?></th>
+                                    <th class="py-3 px-4 font-semibold tracking-wider text-center bg-[#0b121c]"><?= __('status', 'Trạng thái') ?></th>
+                                </tr>
+                            </thead>
+                            <tbody id="scorecardTableBody" class="text-sm divide-y divide-[#1f2937]/50">
+                                <?php foreach ($supplierScorecard as $sup): ?>
+                                    <?php
+                                        if ($sup['waste_pct'] === null) {
+                                            $rawStatus = 'Insufficient Data';
+                                        } elseif ($sup['waste_pct'] < 5) {
+                                            $rawStatus = 'Good';
+                                        } elseif ($sup['waste_pct'] <= 15) {
+                                            $rawStatus = 'Monitor';
+                                        } else {
+                                            $rawStatus = 'Warning';
+                                        }
+                                    ?>
+                                    <tr class="hover:bg-[#131c26] transition-colors scorecard-row" 
+                                        data-status="<?= $rawStatus ?>" 
+                                        data-waste="<?= $sup['waste_pct'] !== null ? $sup['waste_pct'] : -1 ?>">
+                                        <td class="py-3 px-4 font-medium text-gray-300"><?= htmlspecialchars($sup['supplier_name']) ?></td>
+                                        <td class="py-3 px-4 text-right text-gray-400 font-mono"><?= number_format($sup['total_supplied'], 1) ?> kg</td>
+                                        <td class="py-3 px-4 text-center font-mono font-bold <?= $sup['waste_pct'] !== null && $sup['waste_pct'] > 15 ? 'text-red-500' : 'text-gray-300' ?>">
+                                            <?= $sup['waste_pct'] !== null ? number_format($sup['waste_pct'], 2) . '%' : '-' ?>
+                                        </td>
+                                        <td class="py-3 px-4 text-right text-red-400 font-mono">
+                                            <?= number_format($sup['waste_cost']) ?> đ
+                                        </td>
+                                        <td class="py-3 px-4 text-center font-mono">
+                                            <?php if ($sup['waste_pct'] === null): ?>
+                                                <span class="text-gray-600">-</span>
+                                            <?php else: ?>
+                                                <?php if ($sup['trend_value'] > 0): ?>
+                                                    <span class="text-red-500 flex items-center justify-center gap-1">
+                                                        <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 10l7-7m0 0l7 7m-7-7v18"></path></svg>
+                                                        <?= number_format(abs($sup['trend_value']), 1) ?>%
+                                                    </span>
+                                                <?php elseif ($sup['trend_value'] < 0): ?>
+                                                    <span class="text-green-500 flex items-center justify-center gap-1">
+                                                        <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"></path></svg>
+                                                        <?= number_format(abs($sup['trend_value']), 1) ?>%
+                                                    </span>
+                                                <?php else: ?>
+                                                    <span class="text-gray-500">0%</span>
+                                                <?php endif; ?>
+                                            <?php endif; ?>
+                                        </td>
+                                        <td class="py-3 px-4 text-center">
+                                            <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] uppercase tracking-wider font-bold <?= $sup['badge_color'] ?>">
+                                                <span class="w-1.5 h-1.5 rounded-full <?= $sup['badge_icon_color'] ?>"></span>
+                                                <?= $sup['badge_text'] ?>
+                                            </span>
+                                        </td>
+                                    </tr>
+                                <?php endforeach; ?>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Scorecard Chart -->
+                <div class="bg-[#0f1722] rounded-lg border border-[#1f2937] flex flex-col min-w-0 max-h-[400px]">
+                    <div class="px-4 py-3 border-b border-[#1f2937] bg-[#0b121c] shrink-0">
+                        <h3 class="text-sm font-bold text-white uppercase tracking-wider"><?= __('waste_comparison', 'So sánh Hao hụt') ?></h3>
+                        <p class="text-[11px] text-gray-500 mt-0.5"><?= __('waste_rate_between_suppliers', 'Tỷ lệ hao hụt giữa các NCC') ?></p>
+                    </div>
+                    <div class="overflow-y-auto flex-1 p-4 custom-scrollbar bg-[#091018]">
+                        <div class="relative w-full" id="chartWrapper">
+                            <canvas id="supplierChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </main>
 
     <script>
@@ -194,6 +300,101 @@ try {
                         }
                     }
                 }
+            });
+        }
+
+        // Supplier Scorecard Chart
+        const supplierData = <?= json_encode($supplierScorecard) ?>;
+        // Lọc bỏ những nhà cung cấp không có dữ liệu tỷ lệ hao hụt
+        const validSuppliers = supplierData.filter(s => s.waste_pct !== null);
+        const supLabels = validSuppliers.map(s => s.supplier_name);
+        const supWastePct = validSuppliers.map(s => s.waste_pct);
+        const supColors = validSuppliers.map(s => {
+            if (s.waste_pct < 5) return '#10b981'; // green
+            if (s.waste_pct <= 15) return '#f59e0b'; // yellow
+            return '#ef4444'; // red
+        });
+
+        if (document.getElementById('supplierChart') && supLabels.length > 0) {
+            const chartWrapper = document.getElementById('chartWrapper');
+            if (chartWrapper) {
+                const requiredHeight = Math.max(250, supLabels.length * 40);
+                chartWrapper.style.height = requiredHeight + 'px';
+            }
+
+            const ctx2 = document.getElementById('supplierChart').getContext('2d');
+            new Chart(ctx2, {
+                type: 'bar',
+                data: {
+                    labels: supLabels,
+                    datasets: [{
+                        label: 'Tỷ lệ hao hụt (%)',
+                        data: supWastePct,
+                        backgroundColor: supColors,
+                        borderRadius: 4,
+                        barPercentage: 0.6
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    indexAxis: 'y', // Biểu đồ ngang dễ đọc tên dài
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            backgroundColor: '#1f2937', titleColor: '#fff', bodyColor: '#d1d5db',
+                            borderColor: '#374151', borderWidth: 1, padding: 10,
+                            callbacks: {
+                                label: function(context) { return ' ' + context.raw.toFixed(2) + '%'; }
+                            }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            grid: { color: '#1f2937' },
+                            ticks: { color: '#9ca3af' },
+                            title: { display: true, text: 'Tỷ lệ hao hụt (%)', color: '#6b7280', font: { size: 10 } }
+                        },
+                        y: {
+                            grid: { display: false },
+                            ticks: { color: '#d1d5db', font: { size: 11 } }
+                        }
+                    }
+                }
+            });
+        } else if (document.getElementById('supplierChart')) {
+            document.getElementById('supplierChart').parentElement.innerHTML = '<div class="text-gray-600 text-sm italic h-full flex items-center">Chưa có dữ liệu hao hụt để hiển thị</div>';
+        }
+
+        // JS logic for Filtering and Sorting the Scorecard Table
+        function filterAndSortScorecard() {
+            const statusFilter = document.getElementById('scorecardStatusFilter').value;
+            const sortOrder = document.getElementById('scorecardSort').value;
+            
+            const tbody = document.getElementById('scorecardTableBody');
+            if (!tbody) return;
+            const rows = Array.from(tbody.querySelectorAll('.scorecard-row'));
+            
+            rows.sort((a, b) => {
+                let valA = parseFloat(a.getAttribute('data-waste'));
+                let valB = parseFloat(b.getAttribute('data-waste'));
+                
+                // Những row chưa đủ dữ liệu (giá trị -1) luôn đẩy xuống cuối cùng
+                if (valA === -1 && valB === -1) return 0;
+                if (valA === -1) return 1;
+                if (valB === -1) return -1;
+                
+                return sortOrder === 'asc' ? valA - valB : valB - valA;
+            });
+            
+            rows.forEach(row => {
+                const rowStatus = row.getAttribute('data-status');
+                if (statusFilter === 'all' || rowStatus === statusFilter) {
+                    row.style.display = '';
+                } else {
+                    row.style.display = 'none';
+                }
+                tbody.appendChild(row); // Re-append with new order
             });
         }
     </script>
