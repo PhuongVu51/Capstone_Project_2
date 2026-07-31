@@ -82,7 +82,16 @@ if (!function_exists('__')) {
         <div id="notification-dropdown" class="hidden absolute right-0 mt-2 w-80 sm:w-96 bg-[#0f1722] border border-[#1f2937] rounded-xl shadow-2xl overflow-hidden transform opacity-0 scale-95 transition-all duration-200 origin-top-right">
             <div class="p-4 border-b border-[#1f2937] flex justify-between items-center bg-[#07121a]">
                 <h3 class="text-sm font-bold text-white uppercase tracking-wider"><?= __('notifications', 'Thông báo') ?></h3>
-                <button id="mark-all-read-btn" class="hidden text-xs text-[#10b981] hover:text-[#059669] transition-colors">Đánh dấu đã đọc</button>
+                <button id="mark-all-read-btn" class="hidden text-xs text-[#10b981] hover:text-[#059669] transition-colors"><?= __('mark_all_read', 'Đánh dấu đã đọc') ?></button>
+            </div>
+
+            <!-- Filter Bar -->
+            <div id="notification-filter-bar" class="p-2 border-b border-[#1f2937] bg-[#0f1722] flex gap-2 overflow-x-auto no-scrollbar text-xs">
+                <button class="notif-filter-btn px-3 py-1.5 rounded-full bg-[#10b981] text-white font-medium whitespace-nowrap transition-colors" data-filter="all"><?= __('all', 'Tất cả') ?></button>
+                <button class="notif-filter-btn px-3 py-1.5 rounded-full bg-[#1f2937] text-gray-400 hover:text-white transition-colors whitespace-nowrap" data-filter="fefo">FEFO</button>
+                <button class="notif-filter-btn px-3 py-1.5 rounded-full bg-[#1f2937] text-gray-400 hover:text-white transition-colors whitespace-nowrap" data-filter="qc">QC</button>
+                <button class="notif-filter-btn px-3 py-1.5 rounded-full bg-[#1f2937] text-gray-400 hover:text-white transition-colors whitespace-nowrap" data-filter="stock"><?= __('inventory', 'Hàng tồn') ?></button>
+                <button class="notif-filter-btn px-3 py-1.5 rounded-full bg-[#1f2937] text-gray-400 hover:text-white transition-colors whitespace-nowrap" data-filter="request"><?= __('materials', 'Vật tư') ?></button>
             </div>
             
             <div id="notification-list-container" class="max-h-[60vh] overflow-y-auto">
@@ -162,6 +171,9 @@ if (!function_exists('__')) {
     </div>
 </aside>
 
+
+
+
 <script>
 document.addEventListener('DOMContentLoaded', function() {
     const toggleBtn = document.getElementById('mobile-menu-toggle');
@@ -188,8 +200,33 @@ document.addEventListener('DOMContentLoaded', function() {
     const listContainer = document.getElementById('notification-list-container');
     
     const currentRole = '<?= htmlspecialchars($role) ?>';
-    const storageKey = 'fng_read_notifs_' + currentRole;
-    let serverNotifCount = 0;
+    const storageKey = 'fng_read_notif_ids_' + currentRole;
+    let currentNotifs = [];
+    let currentNotifFilter = 'all';
+    
+    // Localization for JS
+    const textMarkAsRead = '<?= __('mark_as_read', 'Đánh dấu đã đọc') ?>';
+    const textRead = '<?= __('read', 'Đã đọc') ?>';
+
+    // Handle filter clicks
+    const filterBtns = document.querySelectorAll('.notif-filter-btn');
+    filterBtns.forEach(btn => {
+        btn.addEventListener('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            
+            // Update active state
+            filterBtns.forEach(b => {
+                b.classList.remove('bg-[#10b981]', 'text-white');
+                b.classList.add('bg-[#1f2937]', 'text-gray-400');
+            });
+            this.classList.remove('bg-[#1f2937]', 'text-gray-400');
+            this.classList.add('bg-[#10b981]', 'text-white');
+            
+            currentNotifFilter = this.getAttribute('data-filter');
+            renderNotifications();
+        });
+    });
 
     function escapeHtml(unsafe) {
         return (unsafe || '').toString()
@@ -200,53 +237,107 @@ document.addEventListener('DOMContentLoaded', function() {
              .replace(/'/g, "&#039;");
     }
 
+    function getReadIds() {
+        try {
+            const ids = JSON.parse(localStorage.getItem(storageKey));
+            return Array.isArray(ids) ? ids : [];
+        } catch (e) {
+            return [];
+        }
+    }
+
+    function addReadId(id) {
+        const ids = getReadIds();
+        if (!ids.includes(id)) {
+            ids.push(id);
+            if (ids.length > 200) ids.shift(); // Keep max 200 items to avoid bloat
+            localStorage.setItem(storageKey, JSON.stringify(ids));
+        }
+    }
+
+    function renderNotifications() {
+        const readIds = getReadIds();
+        let unreadCount = 0;
+        
+        currentNotifs.forEach(n => {
+            if (!readIds.includes(n.id)) unreadCount++;
+        });
+
+        // Update Badge
+        if (unreadCount > 0) {
+            badge.textContent = unreadCount;
+            badge.classList.remove('hidden');
+        } else {
+            badge.classList.add('hidden');
+        }
+
+        // Render Dropdown Content
+        let displayNotifs = currentNotifs;
+        if (currentNotifFilter !== 'all') {
+            displayNotifs = currentNotifs.filter(n => {
+                if (currentNotifFilter === 'fefo') return n.type === 'fefo';
+                if (currentNotifFilter === 'qc') return ['qc_passed', 'qc_failed', 'qc'].includes(n.type);
+                if (currentNotifFilter === 'stock') return ['low_stock', 'out_of_stock'].includes(n.type);
+                if (currentNotifFilter === 'request') return n.type === 'material_request';
+                return true;
+            });
+        }
+
+        if (displayNotifs.length > 0) {
+            markReadBtn.classList.remove('hidden');
+            let html = '<ul class="divide-y divide-[#1f2937]">';
+            displayNotifs.forEach(notif => {
+                const isRead = readIds.includes(notif.id);
+                // Create a circular checkmark for "Mark as read"
+                const checkBtnHtml = `
+                    <button onclick="markSingleRead('${notif.id}', event)" title="${isRead ? textRead : textMarkAsRead}" class="flex-shrink-0 mt-2 transition-colors ${isRead ? 'text-green-500' : 'text-blue-500 hover:text-blue-400'}">
+                        ${isRead 
+                            ? '<svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path></svg>'
+                            : '<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>'}
+                    </button>
+                `;
+
+                html += `
+                <li class="relative ${isRead ? 'opacity-60' : 'bg-[#1f2937]/30'} hover:bg-[#1f2937]/60 transition-colors">
+                    <div class="flex items-start gap-3 p-4">
+                        ${checkBtnHtml}
+                        <a href="${notif.link}" class="flex-1 min-w-0 block" onclick="markSingleRead('${notif.id}')">
+                            <p class="text-sm font-semibold ${isRead ? 'text-gray-400' : 'text-white'} mb-1">${escapeHtml(notif.title)}</p>
+                            <p class="text-xs ${isRead ? 'text-gray-500' : 'text-gray-300'} truncate">${escapeHtml(notif.message)}</p>
+                            <p class="text-[10px] text-gray-500 mt-1 uppercase tracking-wider">${escapeHtml(notif.time_desc)}</p>
+                        </a>
+                    </div>
+                </li>`;
+            });
+            html += '</ul>';
+            listContainer.innerHTML = html;
+        } else {
+            markReadBtn.classList.add('hidden');
+            listContainer.innerHTML = `
+            <div class="p-8 text-center">
+                <svg class="w-12 h-12 text-gray-600 mx-auto mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"></path></svg>
+                <p class="text-sm text-gray-500"><?= __('no_new_notif', 'Không có thông báo mới') ?? 'Không có thông báo mới' ?></p>
+            </div>`;
+        }
+    }
+
+    // Expose for inline onclick
+    window.markSingleRead = function(id, event) {
+        if (event) {
+            event.preventDefault();
+            event.stopPropagation();
+        }
+        addReadId(id);
+        renderNotifications();
+    };
+
     function fetchNotifications() {
         fetch('../backend/api/notifications.php?t=' + new Date().getTime())
             .then(response => response.json())
             .then(data => {
                 if (data.status === 'success') {
-                    serverNotifCount = data.count;
-                    const lastReadCount = parseInt(localStorage.getItem(storageKey)) || 0;
-                    
-                    // Update Badge
-                    if (serverNotifCount > 0 && serverNotifCount !== lastReadCount) {
-                        badge.textContent = serverNotifCount;
-                        badge.classList.remove('hidden');
-                    } else {
-                        badge.classList.add('hidden');
-                    }
-
-                    // Render Dropdown Content
-                    if (serverNotifCount > 0) {
-                        markReadBtn.classList.remove('hidden');
-                        let html = '<ul class="divide-y divide-[#1f2937]">';
-                        data.data.forEach(notif => {
-                            html += `
-                            <li>
-                                <a href="${notif.link}" class="block p-4 hover:bg-[#1f2937]/50 transition-colors">
-                                    <div class="flex items-start gap-3">
-                                        <div class="flex-shrink-0 mt-1">
-                                            ${notif.icon}
-                                        </div>
-                                        <div class="flex-1 min-w-0">
-                                            <p class="text-sm font-semibold text-white mb-1">${escapeHtml(notif.title)}</p>
-                                            <p class="text-xs text-gray-400 truncate">${escapeHtml(notif.message)}</p>
-                                            <p class="text-[10px] text-gray-500 mt-1 uppercase tracking-wider">${escapeHtml(notif.time_desc)}</p>
-                                        </div>
-                                    </div>
-                                </a>
-                            </li>`;
-                        });
-                        html += '</ul>';
-                        listContainer.innerHTML = html;
-                    } else {
-                        markReadBtn.classList.add('hidden');
-                        listContainer.innerHTML = `
-                        <div class="p-8 text-center">
-                            <svg class="w-12 h-12 text-gray-600 mx-auto mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"></path></svg>
-                            <p class="text-sm text-gray-500">Không có thông báo mới</p>
-                        </div>`;
-                    }
+                    currentNotifs = data.data || [];
+                    renderNotifications();
                 }
             })
             .catch(error => console.error('Error fetching notifications:', error));
@@ -275,13 +366,22 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    // Mark as read logic
+    // Mark all as read logic
     if (markReadBtn) {
         markReadBtn.addEventListener('click', function(e) {
             e.preventDefault();
             e.stopPropagation();
-            localStorage.setItem(storageKey, serverNotifCount);
-            badge.classList.add('hidden');
+            
+            const ids = getReadIds();
+            currentNotifs.forEach(n => {
+                if (!ids.includes(n.id)) ids.push(n.id);
+            });
+            if (ids.length > 200) ids.splice(0, ids.length - 200);
+            localStorage.setItem(storageKey, JSON.stringify(ids));
+            
+            renderNotifications();
+            
+            // Optionally close dropdown after marking all read
             dropdown.classList.add('opacity-0', 'scale-95');
             setTimeout(() => dropdown.classList.add('hidden'), 200);
         });
