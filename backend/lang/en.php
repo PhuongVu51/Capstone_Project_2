@@ -592,5 +592,13 @@ return [
     'status' => 'Status',
     'waste_comparison' => 'Waste Comparison',
     'waste_rate_between_suppliers' => 'Waste rate between suppliers',
-
+    'weather_alert' => 'Weather Alert',
+    'weather_normal' => 'Normal',
+    'weather_warning' => 'Warning',
+    'weather_select_city' => 'Select City',
+    'weather_optimal' => 'Weather conditions are optimal for supply transport.',
+    'weather_heavy_rain' => 'Heavy Rain / Storm detected! Expect supply chain delays. Consider prioritizing current raw material processing.',
+    'weather_extreme_heat' => 'Extreme Heat! Harvest might be affected, reducing incoming volume. Prepare storage for preservation.',
+    'weather_error' => 'Error loading weather',
+    'weather_conn_error' => 'Connection error',
 ];

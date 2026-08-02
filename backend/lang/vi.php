@@ -592,5 +592,13 @@ return [
     'status' => 'Trạng thái',
     'waste_comparison' => 'So sánh Hao hụt',
     'waste_rate_between_suppliers' => 'Tỷ lệ hao hụt giữa các NCC',
-
+    'weather_alert' => 'Cảnh báo thời tiết',
+    'weather_normal' => 'Bình thường',
+    'weather_warning' => 'Cảnh báo',
+    'weather_select_city' => 'Chọn khu vực',
+    'weather_optimal' => 'Thời tiết thuận lợi cho việc vận chuyển nguyên liệu.',
+    'weather_heavy_rain' => 'Có mưa lớn/bão! Khả năng chậm trễ vận chuyển. Cân nhắc ưu tiên xử lý nguyên liệu hiện tại.',
+    'weather_extreme_heat' => 'Nắng nóng gay gắt! Thu hoạch có thể bị ảnh hưởng làm giảm sản lượng nhập. Chuẩn bị kho bảo quản.',
+    'weather_error' => 'Lỗi tải dữ liệu thời tiết',
+    'weather_conn_error' => 'Lỗi kết nối',
 ];

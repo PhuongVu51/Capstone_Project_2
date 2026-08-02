@@ -19,7 +19,7 @@ if (isset($_GET['lang'])) {
     exit();
 }
 
-$current_lang = $_SESSION['lang'] ?? 'vi';
+$current_lang = $_SESSION['lang'] ?? 'en';
 $lang_file = __DIR__ . '/../lang/' . $current_lang . '.php';
 
 if (file_exists($lang_file)) {

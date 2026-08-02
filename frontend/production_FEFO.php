@@ -5,11 +5,11 @@ require_role(['Production_Manager', 'Director'], 'login.php');
 require_once '../backend/connection/db_connect.php';
 
 try {
-    $lang = $_SESSION['lang'] ?? 'vi';
+    $lang = $_SESSION['lang'] ?? 'en';
     $productNameCol = ($lang === 'en') ? 'COALESCE(p.PRD_product_name_en, p.PRD_product_name)' : 'p.PRD_product_name';
 
     // Truy vấn các lô hàng sắp hết hạn trong 48h tới
-    $lang = $_SESSION['lang'] ?? 'vi';
+    $lang = $_SESSION['lang'] ?? 'en';
     $productNameCol = ($lang === 'en') ? 'COALESCE(p.PRD_product_name_en, p.PRD_product_name)' : 'p.PRD_product_name';
     $zoneNameCol = ($lang === 'en') ? 'COALESCE(z.STZ_zone_name_en, z.STZ_zone_name)' : 'z.STZ_zone_name';
 
@@ -96,7 +96,27 @@ try {
                     <p class="text-gray-400 text-sm max-w-2xl"><?= __('fefo_red_alerts_desc') ?></p>
                 </div>
                 
-                <div class="flex gap-4">
+                <div class="flex gap-4 flex-wrap justify-end">
+                    <!-- Weather Alert Card -->
+                    <div class="bg-[#0f1722] p-4 rounded-lg min-w-[200px] flex flex-col justify-between border border-[#1f2937]" id="weather-card">
+                        <div class="flex justify-between items-start mb-2 gap-2">
+                            <p class="text-[10px] text-gray-500 uppercase font-bold tracking-wider"><?= __('weather_alert') ?></p>
+                            <select id="weather-city" class="bg-[#0a1118] text-xs text-gray-300 border border-[#1f2937] rounded px-1 outline-none">
+                                <option value="Hanoi">Hanoi</option>
+                                <option value="Hai Phong">Hai Phong</option>
+                                <option value="Hung Yen">Hung Yen</option>
+                            </select>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <img id="weather-icon" src="" alt="Weather" class="w-8 h-8 hidden" />
+                            <div>
+                                <h3 class="text-xl font-bold text-white font-mono" id="weather-temp">--°C</h3>
+                                <p class="text-[10px] text-gray-400" id="weather-desc">Loading...</p>
+                            </div>
+                        </div>
+                        <p class="text-[9px] mt-1 font-medium" id="weather-msg"></p>
+                    </div>
+
                     <div class="bg-[#b91c1c] p-4 rounded-lg min-w-[140px] text-center border border-red-500/50 shadow-[0_0_15px_rgba(220,38,38,0.2)]">
                         <p class="text-[10px] text-red-200 uppercase font-bold tracking-wider mb-1"><?= __('total_at_risk') ?></p>
                         <h3 class="text-2xl font-bold text-white"><?= $totalRiskBatches ?> <?= __('batches') ?></h3>
@@ -273,6 +293,52 @@ try {
         function closeModal() {
             document.getElementById('allocationModal').classList.add('hidden');
         }
+    </script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const citySelect = document.getElementById('weather-city');
+            
+            function fetchWeather(city) {
+                fetch('../backend/api/get_weather.php?city=' + encodeURIComponent(city))
+                    .then(res => res.json())
+                    .then(data => {
+                        if(data.error) {
+                            document.getElementById('weather-desc').innerText = '<?= __('weather_error') ?>';
+                            return;
+                        }
+                        
+                        document.getElementById('weather-temp').innerText = data.temp + '°C';
+                        document.getElementById('weather-desc').innerText = data.condition + ' - ' + data.description;
+                        
+                        const iconEl = document.getElementById('weather-icon');
+                        iconEl.src = `https://openweathermap.org/img/wn/${data.icon}.png`;
+                        iconEl.classList.remove('hidden');
+
+                        const msgEl = document.getElementById('weather-msg');
+                        msgEl.innerText = data.alert_message;
+                        
+                        const cardEl = document.getElementById('weather-card');
+                        if(data.alert_level === 'Warning') {
+                            cardEl.classList.add('border-' + data.alert_color + '-500/50', 'shadow-[0_0_15px_rgba(220,38,38,0.1)]');
+                            msgEl.classList.add('text-' + data.alert_color + '-400');
+                            msgEl.classList.remove('text-green-400');
+                        } else {
+                            cardEl.classList.remove('border-red-500/50', 'border-orange-500/50', 'shadow-[0_0_15px_rgba(220,38,38,0.1)]');
+                            msgEl.classList.add('text-green-400');
+                            msgEl.classList.remove('text-red-400', 'text-orange-400');
+                        }
+                    })
+                    .catch(err => {
+                        console.error('Weather fetch error:', err);
+                        document.getElementById('weather-desc').innerText = '<?= __('weather_conn_error') ?>';
+                    });
+            }
+
+            citySelect.addEventListener('change', (e) => fetchWeather(e.target.value));
+            
+            // Initial fetch
+            fetchWeather(citySelect.value);
+        });
     </script>
 </body>
 </html>
