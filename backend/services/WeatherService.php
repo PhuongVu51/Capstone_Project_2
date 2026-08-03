@@ -58,7 +58,7 @@ class WeatherService {
         $alertMessage = __('weather_optimal');
         $alertColor = 'green';
 
-        if ($weatherId >= 200 && $weatherId < 600) { // Thunderstorm, Drizzle, Rain
+        if (($weatherId >= 200 && $weatherId < 300) || in_array($weatherId, [502, 503, 504, 522, 531])) { // Thunderstorm or Heavy Rain
             $alertLevel = 'Warning';
             $alertMessage = __('weather_heavy_rain');
             $alertColor = 'red';
