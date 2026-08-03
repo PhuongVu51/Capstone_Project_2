@@ -16,6 +16,10 @@ if (!isset($_SESSION['user_id']) || !isset($_SESSION['role'])) {
     exit;
 }
 
+// Giải phóng session lock ngay lập tức để không làm lag các trang khác (như trang login) 
+// nếu db_connect.php bị chậm hoặc treo.
+session_write_close();
+
 require_once __DIR__ . '/../models/NotificationModel.php';
 
 try {

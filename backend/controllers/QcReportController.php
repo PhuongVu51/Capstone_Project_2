@@ -10,10 +10,18 @@ class QcReportController {
     }
 
     public function loadReportData($lang = 'vi') {
+        $reasonFilter = $_GET['reason'] ?? '';
+        $this->model->setReasonFilter($reasonFilter);
+
         $summary = $this->model->getLossSummary();
         $breakdown = $this->model->getReasonBreakdown($lang);
         $lossBatches = $this->model->getHighLossBatches($lang);
         $supplierScorecard = $this->model->getSupplierScorecard($lang);
+        
+        $availableReasons = $this->model->getAvailableReasons($lang);
+        
+        $costByProduct = $this->model->getWasteCostByProduct($lang);
+        $costTrend = $this->model->getWasteCostTrend(30);
 
         // Xử lý logic dữ liệu cho biểu đồ tròn (Doughnut Chart)
         $chartLabels = [];
@@ -44,12 +52,19 @@ class QcReportController {
             'totalInspected' => number_format($summary['totalInspected'], 1),
             'totalLoss'      => number_format($summary['totalLoss'], 1),
             'defectRate'     => number_format($summary['defectRate'], 2),
+            'totalLossCost'  => number_format($summary['totalLossCost']),
+            'totalAbnormalCost' => number_format($summary['totalAbnormalCost']),
+            'totalNaturalCost'  => number_format($summary['totalNaturalCost']),
+            'abnormalCostPct'   => number_format($summary['abnormalCostPct'], 1),
             'topReason'      => $topReason,
             'topReasonKg'    => number_format((float)$topReasonKg, 1),
             'chartLabels'    => $chartLabels,
             'chartData'      => $chartData,
             'lossBatches'    => $lossBatches,
-            'supplierScorecard' => $supplierScorecard
+            'supplierScorecard' => $supplierScorecard,
+            'availableReasons' => $availableReasons,
+            'costByProduct'  => $costByProduct,
+            'costTrend'      => $costTrend
         ];
     }
 

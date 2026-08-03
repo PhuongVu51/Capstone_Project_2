@@ -338,6 +338,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 if (data.status === 'success') {
                     currentNotifs = data.data || [];
                     renderNotifications();
+
                 }
             })
             .catch(error => console.error('Error fetching notifications:', error));
