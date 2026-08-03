@@ -3,15 +3,32 @@
 require_once __DIR__ . '/../core/BaseModel.php';
 
 class QcReportModel extends BaseModel {
+    private $reasonFilter = '';
+
+    public function setReasonFilter($reason) {
+        $this->reasonFilter = $reason;
+    }
+
+    private function getReasonCondition() {
+        if (empty($this->reasonFilter)) return "";
+        return " AND q.QCI_rejection_reason = " . $this->pdo->quote($this->reasonFilter);
+    }
 
     // Lấy tổng quan thống kê hao hụt
     public function getLossSummary() {
+        $reasonCond = $this->getReasonCondition();
         $stmt = $this->pdo->query("
             SELECT 
-                SUM(QCI_usable_weight_kg + QCI_rotten_weight_kg + QCI_natural_loss_weight_kg) AS total_inspected,
-                SUM(QCI_rotten_weight_kg) AS total_rotten,
-                SUM(QCI_natural_loss_weight_kg) AS total_natural
-            FROM QC_INSPECTIONS
+                SUM(COALESCE(q.QCI_usable_weight_kg, 0) + COALESCE(q.QCI_rotten_weight_kg, 0) + COALESCE(q.QCI_natural_loss_weight_kg, 0)) AS total_inspected,
+                SUM(COALESCE(q.QCI_rotten_weight_kg, 0)) AS total_rotten,
+                SUM(COALESCE(q.QCI_natural_loss_weight_kg, 0)) AS total_natural,
+                SUM((COALESCE(q.QCI_rotten_weight_kg, 0) + COALESCE(q.QCI_natural_loss_weight_kg, 0)) * p.PRD_unit_price) AS total_loss_cost,
+                SUM(q.QCI_rotten_weight_kg * p.PRD_unit_price) AS total_abnormal_loss_cost,
+                SUM(q.QCI_natural_loss_weight_kg * p.PRD_unit_price) AS total_natural_loss_cost
+            FROM QC_INSPECTIONS q
+            JOIN BATCHES b ON q.QCI_batch_id = b.BCH_batch_id
+            JOIN PRODUCTS p ON b.BCH_product_id = p.PRD_product_id
+            WHERE 1=1 $reasonCond
         ");
         $res = $stmt->fetch(PDO::FETCH_ASSOC);
         
@@ -21,21 +38,31 @@ class QcReportModel extends BaseModel {
         $totalLoss = $totalRotten + $totalNatural;
 
         $defectRate = ($totalInspected > 0) ? ($totalLoss / $totalInspected) * 100 : 0;
+        
+        $totalLossCost = (float)($res['total_loss_cost'] ?? 0);
+        $totalAbnormalCost = (float)($res['total_abnormal_loss_cost'] ?? 0);
+        $totalNaturalCost = (float)($res['total_natural_loss_cost'] ?? 0);
+        $abnormalCostPct = ($totalLossCost > 0) ? ($totalAbnormalCost / $totalLossCost) * 100 : 0;
 
         return [
             'totalInspected' => $totalInspected,
             'totalLoss' => $totalLoss,
-            'defectRate' => $defectRate
+            'defectRate' => $defectRate,
+            'totalLossCost' => $totalLossCost,
+            'totalAbnormalCost' => $totalAbnormalCost,
+            'totalNaturalCost' => $totalNaturalCost,
+            'abnormalCostPct' => $abnormalCostPct
         ];
     }
 
     // Phân bổ nguyên nhân loại bỏ để vẽ Biểu đồ Tròn
     public function getReasonBreakdown($lang = 'vi') {
         $reasonCol = ($lang === 'en') ? 'COALESCE(QCI_rejection_reason_en, QCI_rejection_reason)' : 'QCI_rejection_reason';
+        $reasonCond = $this->getReasonCondition();
         $stmt = $this->pdo->query("
             SELECT $reasonCol AS reason, COUNT(*) AS count, SUM(QCI_rotten_weight_kg) AS total_kg
-            FROM QC_INSPECTIONS
-            WHERE QCI_rejection_reason IS NOT NULL AND QCI_rejection_reason != 'None' AND QCI_rejection_reason != ''
+            FROM QC_INSPECTIONS q
+            WHERE QCI_rejection_reason IS NOT NULL AND QCI_rejection_reason != 'None' AND QCI_rejection_reason != '' $reasonCond
             GROUP BY reason
             ORDER BY total_kg DESC
         ");
@@ -44,24 +71,27 @@ class QcReportModel extends BaseModel {
 
     // Danh sách các lô hàng có phế phẩm cao (Lớn hơn 0)
     public function getHighLossBatches($lang = 'vi', $limit = 15) {
-        $limit = (int) $limit; // Ép kiểu thành số nguyên an toàn tuyệt đối
-        $productNameCol = ($lang === 'en') ? 'COALESCE(p.PRD_product_name_en, p.PRD_product_name)' : 'p.PRD_product_name';
-        $supplierNameCol = ($lang === 'en') ? 'COALESCE(s.SUP_supplier_name_en, s.SUP_supplier_name)' : 's.SUP_supplier_name';
-        
+        $limit = (int) $limit;
         $reasonCol = ($lang === 'en') ? 'COALESCE(q.QCI_rejection_reason_en, q.QCI_rejection_reason)' : 'q.QCI_rejection_reason';
-        $sql = "
-            SELECT q.QCI_batch_id, $productNameCol AS PRD_product_name, $supplierNameCol AS SUP_supplier_name,
+        $reasonCond = $this->getReasonCondition();
+        
+        $stmt = $this->pdo->prepare("
+            SELECT q.QCI_batch_id, 
+                   " . (($lang === 'en') ? 'COALESCE(p.PRD_product_name_en, p.PRD_product_name)' : 'p.PRD_product_name') . " AS PRD_product_name, 
+                   " . (($lang === 'en') ? 'COALESCE(s.SUP_supplier_name_en, s.SUP_supplier_name)' : 's.SUP_supplier_name') . " AS SUP_supplier_name,
                    q.QCI_rotten_weight_kg, $reasonCol AS QCI_rejection_reason, q.QCI_actual_yield_pct,
-                   b.BCH_received_date
+                   b.BCH_received_date, (q.QCI_rotten_weight_kg * p.PRD_unit_price) AS cost_impact
             FROM QC_INSPECTIONS q
             JOIN BATCHES b ON q.QCI_batch_id = b.BCH_batch_id
             JOIN PRODUCTS p ON b.BCH_product_id = p.PRD_product_id
             JOIN SUPPLIERS s ON b.BCH_supplier_id = s.SUP_supplier_id
-            WHERE q.QCI_rotten_weight_kg > 0
-            ORDER BY q.QCI_rotten_weight_kg DESC
-            LIMIT $limit
-        ";
-        $stmt = $this->pdo->query($sql);
+            WHERE q.QCI_rotten_weight_kg > 0 $reasonCond
+            ORDER BY cost_impact DESC
+            LIMIT :limit
+        ");
+        
+        $stmt->bindValue(':limit', $limit, PDO::PARAM_INT);
+        $stmt->execute();
         
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
@@ -69,6 +99,7 @@ class QcReportModel extends BaseModel {
     // Lấy dữ liệu cho Supplier Scorecard
     public function getSupplierScorecard($lang = 'vi') {
         $supplierNameCol = ($lang === 'en') ? 'COALESCE(s.SUP_supplier_name_en, s.SUP_supplier_name)' : 's.SUP_supplier_name';
+        $reasonCond = $this->getReasonCondition();
         $sql = "
             SELECT 
                 s.SUP_supplier_id,
@@ -88,6 +119,7 @@ class QcReportModel extends BaseModel {
             LEFT JOIN BATCHES b ON s.SUP_supplier_id = b.BCH_supplier_id
             LEFT JOIN PRODUCTS p ON b.BCH_product_id = p.PRD_product_id
             LEFT JOIN QC_INSPECTIONS q ON b.BCH_batch_id = q.QCI_batch_id
+            WHERE 1=1 $reasonCond
             GROUP BY s.SUP_supplier_id
             ORDER BY total_waste_cost DESC
         ";
@@ -152,6 +184,70 @@ class QcReportModel extends BaseModel {
         });
 
         return $processed;
+    }
+
+    // Biểu đồ cột: So sánh chi phí hao hụt giữa các sản phẩm
+    public function getWasteCostByProduct($lang = 'vi') {
+        $productNameCol = ($lang === 'en') ? 'COALESCE(p.PRD_product_name_en, p.PRD_product_name)' : 'p.PRD_product_name';
+        $reasonCond = $this->getReasonCondition();
+        $stmt = $this->pdo->query("
+            SELECT 
+                $productNameCol AS product_name, 
+                COALESCE(SUM(q.QCI_rotten_weight_kg * p.PRD_unit_price), 0) AS abnormal_cost,
+                COALESCE(SUM(q.QCI_natural_loss_weight_kg * p.PRD_unit_price), 0) AS natural_cost
+            FROM QC_INSPECTIONS q
+            JOIN BATCHES b ON q.QCI_batch_id = b.BCH_batch_id
+            JOIN PRODUCTS p ON b.BCH_product_id = p.PRD_product_id
+            WHERE 1=1 $reasonCond
+            GROUP BY product_name
+            ORDER BY abnormal_cost DESC
+        ");
+        $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        foreach ($results as &$r) {
+            $r['abnormal_cost'] = (float)$r['abnormal_cost'];
+            $r['natural_cost'] = (float)$r['natural_cost'];
+        }
+        return $results;
+    }
+
+    // Biểu đồ xu hướng: Chi phí hao hụt theo ngày (30 ngày gần nhất)
+    public function getWasteCostTrend($days = 30) {
+        $days = (int)$days;
+        $reasonCond = $this->getReasonCondition();
+        $stmt = $this->pdo->query("
+            SELECT 
+                DATE(b.BCH_received_date) AS report_date,
+                COALESCE(SUM(q.QCI_rotten_weight_kg * p.PRD_unit_price), 0) AS daily_abnormal_cost,
+                COALESCE(SUM(q.QCI_natural_loss_weight_kg * p.PRD_unit_price), 0) AS daily_natural_cost
+            FROM QC_INSPECTIONS q
+            JOIN BATCHES b ON q.QCI_batch_id = b.BCH_batch_id
+            JOIN PRODUCTS p ON b.BCH_product_id = p.PRD_product_id
+            WHERE 1=1 $reasonCond
+            GROUP BY report_date
+            ORDER BY report_date DESC
+            LIMIT $days
+        ");
+        $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        
+        // Reverse array to show oldest to newest left to right
+        $results = array_reverse($results);
+        
+        foreach ($results as &$r) {
+            $r['daily_abnormal_cost'] = (float)$r['daily_abnormal_cost'];
+            $r['daily_natural_cost'] = (float)$r['daily_natural_cost'];
+        }
+        return $results;
+    }
+
+    public function getAvailableReasons($lang = 'vi') {
+        $reasonCol = ($lang === 'en') ? 'COALESCE(QCI_rejection_reason_en, QCI_rejection_reason)' : 'QCI_rejection_reason';
+        $stmt = $this->pdo->query("
+            SELECT DISTINCT $reasonCol AS reason
+            FROM QC_INSPECTIONS
+            WHERE QCI_rejection_reason IS NOT NULL AND QCI_rejection_reason != '' AND QCI_rejection_reason != 'None'
+            ORDER BY reason ASC
+        ");
+        return $stmt->fetchAll(PDO::FETCH_COLUMN);
     }
 }
 ?>
