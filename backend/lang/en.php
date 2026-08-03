@@ -601,4 +601,9 @@ return [
     'weather_extreme_heat' => 'Extreme Heat! Harvest might be affected, reducing incoming volume. Prepare storage for preservation.',
     'weather_error' => 'Error loading weather',
     'weather_conn_error' => 'Connection error',
+    'see_more_info' => 'See more information &rarr;',
+    'collapse' => 'Collapse',
+    'weather_forecast' => 'Weather Forecast',
+    'hourly_forecast' => 'Hourly Forecast',
+    'feels_like' => 'Feels like',
 ];

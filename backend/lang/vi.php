@@ -601,4 +601,9 @@ return [
     'weather_extreme_heat' => 'Nắng nóng gay gắt! Thu hoạch có thể bị ảnh hưởng làm giảm sản lượng nhập. Chuẩn bị kho bảo quản.',
     'weather_error' => 'Lỗi tải dữ liệu thời tiết',
     'weather_conn_error' => 'Lỗi kết nối',
+    'see_more_info' => 'Xem thêm thông tin &rarr;',
+    'collapse' => 'Thu gọn',
+    'weather_forecast' => 'Dự báo thời tiết',
+    'hourly_forecast' => 'Dự báo theo giờ',
+    'feels_like' => 'Cảm giác như',
 ];

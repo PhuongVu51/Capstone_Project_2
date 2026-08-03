@@ -32,6 +32,7 @@ class WeatherService {
         curl_setopt($ch, CURLOPT_URL, $url);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($ch, CURLOPT_TIMEOUT, 5); // 5 seconds timeout
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false); // Fix for local dev SSL issues
         $response = curl_exec($ch);
         $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
         curl_close($ch);
@@ -55,16 +56,16 @@ class WeatherService {
         // OpenWeatherMap condition codes: https://openweathermap.org/weather-conditions
         // 2xx: Thunderstorm, 3xx: Drizzle, 5xx: Rain, 6xx: Snow
         $alertLevel = 'Normal';
-        $alertMessage = __('weather_optimal');
+        $alertMessage = function_exists('__') ? __('weather_optimal') : 'Conditions are optimal.';
         $alertColor = 'green';
 
-        if ($weatherId >= 200 && $weatherId < 600) { // Thunderstorm, Drizzle, Rain
+        if (($weatherId >= 200 && $weatherId < 300) || in_array($weatherId, [502, 503, 504, 522, 531])) { // Thunderstorm or Heavy Rain
             $alertLevel = 'Warning';
-            $alertMessage = __('weather_heavy_rain');
+            $alertMessage = function_exists('__') ? __('weather_heavy_rain') : 'Heavy rain/storm detected!';
             $alertColor = 'red';
         } else if ($temp >= 38) {
             $alertLevel = 'Warning';
-            $alertMessage = __('weather_extreme_heat');
+            $alertMessage = function_exists('__') ? __('weather_extreme_heat') : 'Extreme Heat!';
             $alertColor = 'orange';
         }
 
