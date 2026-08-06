@@ -389,3 +389,6 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 });
 </script>
+
+<!-- AI CHATBOT WIDGET -->
+<?php require_once __DIR__ . '/chat_widget.php'; ?>
