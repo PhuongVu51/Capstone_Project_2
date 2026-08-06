@@ -96,9 +96,9 @@ try {
                     </div>
 
                     <!-- MAIN PANELS: 2 Frames -->
-                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 w-full">
                         <!-- Frame 1: Current Weather & Alert -->
-                        <div id="cur-bg" class="bg-cover bg-center border border-[#1f2937] rounded-2xl p-6 h-[280px] flex flex-col justify-between shadow-lg transition-all duration-700 relative overflow-hidden" style="background-image: url('https://images.unsplash.com/photo-1601297183314-046603a1d137?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80');">
+                        <div id="cur-bg" class="lg:col-span-5 bg-cover bg-center border border-[#1f2937] rounded-2xl p-6 h-[300px] flex flex-col justify-between shadow-lg transition-all duration-700 relative overflow-hidden w-full min-w-0" style="background-image: url('https://images.unsplash.com/photo-1601297183314-046603a1d137?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80');">
                             <div class="absolute inset-0 bg-black/40 backdrop-blur-[2px]"></div>
                             
                             <div class="relative z-10 flex justify-between items-start">
@@ -107,7 +107,7 @@ try {
                                 </div>
                                 <div class="text-right">
                                     <p class="text-gray-200 text-sm font-medium" id="cur-date">--</p>
-                                    <p class="text-gray-300 text-xs font-medium mt-1" id="cur-time">--</p>
+                                    <p class="text-gray-300 text-xs font-medium mt-0.5" id="cur-time">--</p>
                                 </div>
                             </div>
                             <div class="relative z-10 flex justify-between items-end">
@@ -120,7 +120,7 @@ try {
                         </div>
 
                         <!-- Frame 2: Hourly Forecast -->
-                        <div class="bg-[#1b212f] rounded-2xl border border-[#2b3548] flex flex-col h-[320px] overflow-hidden relative font-sans shadow-lg">
+                        <div class="lg:col-span-7 bg-[#1b212f] rounded-2xl border border-[#2b3548] flex flex-col h-[300px] overflow-hidden relative font-sans shadow-lg w-full min-w-0">
                             
                             <!-- Top Bar -->
                             <div class="flex justify-between items-center px-4 py-3 border-b border-[#2b3548]">
@@ -137,29 +137,24 @@ try {
                             <!-- Main Container -->
                             <div class="flex-1 relative w-full overflow-hidden flex" id="hourly-scroll-container">
                                 
-                                <!-- Y-Axis (Fixed on Left) -->
-                                <div id="y-axis-labels" class="w-10 border-r border-[#2b3548] flex flex-col justify-between py-6 px-1 text-right relative z-10 bg-[#1b212f]/90 backdrop-blur">
-                                    <!-- Rendered dynamically by JS -->
-                                </div>
-
                                 <!-- Scrollable Chart Area -->
-                                <div class="flex-1 overflow-x-auto relative scroll-smooth no-scrollbar" id="hourly-scroll-area">
-                                    <div class="min-w-[800px] h-full relative" id="chart-inner-wrapper">
+                                <div class="flex-1 overflow-hidden relative" id="hourly-scroll-area">
+                                    <div class="w-full h-full relative" id="chart-inner-wrapper">
                                         
                                         <!-- Rain columns & Sunrise/Sunset (Rendered by JS) -->
-                                        <div id="rain-columns" class="absolute inset-0 pointer-events-none z-0"></div>
-                                        <div id="sun-events" class="absolute inset-0 pointer-events-none z-10"></div>
+                                        <div id="rain-columns" class="absolute top-12 left-0 w-full h-[170px] pointer-events-none z-0"></div>
+                                        <div id="sun-events" class="absolute top-12 left-0 w-full h-[170px] pointer-events-none z-10"></div>
                                         
                                         <!-- Chart.js Canvas -->
-                                        <canvas id="hourly-chart" class="absolute top-16 left-0 w-full h-[180px] z-20"></canvas>
+                                        <canvas id="hourly-chart" class="absolute top-12 left-0 w-full h-[170px] z-20"></canvas>
 
                                         <!-- Top Labels Overlay -->
-                                        <div id="top-labels" class="absolute top-0 left-0 w-full h-16 flex items-end pb-1 z-30">
+                                        <div id="top-labels" class="absolute top-0 left-0 w-full h-12 flex items-end pb-1 z-30">
                                             <!-- Rendered by JS -->
                                         </div>
                                         
                                         <!-- Vertical dashed line for tooltip -->
-                                        <div id="tooltip-line" class="absolute top-16 bottom-6 w-[2px] border-l border-dashed border-gray-400 opacity-0 pointer-events-none z-40 transform -translate-x-1/2"></div>
+                                        <div id="tooltip-line" class="absolute top-12 bottom-9 w-[2px] border-l border-dashed border-gray-400 opacity-0 pointer-events-none z-40 transform -translate-x-1/2"></div>
                                         
                                         <!-- Tooltip (Custom) -->
                                         <div id="custom-tooltip" class="absolute bg-white/90 backdrop-blur rounded-xl shadow-lg flex flex-col items-center p-2 opacity-0 pointer-events-none transition-opacity duration-200 z-50 transform -translate-x-1/2" style="top: 10px; width: 60px;">
@@ -178,7 +173,7 @@ try {
                                         <div id="tooltip-ring" class="absolute w-3 h-3 rounded-full border-2 border-white bg-transparent shadow opacity-0 pointer-events-none z-50 transform -translate-x-1/2 -translate-y-1/2"></div>
 
                                         <!-- Bottom POP Bar -->
-                                        <div id="bottom-pop-bar" class="absolute bottom-0 left-0 w-full h-7 flex overflow-hidden border-t border-[#2b3548] z-30">
+                                        <div id="bottom-pop-bar" class="absolute bottom-0 left-0 w-full h-9 flex overflow-hidden border-t border-[#2b3548] z-30">
                                             <!-- Rendered by JS -->
                                         </div>
                                     </div>
@@ -429,23 +424,39 @@ try {
                 }
 
                 const curBg = document.getElementById('cur-bg');
+
+                // Dynamic Background Logic (Use data.current for Today, or selectedDaily for future dates)
+                let targetIcon = (isToday && data.current && data.current.icon) ? data.current.icon : (selectedDaily.icon || '');
+                let targetCond = (isToday && data.current && data.current.condition) ? data.current.condition : (selectedDaily.condition || '');
+                let targetDesc = (isToday && data.current && data.current.description) ? data.current.description : (selectedDaily.description || '');
                 
-                // Dynamic Background
-                let iconCode = selectedDaily.icon;
+                let iconCode = targetIcon.toLowerCase();
+                let condText = (targetCond + ' ' + targetDesc).toLowerCase();
                 let bgUrl = '';
-                if (iconCode.includes('02') || iconCode.includes('03') || iconCode.includes('04')) {
-                    bgUrl = 'https://images.unsplash.com/photo-1534088568595-a066f410cbda?auto=format&fit=crop&q=80';
-                } else if (iconCode.includes('09') || iconCode.includes('10')) {
-                    bgUrl = 'https://images.unsplash.com/photo-1515694346937-94d85e41e6f0?auto=format&fit=crop&q=80';
-                } else if (iconCode.includes('11')) {
-                    bgUrl = 'https://images.unsplash.com/photo-1605727216801-e27ce1d0ce49?auto=format&fit=crop&q=80';
-                } else if (iconCode.includes('13')) {
-                    bgUrl = 'https://images.unsplash.com/photo-1542601098-8fc114e148e2?auto=format&fit=crop&q=80';
-                } else if (iconCode.includes('50')) {
-                    bgUrl = 'https://images.unsplash.com/photo-1487621167305-5d248087c724?auto=format&fit=crop&q=80';
+
+                if (iconCode.includes('11') || condText.includes('thunderstorm')) {
+                    // Thunderstorm
+                    bgUrl = 'https://images.unsplash.com/photo-1605727216801-e27ce1d0ce49?auto=format&fit=crop&w=1000&q=80';
+                } else if (iconCode.includes('13') || condText.includes('snow')) {
+                    // Snow
+                    bgUrl = 'https://images.unsplash.com/photo-1483664852095-d6cc6870702d?auto=format&fit=crop&w=1000&q=80';
+                } else if (iconCode.includes('09') || iconCode.includes('10') || condText.includes('rain') || condText.includes('drizzle')) {
+                    // Rain / Heavy Rain
+                    bgUrl = 'https://images.unsplash.com/photo-1519692933481-e162a57d6721?auto=format&fit=crop&w=1000&q=80';
+                } else if (iconCode.includes('04') || condText.includes('overcast')) {
+                    // Overcast Clouds
+                    bgUrl = 'https://images.unsplash.com/photo-1513002749550-c59d786b8e6c?auto=format&fit=crop&w=1000&q=80';
+                } else if (iconCode.includes('02') || iconCode.includes('03') || condText.includes('cloud')) {
+                    // Scattered / Few Clouds
+                    bgUrl = 'https://images.unsplash.com/photo-1534088568595-a066f410cbda?auto=format&fit=crop&w=1000&q=80';
+                } else if (iconCode.includes('50') || condText.includes('mist') || condText.includes('fog') || condText.includes('haze')) {
+                    // Mist / Fog
+                    bgUrl = 'https://images.unsplash.com/photo-1487621167305-5d248087c724?auto=format&fit=crop&w=1000&q=80';
                 } else {
-                    bgUrl = 'https://images.unsplash.com/photo-1622396481328-9b1b78cdd9fd?auto=format&fit=crop&q=80';
+                    // Clear / Sunny
+                    bgUrl = 'https://images.unsplash.com/photo-1601297183314-046603a1d137?auto=format&fit=crop&w=1000&q=80';
                 }
+
                 curBg.style.backgroundImage = `url('${bgUrl}')`;
                 
                 // Also update small widget background
@@ -460,16 +471,16 @@ try {
                     if (data.current.alert_level === 'Warning') {
                         alertBox.className = 'flex px-3 py-1.5 rounded border bg-' + data.current.alert_color + '-500/10 border-' + data.current.alert_color + '-500/30 backdrop-blur-md';
                         alertMsg.className = 'text-xs font-bold text-' + data.current.alert_color + '-400';
-                        curBg.className = 'bg-cover bg-center rounded-2xl p-6 h-[280px] flex flex-col justify-between transition-colors border border-' + data.current.alert_color + '-500/50 shadow-[0_0_15px_rgba(220,38,38,0.1)] relative overflow-hidden';
+                        curBg.className = 'lg:col-span-5 bg-cover bg-center rounded-2xl p-6 h-[300px] flex flex-col justify-between transition-colors border border-' + data.current.alert_color + '-500/50 shadow-[0_0_15px_rgba(220,38,38,0.1)] relative overflow-hidden w-full min-w-0';
                     } else {
                         alertBox.className = 'flex px-3 py-1.5 rounded border bg-green-500/10 border-green-500/20 backdrop-blur-md';
                         alertMsg.className = 'text-xs font-medium text-green-400';
-                        curBg.className = 'bg-cover bg-center border border-[#1f2937] rounded-2xl p-6 h-[280px] flex flex-col justify-between shadow-lg transition-colors relative overflow-hidden';
+                        curBg.className = 'lg:col-span-5 bg-cover bg-center border border-[#1f2937] rounded-2xl p-6 h-[300px] flex flex-col justify-between shadow-lg transition-colors relative overflow-hidden w-full min-w-0';
                     }
                     alertMsg.innerText = data.current.alert_message;
                 } else {
                     alertBox.style.display = 'none';
-                    curBg.className = 'bg-cover bg-center border border-[#1f2937] rounded-2xl p-6 h-[280px] flex flex-col justify-between shadow-lg transition-colors relative overflow-hidden';
+                    curBg.className = 'lg:col-span-5 bg-cover bg-center border border-[#1f2937] rounded-2xl p-6 h-[300px] flex flex-col justify-between shadow-lg transition-colors relative overflow-hidden w-full min-w-0';
                 }
                 
                 // Update Small Widget Data (always shows current weather)
@@ -517,10 +528,13 @@ try {
                     // Reset scroll container content if it was empty
                     if (!topLabels) return; // safety
                     
-                    // Update width based on points
-                    const pointWidth = 65;
-                    const totalWidth = Math.max(800, hourlyData.length * pointWidth);
-                    chartInner.style.width = totalWidth + 'px';
+                    // Fill 100% width of chart container
+                    chartInner.style.width = '100%';
+                    const containerWidth = chartInner.clientWidth || hourlyScrollArea.clientWidth || 600;
+
+                    // Padding for first and last points (40px) so 00h and 22h labels are never clipped by Y-axis or right border
+                    const paddingX = 40;
+                    const usableWidth = containerWidth - (paddingX * 2);
 
                     // Top labels & Bottom POP bar
                     topLabels.innerHTML = '';
@@ -531,11 +545,11 @@ try {
                     
                     // Render HTML overlays for each data point
                     hourlyData.forEach((h, i) => {
-                        const leftPos = (i / (hourlyData.length - 1)) * 100;
+                        const pxPos = hourlyData.length > 1 ? (paddingX + (i / (hourlyData.length - 1)) * usableWidth) : (containerWidth / 2);
                         
                         // Top label
                         topLabels.innerHTML += `
-                            <div class="absolute flex flex-col items-center justify-end transform -translate-x-1/2 w-12" style="left: ${leftPos}%; bottom: 0;">
+                            <div class="absolute flex flex-col items-center justify-end transform -translate-x-1/2 w-16" style="left: ${pxPos}px; bottom: 0;">
                                 <span class="text-[11px] text-gray-300 font-medium mb-0.5">${h.time}</span>
                                 <img src="https://openweathermap.org/img/wn/${h.icon}.png" class="w-8 h-8 -my-1" />
                                 <span class="text-xs font-bold text-gray-200 mt-0.5">${getTemp(h.temp)}°</span>
@@ -555,23 +569,17 @@ try {
                     });
 
                     // Dynamic Y-axis limits
-                    const allTemps = [...hourlyTemps, ...hourlyFeels];
-                    let maxTemp = Math.max(...allTemps);
-                    let minTemp = Math.min(...allTemps);
+                    const allTemps = [...hourlyTemps, ...hourlyFeels].filter(t => t > 0);
+                    let maxTemp = allTemps.length ? Math.max(...allTemps) : 35;
+                    let minTemp = allTemps.length ? Math.min(...allTemps) : 20;
                     
-                    if (maxTemp === minTemp) { maxTemp += 5; minTemp -= 5; }
-                    
-                    const yMax = Math.ceil(maxTemp / 10) * 10 + 10;
-                    const yMin = Math.floor(minTemp / 10) * 10 - 10;
-                    const yStep = (yMax - yMin) / 4;
-                    
-                    const yAxisLabels = document.getElementById('y-axis-labels');
-                    if (yAxisLabels) {
-                        yAxisLabels.innerHTML = '';
-                        for(let i=4; i>=0; i--) {
-                            const val = Math.round(yMin + yStep * i);
-                            yAxisLabels.innerHTML += `<span class="text-[10px] text-gray-400">${val}°</span>`;
-                        }
+                    let yMax = 50;
+                    let yMin = 10;
+
+                    if (maxTemp > 45) yMax = Math.ceil((maxTemp + 2) / 10) * 10;
+                    if (minTemp < 12) yMin = Math.floor((minTemp - 2) / 10) * 10;
+                    if ((yMax - yMin) < 40) {
+                        yMin = Math.max(0, yMax - 40);
                     }
 
                     // Rain Columns plugin
@@ -607,10 +615,12 @@ try {
                     };
 
                     const ctx = document.getElementById('hourly-chart').getContext('2d');
-                    let areaGradient = ctx.createLinearGradient(0, 0, 0, 180);
-                    areaGradient.addColorStop(0, 'rgba(220, 38, 38, 0.7)'); // Red peak
-                    areaGradient.addColorStop(0.5, 'rgba(249, 115, 22, 0.5)'); // Orange mid
-                    areaGradient.addColorStop(1, 'rgba(180, 140, 100, 0.8)'); // Sand bottom
+                    let areaGradient = ctx.createLinearGradient(0, 0, 0, 170);
+                    areaGradient.addColorStop(0, 'rgba(220, 38, 38, 0.6)'); // Red peak
+                    areaGradient.addColorStop(0.5, 'rgba(249, 115, 22, 0.4)'); // Orange mid
+                    areaGradient.addColorStop(1, 'rgba(180, 140, 100, 0.6)'); // Sand bottom
+
+                    const cleanFeels = hourlyFeels.map((f, idx) => (f && f > 0) ? f : hourlyTemps[idx]);
 
                     window.weatherChart = new Chart(ctx, {
                         type: 'line',
@@ -620,9 +630,9 @@ try {
                             datasets: [
                                 {
                                     label: 'Feels Like',
-                                    data: hourlyFeels,
-                                    borderColor: 'rgba(200, 200, 200, 0.7)',
-                                    borderWidth: 1.5,
+                                    data: cleanFeels,
+                                    borderColor: 'rgba(229, 231, 235, 0.8)',
+                                    borderWidth: 2,
                                     borderDash: [4, 4],
                                     tension: 0.4,
                                     fill: false,
@@ -633,11 +643,11 @@ try {
                                 {
                                     label: 'Actual Temp',
                                     data: hourlyTemps,
-                                    borderColor: 'transparent',
+                                    borderColor: 'rgba(245, 158, 11, 0.9)',
                                     backgroundColor: areaGradient,
-                                    borderWidth: 0,
+                                    borderWidth: 2,
                                     tension: 0.4,
-                                    fill: true,
+                                    fill: 'start',
                                     pointRadius: 0,
                                     pointHoverRadius: 0
                                 }
@@ -678,7 +688,7 @@ try {
                                         }
 
                                         const xPos = tooltipModel.caretX;
-                                        const yPos = tooltipModel.dataPoints[0].element.y + 64; 
+                                        const yPos = tooltipModel.dataPoints[0].element.y + 48; 
 
                                         tooltipEl.style.opacity = 1;
                                         tooltipEl.style.left = xPos + 'px';
@@ -698,9 +708,9 @@ try {
                                     min: yMin, 
                                     max: yMax 
                                 },
-                                x: { display: false, offset: true }
+                                x: { display: false, offset: false }
                             },
-                            layout: { padding: { top: 20, bottom: 0, left: 0, right: 0 } }
+                            layout: { padding: { top: 20, bottom: 0, left: 30, right: 30 } }
                         }
                     });
                     
