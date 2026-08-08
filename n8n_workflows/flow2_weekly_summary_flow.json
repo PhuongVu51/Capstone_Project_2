@@ -1,0 +1,104 @@
+{
+  "name": "Flow 3: Weekly Production & Yield Analytics Summary Workflow",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "weeks",
+              "triggerAtDay": [
+                "5"
+              ],
+              "triggerAtHour": 17,
+              "triggerAtMinute": 0
+            }
+          ]
+        }
+      },
+      "name": "Weekly Schedule (Friday 17:00)",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        250,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "url": "http://localhost/Capstone_Project_2/backend/api/n8n_weekly_summary.php",
+        "options": {}
+      },
+      "name": "Fetch Weekly Summary API",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [
+        500,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const res = $input.item.json;\nconst qc = res.qc_metrics || {};\nconst prod = res.production_metrics || {};\nconst lowStock = res.low_stock_alerts || [];\n\nlet lowStockHtml = '<p style=\"color: green;\">Không có lô hàng nào rơi vào ngưỡng nguy hiểm.</p>';\nif (lowStock.length > 0) {\n  const rows = lowStock.map(b => `<tr><td style=\"padding: 8px; border: 1px solid #e5e7eb;\">${b.batch_id}</td><td style=\"padding: 8px; border: 1px solid #e5e7eb;\">${b.product_name}</td><td style=\"padding: 8px; border: 1px solid #e5e7eb;\"><strong>${b.available_stock_kg} kg</strong></td></tr>`).join('');\n  lowStockHtml = `<table style=\"width: 100%; border-collapse: collapse;\"><thead><tr style=\"background-color: #ef4444; color: white;\"><th style=\"padding: 8px; border: 1px solid #dc2626;\">Batch ID</th><th style=\"padding: 8px; border: 1px solid #dc2626;\">Sản phẩm</th><th style=\"padding: 8px; border: 1px solid #dc2626;\">Tồn kho</th></tr></thead><tbody>${rows}</tbody></table>`;\n}\n\nconst htmlBody = `<div style=\"font-family: Arial, sans-serif; max-width: 650px; margin: 0 auto; border: 1px solid #d1d5db; border-radius: 8px; padding: 24px; background-color: #ffffff;\"><h2 style=\"color: #1e3a8a; border-bottom: 2px solid #3b82f6; padding-bottom: 10px;\">📊 BÁO CÁO TỔNG HỢP SẢN XUẤT & YIELD HÀNG TUẦN</h2><p style=\"color: #4b5563;\">Thời gian tạo: <strong>${res.report_period.generated_at}</strong></p><h3 style=\"color: #1f2937; margin-top: 20px;\">1. Chỉ số Kiểm định Chất lượng (QC & Yield)</h3><table style=\"width: 100%; border-collapse: collapse; margin-bottom: 20px;\"><tr style=\"background-color: #f3f4f6;\"><td style=\"padding: 10px; border: 1px solid #e5e7eb;\">Tổng lượt kiểm định</td><td style=\"padding: 10px; border: 1px solid #e5e7eb;\"><strong>${qc.total_inspections}</strong></td></tr><tr><td style=\"padding: 10px; border: 1px solid #e5e7eb;\">Số lô Đạt (Pass) / Từ chối (Fail)</td><td style=\"padding: 10px; border: 1px solid #e5e7eb;\"><span style=\"color: green;\">${qc.passed_count} Đạt</span> / <span style=\"color: red;\">${qc.rejected_count} Loại</span></td></tr><tr style=\"background-color: #f3f4f6;\"><td style=\"padding: 10px; border: 1px solid #e5e7eb;\">Tỷ lệ Yield trung bình</td><td style=\"padding: 10px; border: 1px solid #e5e7eb;\"><strong style=\"color: #2563eb;\">${qc.pass_rate_pct}%</strong></td></tr><tr><td style=\"padding: 10px; border: 1px solid #e5e7eb;\">Khối lượng khả dụng (Usable Weight)</td><td style=\"padding: 10px; border: 1px solid #e5e7eb;\">${qc.total_usable_kg} kg</td></tr><tr style=\"background-color: #f3f4f6;\"><td style=\"padding: 10px; border: 1px solid #e5e7eb;\">Hao hụt tự nhiên / Thối hỏng</td><td style=\"padding: 10px; border: 1px solid #e5e7eb;\">${qc.total_natural_loss_kg} kg / ${qc.total_rotten_kg} kg</td></tr></table><h3 style=\"color: #1f2937;\">2. Tăng trưởng Sản lượng Đóng gói (Finished Goods)</h3><p style=\"font-size: 16px;\">Tổng lon sản phẩm hoàn thành: <strong style=\"color: #16a34a;\">${prod.total_cans_produced} lon</strong></p><h3 style=\"color: #1f2937;\">3. Cảnh báo Lô hàng Tồn kho Thấp (&lt; 100 kg)</h3>${lowStockHtml}</div>`;\n\nreturn {\n  json: {\n    subject: `[HÀNG TUẦN] Báo cáo Sản lượng & Yield Analytics - ${res.report_period.generated_at}`,\n    recipient_email: 'director@company.com',\n    htmlBody: htmlBody\n  }\n};"
+      },
+      "name": "Generate Weekly HTML Report",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 1,
+      "position": [
+        750,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "fromEmail": "reports@capstone-project2.local",
+        "toEmail": "={{ $json.recipient_email }}",
+        "subject": "={{ $json.subject }}",
+        "html": "={{ $json.htmlBody }}",
+        "options": {}
+      },
+      "name": "Send Weekly Email to Executive",
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 1,
+      "position": [
+        1000,
+        300
+      ]
+    }
+  ],
+  "connections": {
+    "Weekly Schedule (Friday 17:00)": {
+      "main": [
+        [
+          {
+            "node": "Fetch Weekly Summary API",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fetch Weekly Summary API": {
+      "main": [
+        [
+          {
+            "node": "Generate Weekly HTML Report",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Generate Weekly HTML Report": {
+      "main": [
+        [
+          {
+            "node": "Send Weekly Email to Executive",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  }
+}

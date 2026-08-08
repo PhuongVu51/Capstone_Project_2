@@ -30,6 +30,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             ':requested_by' => $requested_by
         ]);
 
+        $reqId = $pdo->lastInsertId();
+        require_once __DIR__ . '/../helpers/n8n_helper.php';
+        triggerN8nWebhook('material-request-alert', [
+            'request_id' => $reqId,
+            'action' => 'created',
+            'material_id' => $material_id,
+            'quantity_kg' => (float)$quantity,
+            'needed_date' => $needed_date,
+            'priority' => $priority,
+            'notes' => $notes,
+            'requested_by_user_id' => $requested_by,
+            'status' => 'Pending'
+        ]);
+
         // 4. Chuyển hướng về trang Inventory và báo thành công
         $_SESSION['success_msg'] = "Material request submitted successfully!";
         header("Location: ../../frontend/inventory.php");
