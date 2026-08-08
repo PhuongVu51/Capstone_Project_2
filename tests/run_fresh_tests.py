@@ -10,14 +10,14 @@ base_dir = os.path.dirname(os.path.abspath(__file__))
 screenshots_dir = os.path.join(base_dir, 'screenshots')
 
 print("1. Cleaning up existing screenshots...")
-for m in range(1, 10):
+for m in range(1, 11):
     mdir = os.path.join(screenshots_dir, f'module{m}')
     if os.path.exists(mdir):
         shutil.rmtree(mdir)
     os.makedirs(mdir, exist_ok=True)
 
-print("\n2. Executing all module tests (Module 1 to 9)...")
-modules = [f"test_module{i}.py" for i in range(1, 10)]
+print("\n2. Executing all module tests (Module 1 to 10)...")
+modules = [f"test_module{i}.py" for i in range(1, 11)]
 
 for mod in modules:
     mod_path = os.path.join(base_dir, mod)
@@ -36,7 +36,7 @@ all_unique = True
 total_images = 0
 duplicates_found = 0
 
-for m in range(1, 10):
+for m in range(1, 11):
     mdir = os.path.join(screenshots_dir, f'module{m}')
     files = glob.glob(os.path.join(mdir, '*.png'))
     total_images += len(files)

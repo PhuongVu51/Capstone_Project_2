@@ -21,6 +21,7 @@ MODULES = [
     ("test_module7", "Module 7: Production Dashboard & FEFO", 8),
     ("test_module8", "Module 8: Finished Goods Declaration", 6),
     ("test_module9", "Module 9: Material Request & Reports", 9),
+    ("test_module10", "Module 10: Performance & Stress Testing", 5),
 ]
 
 def run_all():
@@ -49,9 +50,9 @@ def run_all():
     
     elapsed = time.time() - start_time
     print(f"\n{'='*70}")
-    print(f"  ALL TESTS COMPLETE — {total_cases} cases across 9 modules")
+    print(f"  ALL TESTS COMPLETE — {total_cases} cases across 10 modules")
     print(f"  Total time: {elapsed:.1f}s")
-    print(f"  Screenshots saved in: tests/screenshots/module1..module9/")
+    print(f"  Screenshots saved in: tests/screenshots/module1..module10/")
     print(f"{'='*70}")
 
 

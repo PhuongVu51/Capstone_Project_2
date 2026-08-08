@@ -17,6 +17,7 @@ def get_module(tc_id):
     if tc_id.startswith('TC_ANALYTICS_') or tc_id.startswith('TC_FG_'): return 7
     if tc_id.startswith('TC_REPORT_'): return 8
     if tc_id.startswith('TC_SEC_') or tc_id.startswith('TC_UI_'): return 9
+    if tc_id.startswith('TC_PERF_') or tc_id.startswith('TC_STRESS_'): return 10
     return 1
 
 modules = {}
@@ -36,4 +37,4 @@ for m, items in modules.items():
             line = f"{test_data}\t{expected}\t{actual}\t{status}\t{bug}\t{evidence}\n"
             f.write(line)
 
-print("Generated TSV files for all 9 modules successfully.")
+print("Generated TSV files for all 10 modules successfully.")
