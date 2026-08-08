@@ -10,7 +10,25 @@ class MaterialRequestModel extends BaseModel {
             INSERT INTO MATERIAL_REQUESTS (REQ_material_id, REQ_quantity, REQ_needed_date, REQ_priority, REQ_notes, REQ_requested_by, REQ_status) 
             VALUES (?, ?, ?, ?, ?, ?, 'Pending')
         ");
-        return $stmt->execute([$materialId, $quantity, $neededDate, $priority, $notes, $userId]);
+        $result = $stmt->execute([$materialId, $quantity, $neededDate, $priority, $notes, $userId]);
+
+        if ($result) {
+            $reqId = $this->pdo->lastInsertId();
+            require_once __DIR__ . '/../helpers/n8n_helper.php';
+            triggerN8nWebhook('material-request-alert', [
+                'request_id' => $reqId,
+                'action' => 'created',
+                'material_id' => $materialId,
+                'quantity_kg' => (float)$quantity,
+                'needed_date' => $neededDate,
+                'priority' => $priority,
+                'notes' => $notes,
+                'requested_by_user_id' => $userId,
+                'status' => 'Pending'
+            ]);
+        }
+
+        return $result;
     }
 
     // 2. Dành cho Warehouse: Lấy tất cả yêu cầu (Pending lên đầu)
@@ -29,7 +47,18 @@ class MaterialRequestModel extends BaseModel {
     // 3. Dành cho Kho/Director: Xử lý duyệt yêu cầu
     public function updateRequestStatus($requestId, $status) {
         $stmt = $this->pdo->prepare("UPDATE MATERIAL_REQUESTS SET REQ_status = ? WHERE REQ_id = ?");
-        return $stmt->execute([$status, $requestId]);
+        $result = $stmt->execute([$status, $requestId]);
+
+        if ($result) {
+            require_once __DIR__ . '/../helpers/n8n_helper.php';
+            triggerN8nWebhook('material-request-alert', [
+                'request_id' => $requestId,
+                'action' => 'status_updated',
+                'status' => $status
+            ]);
+        }
+
+        return $result;
     }
 }
 ?>

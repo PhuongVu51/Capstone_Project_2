@@ -338,6 +338,20 @@ class StockModel extends BaseModel {
             ]);
 
             $this->pdo->commit();
+
+            // Trigger n8n stock-alert webhook if available stock is low (<= 100kg) or out of stock (<= 0kg)
+            $newStock = (float)$batch['BCH_available_stock_kg'] - (float)$outVolume;
+            if ($newStock <= 100) {
+                require_once __DIR__ . '/../helpers/n8n_helper.php';
+                triggerN8nWebhook('stock-alert', [
+                    'batch_id' => $batchId,
+                    'alert_type' => ($newStock <= 0) ? 'out_of_stock' : 'low_stock',
+                    'available_stock_kg' => round($newStock, 2),
+                    'out_volume_kg' => round($outVolume, 2),
+                    'user_id' => $userId
+                ]);
+            }
+
             return true;
         } catch (Exception $e) {
             $this->pdo->rollBack();
@@ -516,6 +530,19 @@ class StockModel extends BaseModel {
             }
 
             $this->pdo->commit();
+
+            // Trigger n8n stock-alert webhook if updated stock is low (<= 100kg) or out of stock (<= 0kg)
+            if ($newStock <= 100) {
+                require_once __DIR__ . '/../helpers/n8n_helper.php';
+                triggerN8nWebhook('stock-alert', [
+                    'batch_id' => $batchId,
+                    'alert_type' => ($newStock <= 0) ? 'out_of_stock' : 'low_stock',
+                    'available_stock_kg' => round($newStock, 2),
+                    'out_volume_kg' => round(abs($oldStock - $newStock), 2),
+                    'user_id' => $userId
+                ]);
+            }
+
             return true;
         } catch (Exception $e) {
             $this->pdo->rollBack();
