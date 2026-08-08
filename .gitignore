@@ -1,4 +1,4 @@
-tests/screenshots/
+# tests/screenshots/
 __pycache__/
 *.pyc
 *.log
