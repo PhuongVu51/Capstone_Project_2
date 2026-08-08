@@ -127,6 +127,22 @@ class QcInspectionModel extends BaseModel {
             $stmtUpdateBatch->execute([$newStage, $usable_weight_final, $batch_id]);
 
             $this->pdo->commit();
+
+            // Fire n8n real-time Webhook alert
+            require_once __DIR__ . '/../helpers/n8n_helper.php';
+            triggerN8nWebhook('qc-alert', [
+                'batch_id' => $batch_id,
+                'status' => $newStage,
+                'destination' => $destination,
+                'usable_weight_kg' => round($usable_weight_final, 2),
+                'rejected_qty_kg' => round($rejected_qty, 2),
+                'natural_loss_kg' => round($natural_loss, 2),
+                'actual_yield_pct' => round($actual_yield_pct, 2),
+                'reason' => $reason ?: ($newStage === 'Rejected' ? 'Dưới ngưỡng tỷ lệ thu hồi 80%' : 'Đạt tiêu chuẩn'),
+                'comments' => $comments ?: '',
+                'inspector_user_id' => $user_id
+            ]);
+
             return true;
         } catch (Exception $e) {
             $this->pdo->rollBack();

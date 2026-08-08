@@ -1,0 +1,121 @@
+{
+  "name": "Flow 1: Real-Time Critical Alerts (QC, Stock, Material Requests)",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "qc-alert",
+        "options": {}
+      },
+      "name": "QC Webhook Trigger",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [
+        250,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "stock-alert",
+        "options": {}
+      },
+      "name": "Stock Webhook Trigger",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [
+        250,
+        500
+      ]
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "material-request-alert",
+        "options": {}
+      },
+      "name": "Material Request Webhook Trigger",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [
+        250,
+        700
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const payload = $input.item.json.body || $input.item.json;\nlet title = 'Alert Notification';\nlet headerColor = '#3b82f6';\nlet messageLines = [];\nlet recipient = '';\n\nconst EMAIL_WH = 'alienmaymua@gmail.com';\nconst EMAIL_QC = 'hoanganhle0320@gmail.com';\nconst EMAIL_PM = 'nhuyenmy4@gmail.com, vuphuong05012005@gmail.com';\n\nif (payload.event === 'material-request-alert' || payload.request_id) {\n  // 1. PM gửi request -> Gửi cho WH (Warehouse)\n  recipient = EMAIL_WH;\n  title = '📦 THÔNG BÁO: YÊU CẦU VẬT TƯ SẢN XUẤT (TỪ PM)';\n  headerColor = '#8b5cf6';\n  messageLines = [\n    `<b>Mã yêu cầu:</b> #${payload.request_id || 'NEW'}`,\n    `<b>Hành động:</b> ${payload.action || 'Tạo mới'}`,\n    `<b>Trạng thái:</b> ${payload.status || 'Pending'}`\n  ];\n  if (payload.material_id) messageLines.push(`<b>Mã vật tư:</b> ${payload.material_id}`);\n  if (payload.quantity_kg) messageLines.push(`<b>Số lượng:</b> ${payload.quantity_kg} kg`);\n  if (payload.needed_date) messageLines.push(`<b>Ngày cần:</b> ${payload.needed_date}`);\n  if (payload.priority) messageLines.push(`<b>Mức ưu tiên:</b> ${payload.priority}`);\n  if (payload.notes) messageLines.push(`<b>Ghi chú:</b> ${payload.notes}`);\n} else if (payload.event === 'stock-alert' || payload.alert_type || payload.available_stock_kg !== undefined) {\n  // 2. WH chỉnh hàng về 0 hoặc <=100 -> Gửi cho PM\n  recipient = EMAIL_PM;\n  const isOOS = payload.alert_type === 'out_of_stock' || payload.available_stock_kg <= 0;\n  title = isOOS ? '🚨 KHẨN CẤP: LÔ HÀNG HẾT HÀNG TỒN KHO (0 KG)' : '⚠️ CẢNH BÁO: TỒN KHO THẤP (<= 100 KG)';\n  headerColor = isOOS ? '#dc2626' : '#f59e0b';\n  messageLines = [\n    `<b>Mã lô hàng:</b> ${payload.batch_id || 'N/A'}`,\n    `<b>Tồn kho khả dụng còn lại:</b> ${payload.available_stock_kg !== undefined ? payload.available_stock_kg : 0} kg`,\n    `<b>Mức cảnh báo:</b> ${isOOS ? 'Hết hàng (0 kg)' : 'Tồn kho thấp (<= 100 kg)'}`\n  ];\n} else if (payload.event === 'qc-alert' || payload.destination || payload.actual_yield_pct !== undefined) {\n  // 3. QC duyệt hoặc từ chối sản phẩm -> Gửi cho WH + PM\n  recipient = `${EMAIL_WH}, ${EMAIL_PM}`;\n  const isRejected = payload.status === 'Rejected';\n  title = isRejected ? '⚠️ CẢNH BÁO: QC TỪ CHỐI LÔ HÀNG (REJECTED)' : '✅ DUYỆT QC: LÔ HÀNG ĐẠT CHUẨN (APPROVED)';\n  headerColor = isRejected ? '#ef4444' : '#22c55e';\n  messageLines = [\n    `<b>Mã lô hàng:</b> ${payload.batch_id || 'N/A'}`,\n    `<b>Trạng thái QC:</b> ${payload.status || 'N/A'}`,\n    `<b>Đích chuyển:</b> ${payload.destination || 'N/A'}`,\n    `<b>Trọng lượng khả dụng:</b> ${payload.usable_weight_kg || 0} kg`,\n    `<b>Số lượng loại bỏ:</b> ${payload.rejected_qty_kg || 0} kg`,\n    `<b>Tỷ lệ thu hồi (Yield):</b> ${payload.actual_yield_pct || 0}%`,\n    `<b>Lý do:</b> ${payload.reason || 'N/A'}`\n  ];\n}\n\nconst listItems = messageLines.map(line => `<li style=\"padding: 8px 0; border-bottom: 1px solid #f3f4f6;\">${line}</li>`).join('');\nconst htmlBody = `<div style=\"font-family: 'Segoe UI', Arial, sans-serif; max-width: 600px; margin: 0 auto; border: 1px solid #e5e7eb; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 6px rgba(0,0,0,0.05);\"><div style=\"background-color: ${headerColor}; color: #ffffff; padding: 20px; text-align: center;\"><h2 style=\"margin: 0; font-size: 20px;\">${title}</h2></div><div style=\"padding: 24px; background-color: #ffffff; color: #1f2937; font-size: 15px; line-height: 1.6;\"><ul style=\"list-style: none; padding: 0; margin: 0;\">${listItems}</ul></div><div style=\"background-color: #f9fafb; padding: 12px 20px; text-align: center; font-size: 12px; color: #6b7280; border-top: 1px solid #e5e7eb;\">Thông báo tự động từ Hệ thống Quản lý Kho & Sản xuất (Capstone Project 2)</div></div>`;\n\nreturn {\n  json: {\n    subject: `[HỆ THỐNG KHO] ${title}`,\n    recipient_email: recipient,\n    htmlBody: htmlBody,\n    payload: payload\n  }\n};"
+      },
+      "name": "Format HTML Email Payload",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 1,
+      "position": [
+        600,
+        500
+      ]
+    },
+    {
+      "parameters": {
+        "fromEmail": "notifications@capstone-project2.local",
+        "toEmail": "={{ $json.recipient_email }}",
+        "subject": "={{ $json.subject }}",
+        "html": "={{ $json.htmlBody }}",
+        "options": {}
+      },
+      "name": "Send Email Node (SMTP/Gmail)",
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 1,
+      "position": [
+        900,
+        500
+      ]
+    }
+  ],
+  "connections": {
+    "QC Webhook Trigger": {
+      "main": [
+        [
+          {
+            "node": "Format HTML Email Payload",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Stock Webhook Trigger": {
+      "main": [
+        [
+          {
+            "node": "Format HTML Email Payload",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Material Request Webhook Trigger": {
+      "main": [
+        [
+          {
+            "node": "Format HTML Email Payload",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Format HTML Email Payload": {
+      "main": [
+        [
+          {
+            "node": "Send Email Node (SMTP/Gmail)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  }
+}
