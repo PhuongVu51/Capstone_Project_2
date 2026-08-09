@@ -18,7 +18,10 @@ DB = "Project2_db"
 
 def setup_driver():
     opts = webdriver.ChromeOptions()
-    opts.add_argument('--start-maximized')
+    opts.add_argument('--headless=new')
+    opts.add_argument('--window-size=1280,960')
+    opts.add_argument('--no-sandbox')
+    opts.add_argument('--disable-dev-shm-usage')
     return webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=opts)
 
 def screenshot(driver, tc_id):
@@ -40,6 +43,13 @@ def db_query(sql):
     cmd = f'"{MYSQL}" -u root -N -e "{sql}"'
     r = subprocess.run(cmd, shell=True, capture_output=True, text=True)
     return r.stdout.strip()
+
+def ensure_pending_qc():
+    bid = db_query(f"SELECT BCH_batch_id FROM {DB}.BATCHES WHERE BCH_current_stage = 'Pending_QC' LIMIT 1;")
+    if not bid:
+        db_query(f"UPDATE {DB}.BATCHES SET BCH_current_stage = 'Pending_QC' LIMIT 1;")
+        bid = db_query(f"SELECT BCH_batch_id FROM {DB}.BATCHES WHERE BCH_current_stage = 'Pending_QC' LIMIT 1;")
+    return bid
 
 
 # TC_QC_01: QC dashboard access
@@ -168,7 +178,7 @@ def run_tc_qc_06():
     driver = setup_driver()
     try:
         login(driver, "nhung_thuy")
-        batch_id = db_query(f"SELECT BCH_batch_id FROM {DB}.BATCHES WHERE BCH_current_stage = 'Pending_QC' LIMIT 1;")
+        batch_id = ensure_pending_qc()
         if not batch_id:
             print("TC_QC_06 SKIPPED: No Pending_QC batch in DB.")
             return
@@ -221,7 +231,7 @@ def run_tc_qc_08():
     driver = setup_driver()
     try:
         login(driver, "nhung_thuy")
-        batch_id = db_query(f"SELECT BCH_batch_id FROM {DB}.BATCHES WHERE BCH_current_stage = 'Pending_QC' LIMIT 1;")
+        batch_id = ensure_pending_qc()
         if not batch_id:
             print("TC_QC_08 SKIPPED: No Pending_QC batch.")
             return
@@ -249,7 +259,7 @@ def run_tc_qc_09():
     driver = setup_driver()
     try:
         login(driver, "nhung_thuy")
-        batch_id = db_query(f"SELECT BCH_batch_id FROM {DB}.BATCHES WHERE BCH_current_stage = 'Pending_QC' LIMIT 1;")
+        batch_id = ensure_pending_qc()
         if not batch_id:
             print("TC_QC_09 SKIPPED: No Pending_QC batch.")
             return
@@ -277,7 +287,7 @@ def run_tc_qc_10():
     driver = setup_driver()
     try:
         login(driver, "nhung_thuy")
-        batch_id = db_query(f"SELECT BCH_batch_id FROM {DB}.BATCHES WHERE BCH_current_stage = 'Pending_QC' LIMIT 1;")
+        batch_id = ensure_pending_qc()
         if not batch_id:
             print("TC_QC_10 SKIPPED: No Pending_QC batch to test.")
             return
@@ -353,7 +363,7 @@ def run_tc_qc_12():
     driver = setup_driver()
     try:
         login(driver, "nhung_thuy")
-        batch_id = db_query(f"SELECT BCH_batch_id FROM {DB}.BATCHES WHERE BCH_current_stage = 'Pending_QC' LIMIT 1;")
+        batch_id = ensure_pending_qc()
         if not batch_id:
             print("TC_QC_12 SKIPPED: No Pending_QC batch.")
             return

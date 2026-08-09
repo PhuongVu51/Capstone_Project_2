@@ -21,9 +21,11 @@ DB = "Project2_db"
 
 def setup_driver():
     opts = webdriver.ChromeOptions()
-    opts.add_argument('--start-maximized')
+    opts.add_argument('--headless=new')
+    opts.add_argument('--window-size=1280,960')
     opts.add_argument('--disable-gpu')
     opts.add_argument('--no-sandbox')
+    opts.add_argument('--disable-dev-shm-usage')
     return webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=opts)
 
 def screenshot(driver, tc_id):

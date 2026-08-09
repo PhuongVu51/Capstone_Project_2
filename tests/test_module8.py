@@ -20,7 +20,10 @@ DB = "Project2_db"
 
 def setup_driver():
     opts = webdriver.ChromeOptions()
-    opts.add_argument('--start-maximized')
+    opts.add_argument('--headless=new')
+    opts.add_argument('--window-size=1280,960')
+    opts.add_argument('--no-sandbox')
+    opts.add_argument('--disable-dev-shm-usage')
     return webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=opts)
 
 def screenshot(driver, tc_id):
@@ -206,6 +209,8 @@ def run_tc_analytics_01():
         login(driver, "pm_alex")
         driver.get(f"{BASE}/production_analytics.php")
         time.sleep(3)
+        driver.execute_script("var k = document.querySelectorAll('.card, .kpi-card, .stat-card, div[class*=\"card\"]'); k.forEach(c => c.style.border='3px solid #3b82f6'); window.scrollTo(0,0);")
+        time.sleep(0.5)
         src = driver.page_source.lower()
         screenshot(driver, "TC_ANALYTICS_01")
         has_total = "total" in src or "output" in src

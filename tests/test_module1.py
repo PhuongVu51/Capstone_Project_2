@@ -21,15 +21,24 @@ def take_screenshot(driver, name):
     driver.save_screenshot(path)
     return path
 
+CHROMEDRIVER_PATH = None
+
+def get_chromedriver():
+    global CHROMEDRIVER_PATH
+    if CHROMEDRIVER_PATH is None:
+        CHROMEDRIVER_PATH = ChromeDriverManager().install()
+    return CHROMEDRIVER_PATH
+
 def make_driver():
     tmp = tempfile.mkdtemp(prefix="chrome_test_")
     opts = Options()
     opts.add_argument(f"--user-data-dir={tmp}")
     opts.add_argument("--no-sandbox")
     opts.add_argument("--disable-dev-shm-usage")
+    opts.add_argument("--headless=new")
+    opts.add_argument("--window-size=1280,960")
     
-    # Run slightly headless or standard, standard is better for screenshots
-    svc = Service(ChromeDriverManager().install())
+    svc = Service(get_chromedriver())
     driver = webdriver.Chrome(service=svc, options=opts)
     driver.implicitly_wait(3)
     return driver, tmp

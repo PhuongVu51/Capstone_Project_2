@@ -19,12 +19,18 @@ DB = "Project2_db"
 
 def setup_driver():
     opts = webdriver.ChromeOptions()
-    opts.add_argument('--start-maximized')
+    opts.add_argument('--headless=new')
+    opts.add_argument('--window-size=1280,960')
+    opts.add_argument('--no-sandbox')
+    opts.add_argument('--disable-dev-shm-usage')
     return webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=opts)
 
 def setup_mobile_driver():
     """Setup driver with mobile viewport for responsive testing."""
     opts = webdriver.ChromeOptions()
+    opts.add_argument('--headless=new')
+    opts.add_argument('--no-sandbox')
+    opts.add_argument('--disable-dev-shm-usage')
     mobile_emulation = {"deviceMetrics": {"width": 375, "height": 812, "pixelRatio": 3.0}}
     opts.add_experimental_option("mobileEmulation", mobile_emulation)
     return webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=opts)

@@ -19,7 +19,10 @@ DB = "Project2_db"
 
 def setup_driver():
     opts = webdriver.ChromeOptions()
-    opts.add_argument('--start-maximized')
+    opts.add_argument('--headless=new')
+    opts.add_argument('--window-size=1280,960')
+    opts.add_argument('--no-sandbox')
+    opts.add_argument('--disable-dev-shm-usage')
     return webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=opts)
 
 def screenshot(driver, tc_id):
@@ -117,6 +120,14 @@ def run_tc_stock_03():
             }
         """)
         time.sleep(2)
+        driver.execute_script("""
+            var exp = document.getElementById('expiry-date-input') || document.querySelector('input[name="expiry_date"]');
+            if (exp) {
+                exp.scrollIntoView();
+                exp.style.border = '4px solid #f97316';
+                exp.style.backgroundColor = '#ffedd5';
+            }
+        """)
         expiry_input = driver.find_element(By.ID, "expiry-date-input")
         expiry_val = expiry_input.get_attribute("value")
         screenshot(driver, "TC_STOCK_03")
