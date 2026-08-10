@@ -606,4 +606,17 @@ return [
     'weather_forecast' => 'Dự báo thời tiết',
     'hourly_forecast' => 'Dự báo theo giờ',
     'feels_like' => 'Cảm giác như',
+
+    // AI Chatbot
+    'ai_assistant' => 'Trợ lý AI F&G Food',
+    'ai_subtitle' => 'Hỗ trợ Quyết định Vận hành',
+    'ai_placeholder' => 'Hỏi về tồn kho, QC, sản xuất...',
+    'ai_send' => 'Gửi',
+    'ai_disclaimer' => 'Kết quả do AI tổng hợp, vui lòng đối chiếu dashboard chính thức trước khi ra quyết định quan trọng.',
+    'ai_out_of_scope' => 'Xin lỗi, tôi chỉ hỗ trợ các câu hỏi liên quan đến dữ liệu kho/sản xuất/QC trong hệ thống F&G Food.',
+    'ai_thinking' => 'AI đang xử lý...',
+    'ai_error' => 'Có lỗi xảy ra trong quá trình xử lý. Vui lòng thử lại sau.',
+    'ai_empty_prompt' => 'Vui lòng nhập câu hỏi của bạn.',
+    'ai_clear_chat' => 'Xóa lịch sử trò chuyện',
 ];
+
