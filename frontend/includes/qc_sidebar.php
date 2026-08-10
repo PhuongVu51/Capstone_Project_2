@@ -59,6 +59,13 @@ $current_page = basename($_SERVER['PHP_SELF']);
                 <p class="text-sm font-bold text-gray-200 truncate"><?= htmlspecialchars($_SESSION['full_name'] ?? 'Guest User') ?></p>
                 <p class="text-[11px] text-[#10b981] uppercase tracking-wider font-semibold mt-0.5">QC Operator</p>
             </div>
+        <div class="flex items-center justify-center gap-4 mb-4">
+            <a href="?lang=vi" class="opacity-70 hover:opacity-100 transition-opacity <?= (isset($_SESSION['lang']) && $_SESSION['lang'] === 'vi') ? 'opacity-100 ring-2 ring-[#10b981] rounded' : '' ?>" title="Tiếng Việt">
+                <img src="https://flagcdn.com/w40/vn.png" alt="VN" class="w-7 h-5 object-cover rounded shadow-sm" />
+            </a>
+            <a href="?lang=en" class="opacity-70 hover:opacity-100 transition-opacity <?= (isset($_SESSION['lang']) && $_SESSION['lang'] === 'en') ? 'opacity-100 ring-2 ring-[#10b981] rounded' : '' ?>" title="English">
+                <img src="https://flagcdn.com/w40/us.png" alt="EN" class="w-7 h-5 object-cover rounded shadow-sm" />
+            </a>
         </div>
         <a href="../backend/connection/logout.php" class="flex items-center justify-center gap-2 w-full py-2.5 text-sm text-red-400 font-semibold border border-red-900/30 rounded-lg hover:bg-red-500 hover:text-white hover:border-red-500 transition-all shadow-sm">
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>

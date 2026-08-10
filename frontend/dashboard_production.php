@@ -21,6 +21,11 @@ try {
         LIMIT 10
     ");
     $batches = $batchesStmt->fetchAll();
+    if ($lang === 'en' && !empty($batches)) {
+        foreach ($batches as &$b) {
+            $b['PRD_product_name'] = translate_product_name($b['PRD_product_name']);
+        }
+    }
 } catch (PDOException $e) {
     die("Lỗi kết nối CSDL: " . $e->getMessage());
 }

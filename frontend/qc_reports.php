@@ -41,7 +41,20 @@ try {
                 <h1 class="text-2xl font-bold text-white tracking-wide"><?= __('loss_defect_reports') ?></h1>
             </div>
             
-            <div class="flex gap-3">
+            <div class="flex items-center gap-3 flex-wrap">
+                <form method="GET" class="flex items-center gap-2">
+                    <label for="filter-reason-select" class="text-xs text-gray-400 font-medium whitespace-nowrap hidden sm:inline"><?= ($lang === 'en') ? 'Filter Defect:' : 'Lọc lỗi:' ?></label>
+                    <select id="filter-reason-select" name="reason" onchange="this.form.submit()" class="bg-[#0f1722] border border-[#374151] text-gray-200 text-xs rounded-lg focus:ring-1 focus:ring-[#10b981] focus:border-[#10b981] py-2 px-3 outline-none cursor-pointer hover:border-[#10b981] transition-all shadow-sm">
+                        <option value=""><?= ($lang === 'en') ? 'All Defects' : 'Tất cả lỗi' ?></option>
+                        <?php foreach($availableReasons as $r): ?>
+                            <?php $dispReason = ($lang === 'en') ? translate_qc_reason($r) : $r; ?>
+                            <option value="<?= htmlspecialchars($r) ?>" <?= (isset($_GET['reason']) && $_GET['reason'] === $r) ? 'selected' : '' ?>>
+                                <?= htmlspecialchars($dispReason) ?>
+                            </option>
+                        <?php endforeach; ?>
+                    </select>
+                </form>
+
                 <button onclick="window.print()" class="bg-[#1f2937] hover:bg-[#374151] border border-[#374151] text-gray-300 font-bold px-4 py-2 rounded text-sm transition-colors shadow-sm flex items-center gap-2">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"></path></svg>
                     <?= __('export_pdf') ?>
@@ -85,21 +98,12 @@ try {
                 }
             ?>
             <div class="bg-[#0f1722] p-5 rounded-lg border border-[#1f2937] relative flex flex-col justify-between">
-                <div class="flex justify-between items-start">
+                <div>
                     <p class="text-[11px] text-gray-500 uppercase font-semibold tracking-wider"><?= __('primary_defect_reason') ?></p>
-                    <form method="GET" class="absolute top-4 right-4">
-                        <select name="reason" onchange="this.form.submit()" class="bg-[#1f2937] border border-[#374151] text-gray-300 text-[11px] rounded focus:ring-blue-500 focus:border-blue-500 block py-1 px-2 outline-none cursor-pointer hover:bg-[#374151] transition-colors shadow-sm">
-                            <option value="">Tất cả</option>
-                            <?php foreach($availableReasons as $r): ?>
-                                <option value="<?= htmlspecialchars($r) ?>" <?= (isset($_GET['reason']) && $_GET['reason'] === $r) ? 'selected' : '' ?>>
-                                    <?= htmlspecialchars(__($r)) ?>
-                                </option>
-                            <?php endforeach; ?>
-                        </select>
-                    </form>
                 </div>
                 <div>
-                    <h3 class="text-xl font-bold <?= $reasonColor ?> mt-3 truncate"><?= htmlspecialchars(__($topReason)) ?></h3>
+                    <?php $dispTopReason = ($lang === 'en') ? translate_qc_reason($topReason) : $topReason; ?>
+                    <h3 class="text-xl font-bold <?= $reasonColor ?> mt-3 truncate"><?= htmlspecialchars($dispTopReason) ?></h3>
                     <p class="text-[11px] text-gray-400 mt-1 font-mono"><?= __('accounted_for') ?> <?= $topReasonKg ?> KG</p>
                 </div>
             </div>
@@ -169,9 +173,9 @@ try {
                                     <tr class="hover:bg-[#131c26] transition-colors">
                                         <td class="py-3 Fraser pl-6 pr-2 vertical-top">
                                             <div class="text-[#10b981] font-mono font-bold text-xs mb-0.5">#<?= htmlspecialchars($batch['QCI_batch_id']) ?></div>
-                                            <div class="text-gray-300 text-[11px] whitespace-normal break-words leading-tight font-medium"><?= htmlspecialchars($batch['PRD_product_name']) ?></div>
+                                            <div class="text-gray-300 text-[11px] whitespace-normal break-words leading-tight font-medium"><?= htmlspecialchars(t_product($batch['PRD_product_name'])) ?></div>
                                         </td>
-                                        <td class="py-3 px-2 text-gray-400 text-xs whitespace-normal break-words leading-tight vertical-top"><?= htmlspecialchars($batch['SUP_supplier_name']) ?></td>
+                                        <td class="py-3 px-2 text-gray-400 text-xs whitespace-normal break-words leading-tight vertical-top"><?= htmlspecialchars(t_supplier($batch['SUP_supplier_name'])) ?></td>
                                         <td class="py-3 px-2 text-red-400 font-mono text-right font-bold vertical-top"><?= number_format($batch['QCI_rotten_weight_kg'], 1) ?> <span class="text-[10px] text-gray-600 font-sans font-normal">kg</span></td>
                                         <td class="py-3 px-2 vertical-top">
                                             <span class="inline-block bg-gray-800/60 text-gray-300 border border-gray-700 px-2 py-0.5 rounded text-[10px] uppercase font-bold tracking-wider whitespace-normal break-words leading-normal max-w-full">
@@ -275,7 +279,7 @@ try {
                                     <tr class="hover:bg-[#131c26] transition-colors scorecard-row" 
                                         data-status="<?= $rawStatus ?>" 
                                         data-waste="<?= $sup['waste_pct'] !== null ? $sup['waste_pct'] : -1 ?>">
-                                        <td class="py-3 px-4 font-medium text-gray-300"><?= htmlspecialchars($sup['supplier_name']) ?></td>
+                                        <td class="py-3 px-4 font-medium text-gray-300"><?= htmlspecialchars(t_supplier($sup['supplier_name'])) ?></td>
                                         <td class="py-3 px-4 text-right text-gray-400 font-mono"><?= number_format($sup['total_supplied'], 1) ?> kg</td>
                                         <td class="py-3 px-4 text-center font-mono font-bold <?= $sup['waste_pct'] !== null && $sup['waste_pct'] > 15 ? 'text-red-500' : 'text-gray-300' ?>">
                                             <?= $sup['waste_pct'] !== null ? number_format($sup['waste_pct'], 2) . '%' : '-' ?>

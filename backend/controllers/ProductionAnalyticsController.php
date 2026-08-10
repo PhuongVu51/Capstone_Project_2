@@ -24,12 +24,19 @@ class ProductionAnalyticsController
             $chartData[] = (int)$row['FGD_total_cans'];
         }
 
+        $productionLog = $this->model->getProductionLog($lang);
+        if ($lang === 'en' && !empty($productionLog)) {
+            foreach ($productionLog as &$row) {
+                $row['PRD_product_name'] = translate_product_name($row['PRD_product_name']);
+            }
+        }
+
         return [
             'totalOutput' => $this->model->getTotalOutput(),
             'averageYield' => $this->model->getAverageYield(),
             'productionBatches' => $this->model->getProductionBatches(),
             'quarantineCount' => $this->model->getQuarantineCount(),
-            'productionLog' => $this->model->getProductionLog($lang),
+            'productionLog' => $productionLog,
             'chartLabels' => $chartLabels,
             'chartData' => $chartData
         ];

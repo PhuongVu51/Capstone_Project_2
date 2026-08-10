@@ -85,7 +85,7 @@ try {
                             </span>
                             <span class="text-xs text-gray-400">ID: <?= htmlspecialchars($selectedBatch['BCH_batch_id']); ?></span>
                         </div>
-                        <h2 class="text-2xl font-bold text-white mt-1"><?= htmlspecialchars($selectedBatch['PRD_product_name'] ?? 'N/A'); ?></h2>
+                        <h2 class="text-2xl font-bold text-white mt-1"><?= htmlspecialchars(t_product($selectedBatch['PRD_product_name'] ?? 'N/A')); ?></h2>
                     </div>
                     <a href="inventory.php" class="bg-slate-800 hover:bg-slate-700 text-gray-300 px-4 py-2 rounded-lg text-sm transition-all font-medium">
                         <?= ($lang === 'en') ? 'Close' : 'Đóng' ?>
@@ -108,7 +108,7 @@ try {
                         </div>
                         <div class="bg-[#162232] rounded-lg p-4 border border-slate-800">
                             <p class="text-xs text-gray-400 font-medium"><?= ($lang === 'en') ? 'Supplier' : 'Nhà Cung Cấp' ?></p>
-                            <p class="text-white font-semibold text-base mt-1"><?= htmlspecialchars($selectedBatch['SUP_supplier_name'] ?? 'N/A'); ?></p>
+                            <p class="text-white font-semibold text-base mt-1"><?= htmlspecialchars(t_supplier($selectedBatch['SUP_supplier_name'] ?? 'N/A')); ?></p>
                         </div>
                     </div>
                     
@@ -165,7 +165,7 @@ try {
                                             <?php echo htmlspecialchars($item['BCH_batch_id']); ?>
                                         </a>
                                     </td>
-                                    <td class="px-4 py-3 text-white"><?php echo htmlspecialchars($item['PRD_product_name'] ?? 'N/A'); ?></td>
+                                    <td class="px-4 py-3 text-white"><?php echo htmlspecialchars(t_product($item['PRD_product_name'] ?? 'N/A')); ?></td>
                                     <td class="px-4 py-3"><?php echo number_format((float) ($item['BCH_available_stock_kg'] ?? 0), 2); ?> kg</td>
                                     <td class="px-4 py-3">
                                         <span class="rounded px-2 py-1 text-xs font-medium <?php echo $badgeClasses; ?>">

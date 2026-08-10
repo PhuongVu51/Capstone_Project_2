@@ -56,7 +56,7 @@ try {
                             
                             <?php foreach ($materials as $mat): ?>
                                 <option value="<?= htmlspecialchars($mat['PRD_product_id']) ?>">
-                                    <?= htmlspecialchars($mat['PRD_product_name']) ?>
+                                    <?= htmlspecialchars(t_product($mat['PRD_product_name'])) ?>
                                 </option>
                             <?php endforeach; ?>
                         

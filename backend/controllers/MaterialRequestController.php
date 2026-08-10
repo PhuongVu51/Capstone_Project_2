@@ -16,6 +16,11 @@ class MaterialRequestController {
     // Trả data ra cho giao diện hiển thị
     public function getRequestsData() {
         $requests = $this->reqModel->getAllRequests();
+        $lang = $_SESSION['lang'] ?? 'vi';
+        foreach ($requests as &$req) {
+            $rawName = !empty($req['PRD_product_name']) ? $req['PRD_product_name'] : $req['REQ_material_id'];
+            $req['material_display'] = ($lang === 'en') ? translate_product_name($rawName) : $rawName;
+        }
         return ['requests' => $requests];
     }
 

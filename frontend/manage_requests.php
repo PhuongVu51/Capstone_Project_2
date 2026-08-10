@@ -67,7 +67,7 @@ unset($_SESSION['success_msg'], $_SESSION['error_msg']);
                             <?php foreach ($requests as $req): ?>
                                 <tr class="hover:bg-[#0d1821] transition-colors">
                                     <td class="p-4 font-mono text-emerald-400">#<?= $req['REQ_id'] ?></td>
-                                    <td class="p-4 text-white font-medium"><?= htmlspecialchars($req['REQ_material_id']) ?></td>
+                                    <td class="p-4 text-white font-medium"><?= htmlspecialchars($req['material_display'] ?? $req['REQ_material_id']) ?></td>
                                     <td class="p-4 font-mono"><?= number_format($req['REQ_quantity'], 2) ?></td>
                                     <td class="p-4"><?= date('d/m/Y', strtotime($req['REQ_needed_date'])) ?></td>
                                     <td class="p-4">

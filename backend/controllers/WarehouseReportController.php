@@ -30,8 +30,15 @@ class WarehouseReportController
 
         foreach ($stockData as $row)
         {
-            $chartLabels[] = $row['PRD_product_name'];
+            $chartLabels[] = ($lang === 'en') ? translate_product_name($row['PRD_product_name']) : $row['PRD_product_name'];
             $chartData[] = (float)$row['stock_kg'];
+        }
+
+        if ($lang === 'en' && !empty($criticalBatches)) {
+            foreach ($criticalBatches as &$b) {
+                $b['PRD_product_name'] = translate_product_name($b['PRD_product_name']);
+                $b['SUP_supplier_name'] = translate_supplier_name($b['SUP_supplier_name']);
+            }
         }
 
         return [

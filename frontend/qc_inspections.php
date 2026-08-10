@@ -122,7 +122,7 @@ extract($viewData);
                                 <?php foreach ($queue as $item): ?>
                                     <tr class="hover:bg-[#131c26] transition-colors queue-row">
                                         <td class="py-4 px-5 text-[#10b981] font-mono font-semibold search-target">#<?= htmlspecialchars($item['BCH_batch_id']) ?></td>
-                                        <td class="py-4 px-5 text-gray-200 font-medium search-target"><?= htmlspecialchars($item['PRD_product_name']) ?></td>
+                                        <td class="py-4 px-5 text-gray-200 font-medium search-target"><?= htmlspecialchars(t_product($item['PRD_product_name'])) ?></td>
                                         <td class="py-4 px-5 text-gray-500 font-mono text-xs"><?= date('Y-m-d H:i', strtotime($item['BCH_received_date'])) ?></td>
                                         <td class="py-4 px-5 text-right text-gray-200 font-mono"><?= number_format($item['BCH_initial_volume_kg'], 1) ?> KG</td>
                                         <td class="py-4 px-5 text-center priority-target">

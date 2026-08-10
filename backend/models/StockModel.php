@@ -225,7 +225,15 @@ class StockModel extends BaseModel {
                 ORDER BY SUP_supplier_name ASC";
         $stmt = $this->pdo->prepare($sql);
         $stmt->execute();
-        return $stmt->fetchAll();
+        $res = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        if ($lang === 'en') {
+            foreach ($res as &$s) {
+                if (function_exists('translate_supplier_name')) {
+                    $s['SUP_supplier_name'] = translate_supplier_name($s['SUP_supplier_name']);
+                }
+            }
+        }
+        return $res;
     }
 
     // Nhập kho (Stock in) an toàn chống SQL Injection với Transaction
@@ -453,6 +461,15 @@ class StockModel extends BaseModel {
         $batch = $stmt->fetch(PDO::FETCH_ASSOC);
 
         if (!$batch) return null;
+
+        if ($lang === 'en') {
+            if (function_exists('translate_product_name') && !empty($batch['PRD_product_name'])) {
+                $batch['PRD_product_name'] = translate_product_name($batch['PRD_product_name']);
+            }
+            if (function_exists('translate_supplier_name') && !empty($batch['SUP_supplier_name'])) {
+                $batch['SUP_supplier_name'] = translate_supplier_name($batch['SUP_supplier_name']);
+            }
+        }
 
         $stmtMoves = $this->pdo->prepare("
             SELECT m.*, u.USR_full_name 

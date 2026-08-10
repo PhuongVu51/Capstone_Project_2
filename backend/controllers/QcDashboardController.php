@@ -36,6 +36,15 @@ class QcDashboardController {
             }
         }
 
+        $lang = $_SESSION['lang'] ?? 'vi';
+        if ($lang === 'en' && !empty($recentActivities)) {
+            foreach ($recentActivities as &$act) {
+                if (isset($act['PRD_product_name'])) {
+                    $act['PRD_product_name'] = translate_product_name($act['PRD_product_name']);
+                }
+            }
+        }
+
         // Trả về một mảng chứa dữ liệu đã làm sạch
         return [
             'passRate' => $passRate,

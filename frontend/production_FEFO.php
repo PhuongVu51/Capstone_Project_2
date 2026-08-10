@@ -5,11 +5,7 @@ require_role(['Production_Manager', 'Director'], 'login.php');
 require_once '../backend/connection/db_connect.php';
 
 try {
-    $lang = $_SESSION['lang'] ?? 'en';
-    $productNameCol = ($lang === 'en') ? 'COALESCE(p.PRD_product_name_en, p.PRD_product_name)' : 'p.PRD_product_name';
-
-    // Truy vấn các lô hàng sắp hết hạn trong 48h tới
-    $lang = $_SESSION['lang'] ?? 'en';
+    $lang = $_SESSION['lang'] ?? 'vi';
     $productNameCol = ($lang === 'en') ? 'COALESCE(p.PRD_product_name_en, p.PRD_product_name)' : 'p.PRD_product_name';
     $zoneNameCol = ($lang === 'en') ? 'COALESCE(z.STZ_zone_name_en, z.STZ_zone_name)' : 'z.STZ_zone_name';
 
@@ -31,6 +27,12 @@ try {
     ";
     $stmt = $pdo->query($sql);
     $expiringBatches = $stmt->fetchAll();
+    if ($lang === 'en' && !empty($expiringBatches)) {
+        foreach ($expiringBatches as &$batch) {
+            $batch['PRD_product_name'] = translate_product_name($batch['PRD_product_name']);
+            $batch['STZ_zone_name'] = translate_zone_name($batch['STZ_zone_name']);
+        }
+    }
 
     // Tính toán chỉ số KPIs
     $totalRiskBatches = count($expiringBatches);
@@ -205,8 +207,8 @@ try {
                                                 <div class="w-8 h-8 rounded bg-[#1f2937] flex items-center justify-center border border-[#374151] shrink-0">
                                                     <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path></svg>
                                                 </div>
-                                                <span class="truncate max-w-[300px]" title="<?= htmlspecialchars($batch['PRD_product_name']) ?>">
-                                                    <?= htmlspecialchars($batch['PRD_product_name']) ?>
+                                                <span class="truncate max-w-[300px]" title="<?= htmlspecialchars(t_product($batch['PRD_product_name'])) ?>">
+                                                    <?= htmlspecialchars(t_product($batch['PRD_product_name'])) ?>
                                                 </span>
                                             </div>
                                         </td>
@@ -217,7 +219,7 @@ try {
                                             </div>
                                         </td>
                                         <td class="p-4 font-mono text-gray-200"><?= number_format($batch['BCH_available_stock_kg'], 2) ?> <span class="text-xs text-gray-500 font-sans">kg</span></td>
-                                        <td class="p-4 text-gray-400 text-xs"><?= htmlspecialchars($batch['STZ_zone_name']) ?></td>
+                                        <td class="p-4 text-gray-400 text-xs"><?= htmlspecialchars(t_zone($batch['STZ_zone_name'])) ?></td>
                                         <td class="p-4 text-center">
                                             <button onclick="openModal('<?= htmlspecialchars($batch['BCH_batch_id']) ?>', <?= $batch['BCH_available_stock_kg'] ?>)" 
                                                     class="border border-[#10b981] text-[#10b981] hover:bg-[#10b981] hover:text-gray-900 px-4 py-1.5 rounded text-xs font-bold transition-colors shadow-[0_0_10px_rgba(16,185,129,0.1)]">

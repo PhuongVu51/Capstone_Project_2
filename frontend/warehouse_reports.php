@@ -253,7 +253,7 @@ body{
                                 <td class="py-3">
 
                                     <div class="text-gray-300 text-xs">
-                                        <?= htmlspecialchars($batch['PRD_product_name']) ?>
+                                        <?= htmlspecialchars(t_product($batch['PRD_product_name'])) ?>
                                     </div>
 
                                 </td>

@@ -40,11 +40,27 @@ class QcReportController {
             }
         }
 
-        if ($lang === 'en' && !empty($lossBatches)) {
-            foreach ($lossBatches as &$b) {
-                $b['QCI_rejection_reason'] = $this->translateReason($b['QCI_rejection_reason']);
-                $b['PRD_product_name'] = $this->removeAccents($b['PRD_product_name']);
-                $b['SUP_supplier_name'] = $this->removeAccents($b['SUP_supplier_name']);
+        if ($lang === 'en') {
+            if (!empty($lossBatches)) {
+                foreach ($lossBatches as &$b) {
+                    $b['QCI_rejection_reason'] = $this->translateReason($b['QCI_rejection_reason']);
+                    $b['PRD_product_name'] = translate_product_name($b['PRD_product_name']);
+                    $b['SUP_supplier_name'] = translate_supplier_name($b['SUP_supplier_name']);
+                }
+            }
+            if (!empty($supplierScorecard)) {
+                foreach ($supplierScorecard as &$s) {
+                    if (isset($s['SUP_supplier_name'])) {
+                        $s['SUP_supplier_name'] = translate_supplier_name($s['SUP_supplier_name']);
+                    }
+                }
+            }
+            if (!empty($costByProduct)) {
+                foreach ($costByProduct as &$p) {
+                    if (isset($p['PRD_product_name'])) {
+                        $p['PRD_product_name'] = translate_product_name($p['PRD_product_name']);
+                    }
+                }
             }
         }
 

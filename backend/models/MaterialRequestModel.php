@@ -34,9 +34,10 @@ class MaterialRequestModel extends BaseModel {
     // 2. Dành cho Warehouse: Lấy tất cả yêu cầu (Pending lên đầu)
     public function getAllRequests() {
         $stmt = $this->pdo->query("
-            SELECT r.*, u.USR_full_name as requester_name
+            SELECT r.*, u.USR_full_name as requester_name, p.PRD_product_name
             FROM MATERIAL_REQUESTS r
             LEFT JOIN USERS u ON r.REQ_requested_by = u.USR_user_id
+            LEFT JOIN PRODUCTS p ON (r.REQ_material_id = CAST(p.PRD_product_id AS CHAR) OR r.REQ_material_id = p.PRD_product_name)
             ORDER BY 
                 CASE r.REQ_status WHEN 'Pending' THEN 1 ELSE 2 END, 
                 r.created_at DESC

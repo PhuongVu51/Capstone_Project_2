@@ -32,7 +32,15 @@ class WarehouseDashboardModel extends BaseModel {
                 JOIN BATCHES b ON s.STM_batch_id = b.BCH_batch_id
                 LEFT JOIN PRODUCTS p ON b.BCH_product_id = p.PRD_product_id
                 ORDER BY s.STM_timestamp DESC LIMIT " . (int)$limit;
-        return $this->pdo->query($sql)->fetchAll();
+        $res = $this->pdo->query($sql)->fetchAll();
+        if ($lang === 'en') {
+            foreach ($res as &$r) {
+                if (isset($r['PRD_product_name'])) {
+                    $r['PRD_product_name'] = translate_product_name($r['PRD_product_name']);
+                }
+            }
+        }
+        return $res;
     }
 
     public function getNodeStatus($zoneId = 1) {

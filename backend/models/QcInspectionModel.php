@@ -20,7 +20,15 @@ class QcInspectionModel extends BaseModel {
                     ELSE 3 
                 END, b.BCH_received_date ASC
         ");
-        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        $res = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        if ($lang === 'en') {
+            foreach ($res as &$r) {
+                if (isset($r['PRD_product_name'])) {
+                    $r['PRD_product_name'] = translate_product_name($r['PRD_product_name']);
+                }
+            }
+        }
+        return $res;
     }
 
     public function getInspectionKPIs() {
@@ -95,7 +103,16 @@ class QcInspectionModel extends BaseModel {
         ";
         $stmt = $this->pdo->prepare($sql);
         $stmt->execute([$batchId]);
-        return $stmt->fetch(PDO::FETCH_ASSOC);
+        $b = $stmt->fetch(PDO::FETCH_ASSOC);
+        if ($b && $lang === 'en') {
+            if (isset($b['PRD_product_name'])) {
+                $b['PRD_product_name'] = translate_product_name($b['PRD_product_name']);
+            }
+            if (isset($b['SUP_supplier_name'])) {
+                $b['SUP_supplier_name'] = translate_supplier_name($b['SUP_supplier_name']);
+            }
+        }
+        return $b;
     }
 
     // Ghi nhận kết quả QC, tính Yield thực tế

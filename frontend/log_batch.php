@@ -69,7 +69,7 @@ try {
                         <select id="product-select" name="product_id" required class="w-full bg-[#0b1722] border border-[#374151] text-white rounded-lg p-2.5 focus:border-[#10b981] focus:ring-1 focus:ring-[#10b981] focus:outline-none transition-colors">
                             <option value=""><?= __('select_product') ?></option>
                             <?php foreach($products as $p): ?>
-                                <option value="<?= intval($p['PRD_product_id']) ?>"><?= '[' . intval($p['PRD_product_id']) . '] ' . htmlspecialchars($p['PRD_product_name']) ?></option>
+                                <option value="<?= intval($p['PRD_product_id']) ?>"><?= '[' . intval($p['PRD_product_id']) . '] ' . htmlspecialchars(t_product($p['PRD_product_name'])) ?></option>
                             <?php endforeach; ?>
                         </select>
                     </div>
@@ -105,7 +105,7 @@ try {
                             <option value=""><?= __('select_shift') ?></option>
                             <?php foreach($shifts as $sh): ?>
                                 <option value="<?= $sh['SHF_shift_id'] ?>">
-                                    <?= htmlspecialchars($sh['SHF_shift_date'] . ' - ' . $sh['SHF_shift_type']) ?>
+                                    <?= htmlspecialchars($sh['SHF_shift_date'] . ' - ' . t_shift($sh['SHF_shift_type'])) ?>
                                 </option>
                             <?php endforeach; ?>
                         </select>
