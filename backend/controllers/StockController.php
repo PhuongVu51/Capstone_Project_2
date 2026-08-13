@@ -4,9 +4,6 @@
 require_once __DIR__ . '/../includes/auth.php';
 require_once __DIR__ . '/../models/StockModel.php';
 
-// Chỉ cho phép Warehouse_Staff truy cập
-require_role(['Warehouse_Staff']);
-
 class StockController {
     private $stockModel;
 
@@ -197,20 +194,38 @@ class StockController {
 // Xử lý định tuyến cơ bản (Router)
 if (isset($_GET['action'])) {
     $controller = new StockController();
-    if ($_GET['action'] === 'stock_in') {
-        $controller->handleStockIn();
-    } elseif ($_GET['action'] === 'stock_out') {
-        $controller->handleStockOut();
-    } elseif ($_GET['action'] === 'fetch_suppliers') {
-        $controller->handleFetchSuppliers();
-    } elseif ($_GET['action'] === 'update') {
-        $controller->handleUpdateBatch();
-    } elseif ($_GET['action'] === 'delete_batch') {
-        $controller->handleDeleteBatch();
-    } elseif ($_GET['action'] === 'get_batch_detail') {
-        $controller->handleGetBatchDetail();
-    } elseif ($_GET['action'] === 'update_batch_full') {
-        $controller->handleUpdateBatchFull();
+    $action = $_GET['action'];
+
+    switch ($action) {
+        case 'fetch_suppliers':
+            // MỞ QUYỀN cho API lấy nhà cung cấp
+            require_role(['Warehouse_Staff', 'Production_Manager', 'Director', 'System_Admin']);
+            $controller->handleFetchSuppliers();
+            break;
+
+        case 'stock_in':
+        case 'stock_out':
+        case 'update':
+        case 'delete_batch':
+        case 'update_batch_full':
+            // KHÓA QUYỀN các thao tác kho (Chỉ cho Warehouse Staff)
+            require_role(['Warehouse_Staff']); 
+            if ($action === 'stock_in') $controller->handleStockIn();
+            elseif ($action === 'stock_out') $controller->handleStockOut();
+            elseif ($action === 'update') $controller->handleUpdateBatch();
+            elseif ($action === 'delete_batch') $controller->handleDeleteBatch();
+            elseif ($action === 'update_batch_full') $controller->handleUpdateBatchFull();
+            break;
+
+        case 'get_batch_detail':
+            require_role(['Warehouse_Staff']); 
+            $controller->handleGetBatchDetail();
+            break;
+            
+        default:
+            http_response_code(404);
+            echo json_encode(['error' => 'Action not found']);
+            exit();
     }
 }
 ?>

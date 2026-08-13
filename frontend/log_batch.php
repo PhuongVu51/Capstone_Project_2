@@ -105,7 +105,7 @@ try {
                             <option value=""><?= __('select_shift') ?></option>
                             <?php foreach($shifts as $sh): ?>
                                 <option value="<?= $sh['SHF_shift_id'] ?>">
-                                    <?= htmlspecialchars($sh['SHF_shift_date'] . ' - ' . t_shift($sh['SHF_shift_type'])) ?>
+                                    <?= htmlspecialchars($sh['SHF_shift_date'] . ' - ' . $sh['SHF_shift_type']) ?>
                                 </option>
                             <?php endforeach; ?>
                         </select>

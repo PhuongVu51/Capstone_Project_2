@@ -218,22 +218,16 @@ class StockModel extends BaseModel {
 
     public function getSuppliersByProduct($productId, $lang = 'vi') {
         $productId = intval($productId);
-        $supplierNameCol = ($lang === 'en') ? 'COALESCE(SUP_supplier_name_en, SUP_supplier_name)' : 'SUP_supplier_name';
-        $sql = "SELECT SUP_supplier_id, $supplierNameCol AS SUP_supplier_name 
-                FROM SUPPLIERS 
-                WHERE SUP_supplier_name NOT IN ('SUP_UNKNOWN', 'Unknown', 'unknown')
-                ORDER BY SUP_supplier_name ASC";
+        $supplierNameCol = ($lang === 'en') ? 'COALESCE(s.SUP_supplier_name_en, s.SUP_supplier_name)' : 's.SUP_supplier_name';
+        $sql = "SELECT s.SUP_supplier_id, $supplierNameCol AS SUP_supplier_name 
+                FROM SUPPLIERS s
+                JOIN PRODUCT_SUPPLIERS ps ON s.SUP_supplier_id = ps.PSP_supplier_id
+                WHERE ps.PSP_product_id = :product_id 
+                  AND s.SUP_supplier_name NOT IN ('SUP_UNKNOWN', 'Unknown', 'unknown')
+                ORDER BY s.SUP_supplier_name ASC";
         $stmt = $this->pdo->prepare($sql);
-        $stmt->execute();
-        $res = $stmt->fetchAll(PDO::FETCH_ASSOC);
-        if ($lang === 'en') {
-            foreach ($res as &$s) {
-                if (function_exists('translate_supplier_name')) {
-                    $s['SUP_supplier_name'] = translate_supplier_name($s['SUP_supplier_name']);
-                }
-            }
-        }
-        return $res;
+        $stmt->execute([':product_id' => $productId]);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
     // Nhập kho (Stock in) an toàn chống SQL Injection với Transaction
@@ -346,20 +340,6 @@ class StockModel extends BaseModel {
             ]);
 
             $this->pdo->commit();
-
-            // Trigger n8n stock-alert webhook if available stock is low (<= 100kg) or out of stock (<= 0kg)
-            $newStock = (float)$batch['BCH_available_stock_kg'] - (float)$outVolume;
-            if ($newStock <= 100) {
-                require_once __DIR__ . '/../helpers/n8n_helper.php';
-                triggerN8nWebhook('stock-alert', [
-                    'batch_id' => $batchId,
-                    'alert_type' => ($newStock <= 0) ? 'out_of_stock' : 'low_stock',
-                    'available_stock_kg' => round($newStock, 2),
-                    'out_volume_kg' => round($outVolume, 2),
-                    'user_id' => $userId
-                ]);
-            }
-
             return true;
         } catch (Exception $e) {
             $this->pdo->rollBack();
@@ -462,15 +442,6 @@ class StockModel extends BaseModel {
 
         if (!$batch) return null;
 
-        if ($lang === 'en') {
-            if (function_exists('translate_product_name') && !empty($batch['PRD_product_name'])) {
-                $batch['PRD_product_name'] = translate_product_name($batch['PRD_product_name']);
-            }
-            if (function_exists('translate_supplier_name') && !empty($batch['SUP_supplier_name'])) {
-                $batch['SUP_supplier_name'] = translate_supplier_name($batch['SUP_supplier_name']);
-            }
-        }
-
         $stmtMoves = $this->pdo->prepare("
             SELECT m.*, u.USR_full_name 
             FROM STOCK_MOVEMENTS m
@@ -547,19 +518,6 @@ class StockModel extends BaseModel {
             }
 
             $this->pdo->commit();
-
-            // Trigger n8n stock-alert webhook if updated stock is low (<= 100kg) or out of stock (<= 0kg)
-            if ($newStock <= 100) {
-                require_once __DIR__ . '/../helpers/n8n_helper.php';
-                triggerN8nWebhook('stock-alert', [
-                    'batch_id' => $batchId,
-                    'alert_type' => ($newStock <= 0) ? 'out_of_stock' : 'low_stock',
-                    'available_stock_kg' => round($newStock, 2),
-                    'out_volume_kg' => round(abs($oldStock - $newStock), 2),
-                    'user_id' => $userId
-                ]);
-            }
-
             return true;
         } catch (Exception $e) {
             $this->pdo->rollBack();
