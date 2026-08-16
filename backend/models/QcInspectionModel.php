@@ -147,6 +147,12 @@ class QcInspectionModel extends BaseModel {
 
             // Fire n8n real-time Webhook alert
             require_once __DIR__ . '/../helpers/n8n_helper.php';
+            $currentLang = $_SESSION['lang'] ?? 'vi';
+            $alertReason = $reason ?: ($newStage === 'Rejected' ? ($currentLang === 'en' ? 'Below 80% recovery threshold' : 'Dưới ngưỡng tỷ lệ thu hồi 80%') : ($currentLang === 'en' ? 'Met quality standard' : 'Đạt tiêu chuẩn'));
+            if ($currentLang === 'en' && function_exists('translate_qc_reason')) {
+                $alertReason = translate_qc_reason($reason ?: $alertReason);
+            }
+
             triggerN8nWebhook('qc-alert', [
                 'batch_id' => $batch_id,
                 'status' => $newStage,
@@ -155,7 +161,7 @@ class QcInspectionModel extends BaseModel {
                 'rejected_qty_kg' => round($rejected_qty, 2),
                 'natural_loss_kg' => round($natural_loss, 2),
                 'actual_yield_pct' => round($actual_yield_pct, 2),
-                'reason' => $reason ?: ($newStage === 'Rejected' ? 'Dưới ngưỡng tỷ lệ thu hồi 80%' : 'Đạt tiêu chuẩn'),
+                'reason' => $alertReason,
                 'comments' => $comments ?: '',
                 'inspector_user_id' => $user_id
             ]);

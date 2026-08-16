@@ -290,31 +290,54 @@ if (!function_exists('translate_shift_name')) {
 
 if (!function_exists('translate_qc_reason')) {
     function translate_qc_reason($str) {
-        if (!$str || $str === 'N/A' || $str === 'None') return 'None';
-        if ($str === 'Tất cả') return 'All Defects';
-        
-        $r = mb_strtolower($str);
-        if (str_contains($r, 'han') || str_contains($r, 'gỉ') || str_contains($r, 'gi') || str_contains($r, 'corrosion')) {
-            if (str_contains($r, 'ngoai') || str_contains($r, 'ngoài')) return 'External Rusty Cans (Internal Unverified)';
-            if (str_contains($r, 'hong') || str_contains($r, 'hỏng')) return 'Rust & Damaged Cans';
-            return 'Rust / Corrosion';
+        $input = trim((string) $str);
+        if ($input === '' || $input === 'N/A' || $input === 'None') return 'None';
+        if ($input === 'Tất cả') return 'All Defects';
+        if (in_array($input, ['No Defects', 'No defect', 'No defects'], true)) return 'No Defects';
+
+        $current_lang = $_SESSION['lang'] ?? 'vi';
+        if ($current_lang !== 'en') {
+            return $input;
         }
-        if (str_contains($r, '10') || str_contains($r, 'mop') || str_contains($r, 'móp')) {
-            if (str_contains($r, '10')) return 'Dented Cans (10 Units)';
-            if (str_contains($r, 'meo') || str_contains($r, 'méo')) return 'Dented & Deformed Cans';
-            return 'Dented Cans';
+
+        $r = mb_strtolower($input);
+        $rNoAccents = mb_strtolower(remove_accents($input));
+
+        $englishMap = [
+            'khong dang ke' => 'No Defects',
+            'khong đáng kể' => 'No Defects',
+            'dập nát' => 'Minor Damage / Bruised',
+            'dap nat' => 'Minor Damage / Bruised',
+            'hư hỏng nhẹ' => 'Minor Damage / Bruised',
+            'hu hong nhe' => 'Minor Damage / Bruised',
+            'mốc / lên men' => 'Mold / Fermented',
+            'moc / len men' => 'Mold / Fermented',
+            'moc' => 'Mold / Fermented',
+            'mốc' => 'Mold / Fermented',
+            'sai quy cach' => 'Wrong Specification',
+            'sau bệnh' => 'Bacterial Disease',
+            'sau benh' => 'Bacterial Disease',
+            'sâu bệnh' => 'Bacterial Disease',
+            'corrosion' => 'Rust / Corrosion',
+            'rust' => 'Rust / Corrosion',
+            'damaged' => 'Damaged Goods',
+            'bruise' => 'Minor Damage / Bruised',
+            'bruised' => 'Minor Damage / Bruised',
+        ];
+
+        foreach ($englishMap as $key => $translated) {
+            if (str_contains($r, $key) || str_contains($rNoAccents, $key)) {
+                return $translated;
+            }
         }
-        if (str_contains($r, 'meo') || str_contains($r, 'méo')) return 'Deformed Cans';
-        if (str_contains($r, 'cut') || str_contains($r, 'cắt')) return 'Miscut Specification Batch';
-        if (str_contains($r, 'tibit')) return 'Tibit Defect';
-        if (str_contains($r, '27') || str_contains($r, 'thung') || str_contains($r, 'thùng')) return '27 Cartons + 7 Cans (Severe Rust)';
-        if (str_contains($r, 'hong yen') || str_contains($r, 'hồng yên') || str_contains($r, 'hung yen') || str_contains($r, 'hưng yên')) return 'Hong Yen Returned Batch';
-        if (str_contains($r, 'tra') || str_contains($r, 'kh')) return 'Customer Return (Canceled Label)';
-        if (str_contains($r, 'den') || str_contains($r, 'đen')) return 'Black Labeled Batch (VP)';
-        if (str_contains($r, 'trang') || str_contains($r, 'trắng')) return 'White Labeled Batch (VP)';
-        if (str_contains($r, 'damaged')) return 'Damaged Goods Seed Record';
-        
-        return remove_accents($str);
+
+        if (str_contains($r, 'khong') || str_contains($rNoAccents, 'khong')) return 'No Defects';
+        if (str_contains($r, 'dập') || str_contains($r, 'dap') || str_contains($r, 'nát') || str_contains($r, 'nat') || str_contains($r, 'hư') || str_contains($r, 'hu') || str_contains($r, 'hỏng') || str_contains($r, 'hong')) return 'Minor Damage / Bruised';
+        if (str_contains($r, 'mốc') || str_contains($r, 'moc') || str_contains($r, 'lên') || str_contains($r, 'len') || str_contains($r, 'men')) return 'Mold / Fermented';
+        if (str_contains($r, 'sai') || str_contains($r, 'quy') || str_contains($r, 'spec') || str_contains($r, 'wrong')) return 'Wrong Specification';
+        if (str_contains($r, 'sâu') || str_contains($r, 'sau') || str_contains($r, 'benh') || str_contains($r, 'bệnh')) return 'Bacterial Disease';
+
+        return $input;
     }
 }
 

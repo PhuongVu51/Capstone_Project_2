@@ -12,6 +12,44 @@ try {
 } catch (Exception $e) {
     die("Lỗi hệ thống khởi tạo Form: " . $e->getMessage());
 }
+
+require_once '../backend/connection/db_connect.php';
+
+$reasons_from_db = [];
+try {
+    $stmt = $pdo->prepare("SELECT QCI_rejection_reason, COUNT(*) AS total
+        FROM QC_INSPECTIONS
+        WHERE QCI_rejection_reason IS NOT NULL
+          AND QCI_rejection_reason != ''
+          AND TRIM(QCI_rejection_reason) NOT IN ('None', 'No Defects', 'Không đáng kể', 'Khong dang ke')
+        GROUP BY QCI_rejection_reason
+        ORDER BY total DESC, QCI_rejection_reason ASC
+        LIMIT 3");
+    $stmt->execute();
+    while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+        $reason = trim((string) $row['QCI_rejection_reason']);
+        $normalized = mb_strtolower(remove_accents($reason));
+        if ($reason === '' || $normalized === 'none' || str_contains($normalized, 'khong dang ke') || str_contains($normalized, 'khong-dang-ke') || str_contains($normalized, 'no defects') || str_contains($normalized, 'no-defects')) {
+            continue;
+        }
+
+        if ($lang === 'en') {
+            $reason = translate_qc_reason($reason);
+        }
+
+        if ($reason !== '' && $reason !== 'None') {
+            $reasons_from_db[] = $reason;
+        }
+    }
+} catch (Exception $e) {
+    $reasons_from_db = [];
+}
+
+if (empty($reasons_from_db)) {
+    $reasons_from_db = ($lang === 'en')
+        ? ['Minor Damage / Bruised', 'Mold / Fermented', 'Wrong Specification']
+        : ['Dập nát / Hư hỏng nhẹ', 'Mốc / Lên men', 'Sai quy cách'];
+}
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -19,6 +57,7 @@ try {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Execute Protocol #<?= htmlspecialchars($batch['BCH_batch_id']) ?> | ProSync</title>
+    <link rel="icon" type="image/jpeg" href="../image/353838036_746744254123717_8058064823033680293_n.jpg">
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="assets/css/searchable_select.css">
     <script src="assets/js/searchable_select.js"></script>
@@ -131,11 +170,11 @@ try {
                         <div>
                             <label for="rejection_reason" class="block text-[11px] text-gray-400 uppercase font-semibold mb-2"><?= __('select_rejection_reason') ?></label>
                             <select id="rejection_reason" name="rejection_reason" class="w-full bg-[#0b121c] border border-[#1f2937] text-sm text-gray-200 rounded p-3 outline-none focus:border-[#10b981] transition-colors appearance-none cursor-pointer">
-                                <option value="None"><?= __('no_defects') ?></option>
-                                <option value="Contaminated"><?= __('material_contamination') ?></option>
-                                <option value="Rotten"><?= __('spoilage') ?></option>
-                                <option value="Moisture_Anomaly"><?= __('incorrect_moisture') ?></option>
-                                <option value="Other"><?= __('other_violation') ?></option>
+                                <?php foreach ($reasons_from_db as $reason): ?>
+                                    <?php if ($reason !== 'None' && trim($reason) !== ''): ?>
+                                        <option value="<?= htmlspecialchars($reason) ?>"><?= htmlspecialchars($reason) ?></option>
+                                    <?php endif; ?>
+                                <?php endforeach; ?>
                             </select>
                         </div>
 
@@ -235,11 +274,77 @@ try {
         }
 
         document.addEventListener('DOMContentLoaded', function() {
-            if (document.getElementById('rejection_reason')) {
-                new SearchableSelect('#rejection_reason', {
-                    placeholder: '<?= __('select_rejection_reason') ?>'
-                });
+            const select = document.getElementById('rejection_reason');
+            if (!select) return;
+
+            const searchable = new SearchableSelect('#rejection_reason', {
+                placeholder: '<?= __('select_rejection_reason') ?>'
+            });
+
+            function ensureCustomOption(value) {
+                const trimmed = value.trim();
+                if (!trimmed) return null;
+
+                const matched = Array.from(select.options).find(option =>
+                    (option.value || '').trim().toLowerCase() === trimmed.toLowerCase() ||
+                    (option.text || '').trim().toLowerCase() === trimmed.toLowerCase()
+                );
+
+                if (matched) {
+                    select.value = matched.value;
+                    return matched;
+                }
+
+                const customOption = new Option(trimmed, trimmed);
+                customOption.dataset.isCustom = 'true';
+                select.add(customOption);
+                select.value = trimmed;
+                return customOption;
             }
+
+            searchable.input.addEventListener('input', function() {
+                const typedValue = this.value.trim();
+                if (!typedValue) {
+                    searchable.renderDropdown('');
+                    return;
+                }
+
+                searchable.renderDropdown(typedValue);
+            });
+
+            searchable.input.addEventListener('keydown', function(event) {
+                if (event.key === 'Enter') {
+                    const typedValue = this.value.trim();
+                    if (!typedValue) return;
+
+                    const hasMatch = Array.from(select.options).some(option => {
+                        const optionText = (option.text || '').trim().toLowerCase();
+                        const optionValue = (option.value || '').trim().toLowerCase();
+                        return optionText.includes(typedValue.toLowerCase()) || optionValue.includes(typedValue.toLowerCase());
+                    });
+
+                    if (!hasMatch) {
+                        event.preventDefault();
+                        ensureCustomOption(typedValue);
+                        searchable.close();
+                    }
+                }
+            });
+
+            searchable.input.addEventListener('blur', function() {
+                const typedValue = this.value.trim();
+                if (!typedValue) return;
+
+                const hasMatch = Array.from(select.options).some(option => {
+                    const optionText = (option.text || '').trim().toLowerCase();
+                    const optionValue = (option.value || '').trim().toLowerCase();
+                    return optionText.includes(typedValue.toLowerCase()) || optionValue.includes(typedValue.toLowerCase());
+                });
+
+                if (!hasMatch) {
+                    ensureCustomOption(typedValue);
+                }
+            });
         });
     </script>
 </body>
