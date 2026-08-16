@@ -41,8 +41,7 @@ try {
                     Log incoming raw materials and update inventory
                 </p>
             </div>
-            <a href="dashboard_warehouse.php" class="bg-[#1f2937] hover:bg-[#374151] border border-[#374151] text-gray-300 font-bold px-4 py-2 rounded text-sm transition-colors flex items-center gap-2">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
+            <a href="dashboard_warehouse.php" class="bg-[#1f2937] hover:bg-[#374151] border border-[#374151] text-gray-300 font-bold px-4 py-2 rounded text-sm transition-colors flex items-center">
                 <?= __('back_to_dashboard') ?>
             </a>
         </header>

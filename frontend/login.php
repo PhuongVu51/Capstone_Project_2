@@ -17,6 +17,7 @@ if (isset($_SESSION['role'])) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ProSync Industrial - Login</title>
+    <link rel="icon" type="image/jpeg" href="../image/353838036_746744254123717_8058064823033680293_n.jpg">
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         :root { --bg-dark: #0a1118; --bg-card: #0f1722; --accent-green: #10b981; --border-color: #1f2937; }
