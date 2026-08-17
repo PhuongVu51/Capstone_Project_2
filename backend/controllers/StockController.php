@@ -199,7 +199,7 @@ if (isset($_GET['action'])) {
     switch ($action) {
         case 'fetch_suppliers':
             // MỞ QUYỀN cho API lấy nhà cung cấp
-            require_role(['Warehouse_Staff', 'Production_Manager', 'Director', 'System_Admin']);
+            require_role(['Warehouse_Staff', 'Production_Manager', 'Director', 'QC', 'System_Admin']);
             $controller->handleFetchSuppliers();
             break;
 
@@ -208,8 +208,8 @@ if (isset($_GET['action'])) {
         case 'update':
         case 'delete_batch':
         case 'update_batch_full':
-            // KHÓA QUYỀN các thao tác kho (Chỉ cho Warehouse Staff)
-            require_role(['Warehouse_Staff']); 
+            // KHÓA QUYỀN các thao tác kho (Warehouse Staff & Director)
+            require_role(['Warehouse_Staff', 'Director', 'System_Admin']); 
             if ($action === 'stock_in') $controller->handleStockIn();
             elseif ($action === 'stock_out') $controller->handleStockOut();
             elseif ($action === 'update') $controller->handleUpdateBatch();
@@ -218,7 +218,8 @@ if (isset($_GET['action'])) {
             break;
 
         case 'get_batch_detail':
-            require_role(['Warehouse_Staff']); 
+            // Cho phép tất cả các role truy cập chi tiết lô hàng
+            require_role(['Warehouse_Staff', 'Production_Manager', 'Director', 'QC', 'System_Admin']); 
             $controller->handleGetBatchDetail();
             break;
             

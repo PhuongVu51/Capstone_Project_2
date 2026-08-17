@@ -82,14 +82,33 @@ class StockModel extends BaseModel {
         return (int) $stmt->fetchColumn() > 0;
     }
     
+    private function buildSearchConditions($search, &$params) {
+        if ($search === '') {
+            return '';
+        }
+
+        $searchClean = trim($search);
+        $searchLower = mb_strtolower($searchClean);
+        $escaped = preg_quote($searchLower, '/');
+
+        $params[':search_like'] = '%' . $searchLower . '%';
+        $params[':search_regex'] = '[[:<:]]' . $escaped . '[[:>:]]';
+
+        return "(
+            LOWER(b.BCH_batch_id) COLLATE utf8mb4_bin LIKE :search_like
+            OR LOWER(p.PRD_product_name) COLLATE utf8mb4_bin REGEXP :search_regex
+            OR LOWER(COALESCE(p.PRD_product_name_en, '')) COLLATE utf8mb4_bin REGEXP :search_regex
+        )";
+    }
+
     // Lấy danh sách tồn kho với phân trang và lọc
     public function getInventoryList($search = '', $statusFilter = '', $offset = 0, $perPage = 10) {
         $conditions = [];
         $params = [];
 
-        if ($search !== '') {
-            $conditions[] = '(b.BCH_batch_id LIKE :search OR p.PRD_product_name LIKE :search OR p.PRD_product_name_en LIKE :search)';
-            $params[':search'] = '%' . $search . '%';
+        $searchCondition = $this->buildSearchConditions($search, $params);
+        if ($searchCondition !== '') {
+            $conditions[] = $searchCondition;
         }
 
         if ($statusFilter !== '') {
@@ -133,16 +152,27 @@ class StockModel extends BaseModel {
         $stmt->bindValue(':perPage', (int)$perPage, PDO::PARAM_INT);
         $stmt->execute();
         
-        return $stmt->fetchAll();
+        $items = $stmt->fetchAll();
+        if ($lang === 'en' && !empty($items)) {
+            foreach ($items as &$it) {
+                if (function_exists('translate_product_name')) {
+                    $it['PRD_product_name'] = translate_product_name($it['PRD_product_name']);
+                }
+                if (function_exists('translate_zone_name')) {
+                    $it['STZ_zone_name'] = translate_zone_name($it['STZ_zone_name']);
+                }
+            }
+        }
+        return $items;
     }
 
     public function getInventoryCount($search = '', $statusFilter = '') {
         $conditions = [];
         $params = [];
 
-        if ($search !== '') {
-            $conditions[] = '(b.BCH_batch_id LIKE :search OR p.PRD_product_name LIKE :search OR p.PRD_product_name_en LIKE :search)';
-            $params[':search'] = '%' . $search . '%';
+        $searchCondition = $this->buildSearchConditions($search, $params);
+        if ($searchCondition !== '') {
+            $conditions[] = $searchCondition;
         }
 
         if ($statusFilter !== '') {
@@ -185,7 +215,20 @@ class StockModel extends BaseModel {
                 
         $stmt = $this->pdo->prepare($sql);
         $stmt->execute([':batch_id' => $batchId]);
-        return $stmt->fetch(PDO::FETCH_ASSOC) ?: null;
+        $batch = $stmt->fetch(PDO::FETCH_ASSOC) ?: null;
+
+        if ($batch && $lang === 'en') {
+            if (function_exists('translate_product_name')) {
+                $batch['PRD_product_name'] = translate_product_name($batch['PRD_product_name']);
+            }
+            if (function_exists('translate_zone_name')) {
+                $batch['STZ_zone_name'] = translate_zone_name($batch['STZ_zone_name']);
+            }
+            if (function_exists('translate_supplier_name')) {
+                $batch['SUP_supplier_name'] = translate_supplier_name($batch['SUP_supplier_name']);
+            }
+        }
+        return $batch;
     }
 
     public function deleteBatch($batchId) {
@@ -447,6 +490,18 @@ class StockModel extends BaseModel {
         $batch = $stmt->fetch(PDO::FETCH_ASSOC);
 
         if (!$batch) return null;
+
+        if ($lang === 'en') {
+            if (function_exists('translate_product_name')) {
+                $batch['PRD_product_name'] = translate_product_name($batch['PRD_product_name']);
+            }
+            if (function_exists('translate_zone_name')) {
+                $batch['STZ_zone_name'] = translate_zone_name($batch['STZ_zone_name']);
+            }
+            if (function_exists('translate_supplier_name')) {
+                $batch['SUP_supplier_name'] = translate_supplier_name($batch['SUP_supplier_name']);
+            }
+        }
 
         $stmtMoves = $this->pdo->prepare("
             SELECT m.*, u.USR_full_name 

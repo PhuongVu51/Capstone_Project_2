@@ -6,8 +6,16 @@ if (session_status() === PHP_SESSION_NONE) {
 require_once __DIR__ . '/i18n.php';
 
 function require_role($allowed_roles, $redirect_path = 'login.php') {
+    $isApi = isset($_GET['action']) || (isset($_SERVER['HTTP_ACCEPT']) && str_contains($_SERVER['HTTP_ACCEPT'], 'application/json'));
+
     // 1. Kiểm tra xem người dùng đã đăng nhập chưa
     if (!isset($_SESSION['user_id']) || !isset($_SESSION['role'])) {
+        if ($isApi) {
+            http_response_code(401);
+            header('Content-Type: application/json; charset=utf-8');
+            echo json_encode(['success' => false, 'error' => 'unauthorized', 'message' => 'Please login']);
+            exit();
+        }
         header("Location: " . $redirect_path);
         exit();
     }
@@ -17,6 +25,12 @@ function require_role($allowed_roles, $redirect_path = 'login.php') {
 
     // 3. Kiểm tra: Role hiện tại có nằm trong mảng được cấp phép không?
     if (!in_array($current_role, $allowed_roles)) {
+        if ($isApi) {
+            http_response_code(403);
+            header('Content-Type: application/json; charset=utf-8');
+            echo json_encode(['success' => false, 'error' => 'forbidden', 'message' => 'Access denied']);
+            exit();
+        }
         // Nếu không có quyền, đá sang trang 403
         $forbidden_path = str_replace('login.php', '403.php', $redirect_path);
         header("Location: " . $forbidden_path);
