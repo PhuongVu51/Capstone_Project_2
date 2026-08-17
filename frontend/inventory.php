@@ -172,7 +172,7 @@ try {
                                             <?= __($item['stock_status'] == 'In Stock' ? 'in_stock' : ($item['stock_status'] == 'Low Stock' ? 'low_stock' : 'out_of_stock')) ?>
                                         </span>
                                     </td>
-                                    <td class="px-4 py-3 text-gray-400"><?php echo htmlspecialchars($item['STZ_zone_name'] ?? 'N/A'); ?></td>
+                                    <td class="px-4 py-3 text-gray-400"><?php echo htmlspecialchars(t_zone($item['STZ_zone_name'] ?? 'N/A')); ?></td>
                                     <td class="px-4 py-3 text-gray-400"><?php echo htmlspecialchars(date('d/m/Y', strtotime($item['BCH_received_date']))); ?></td>
                                     <td class="px-4 py-3 text-right">
                                         <div class="flex justify-end gap-3 items-center">

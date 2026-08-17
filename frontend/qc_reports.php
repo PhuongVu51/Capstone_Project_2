@@ -109,15 +109,15 @@ try {
             </div>
         </div>
 
-        <h2 class="text-lg font-bold text-white mb-4 uppercase tracking-wide">Waste Cost Overview</h2>
+        <h2 class="text-lg font-bold text-white mb-4 uppercase tracking-wide"><?= __('waste_cost_overview', 'Waste Cost Overview') ?></h2>
         <div class="grid grid-cols-1 sm:grid-cols-3 gap-5 mb-8">
             <div class="bg-[#0f1722] p-5 rounded-lg border border-[#1f2937]">
-                <p class="text-[11px] text-gray-500 uppercase font-semibold tracking-wider">Total Natural Loss Cost</p>
-                <h3 class="text-3xl font-bold text-white mt-2 font-mono"><?= $totalNaturalCost ?> <span class="text-sm text-gray-500 font-normal">VNĐ</span></h3>
+                <p class="text-[11px] text-gray-500 uppercase font-semibold tracking-wider"><?= __('total_natural_loss_cost', 'Total Natural Loss Cost') ?></p>
+                <h3 class="text-3xl font-bold text-white mt-2 font-mono"><?= $totalNaturalCost ?> <span class="text-sm text-gray-500 font-normal"><?= ($lang === 'en') ? 'VND' : 'VNĐ' ?></span></h3>
             </div>
             <div class="bg-[#2a1215] p-5 rounded-lg border border-red-900/30">
-                <p class="text-[11px] text-red-400 uppercase font-semibold tracking-wider">Total Abnormal Loss Cost</p>
-                <h3 class="text-3xl font-bold text-red-500 mt-2 font-mono"><?= $totalAbnormalCost ?> <span class="text-sm text-red-800 font-normal">VNĐ</span></h3>
+                <p class="text-[11px] text-red-400 uppercase font-semibold tracking-wider"><?= __('total_abnormal_loss_cost', 'Total Abnormal Loss Cost') ?></p>
+                <h3 class="text-3xl font-bold text-red-500 mt-2 font-mono"><?= $totalAbnormalCost ?> <span class="text-sm text-red-800 font-normal"><?= ($lang === 'en') ? 'VND' : 'VNĐ' ?></span></h3>
             </div>
             <?php
                 $abPct = floatval(str_replace(',', '', $abnormalCostPct));
@@ -126,7 +126,7 @@ try {
                 else { $abColor = 'text-red-500'; $abBg = 'bg-[#2a1215]'; $abBorder = 'border-red-900/30'; $abLabel = 'text-red-400'; }
             ?>
             <div class="<?= $abBg ?> p-5 rounded-lg border <?= $abBorder ?> transition-colors">
-                <p class="text-[11px] <?= $abLabel ?> uppercase font-semibold tracking-wider">% Abnormal / Total Waste Cost</p>
+                <p class="text-[11px] <?= $abLabel ?> uppercase font-semibold tracking-wider"><?= __('abnormal_cost_pct_label', '% Abnormal / Total Waste Cost') ?></p>
                 <h3 class="text-3xl font-bold <?= $abColor ?> mt-2 font-mono"><?= $abnormalCostPct ?>%</h3>
             </div>
         </div>
@@ -161,7 +161,7 @@ try {
                                 <th class="py-3 px-2 font-semibold tracking-wider bg-[#0b121c] w-[20%]"><?= __('supplier_report') ?></th>
                                 <th class="py-3 px-2 font-semibold tracking-wider text-right bg-[#0b121c] w-[14%]"><?= __('rejected') ?></th>
                                 <th class="py-3 px-2 font-semibold tracking-wider bg-[#0b121c] w-[18%]"><?= __('defect_reason') ?></th>
-                                <th class="py-3 px-2 font-semibold tracking-wider text-right bg-[#0b121c] w-[16%]">Cost Impact</th>
+                                <th class="py-3 px-2 font-semibold tracking-wider text-right bg-[#0b121c] w-[16%]"><?= __('cost_impact', 'Cost Impact') ?></th>
                                 <th class="py-3 pl-2 pr-6 font-semibold tracking-wider text-right bg-[#0b121c] w-[10%]"><?= __('yield_pct') ?></th>
                             </tr>
                         </thead>
@@ -182,10 +182,10 @@ try {
                                                 <?= htmlspecialchars(__($batch['QCI_rejection_reason'])) ?>
                                             </span>
                                         </td>
-                                        <td class="py-3 px-2 text-red-400 font-mono text-right font-bold vertical-top"><?= number_format($batch['cost_impact']) ?> <span class="text-[10px] text-gray-600 font-sans font-normal">đ</span></td>
+                                        <td class="py-3 px-2 text-red-400 font-mono text-right font-bold vertical-top"><?= number_format($batch['cost_impact']) ?> <span class="text-[10px] text-gray-600 font-sans font-normal"><?= ($lang === 'en') ? 'đ' : 'đ' ?></span></td>
                                         <td class="py-3 pl-2 pr-6 text-right vertical-top">
                                             <?php 
-                                            $yield = $batch['QCI_actual_yield_pct']; 
+                                             $yield = $batch['QCI_actual_yield_pct']; 
                                             $yieldClass = $yield < 80 ? 'text-red-500' : 'text-[#10b981]';
                                             ?>
                                             <span class="font-mono font-black text-xs <?= $yieldClass ?>"><?= number_format($yield, 1) ?>%</span>
@@ -202,13 +202,13 @@ try {
         
         <!-- Waste Cost Analysis Charts -->
         <div class="mt-8 pt-8 border-t border-[#1f2937]">
-            <h2 class="text-xl font-bold text-white mb-6 uppercase tracking-wide">Waste Cost Analysis</h2>
+            <h2 class="text-xl font-bold text-white mb-6 uppercase tracking-wide"><?= __('waste_cost_analysis', 'Waste Cost Analysis') ?></h2>
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
                 <!-- Cost by Product Chart -->
                 <div class="bg-[#0f1722] rounded-lg border border-[#1f2937] flex flex-col min-w-0">
                     <div class="px-4 py-3 border-b border-[#1f2937] bg-[#0b121c] shrink-0">
-                        <h3 class="text-sm font-bold text-white uppercase tracking-wider">Cost by Product</h3>
-                        <p class="text-[11px] text-gray-500 mt-0.5">Abnormal vs Natural cost comparison</p>
+                        <h3 class="text-sm font-bold text-white uppercase tracking-wider"><?= __('cost_by_product', 'Cost by Product') ?></h3>
+                        <p class="text-[11px] text-gray-500 mt-0.5"><?= __('cost_by_product_desc', 'Abnormal vs Natural cost comparison') ?></p>
                     </div>
                     <div class="p-4 h-[300px] relative w-full">
                         <canvas id="costByProductChart"></canvas>
@@ -218,8 +218,8 @@ try {
                 <!-- Waste Cost Trend Chart -->
                 <div class="bg-[#0f1722] rounded-lg border border-[#1f2937] flex flex-col min-w-0">
                     <div class="px-4 py-3 border-b border-[#1f2937] bg-[#0b121c] shrink-0">
-                        <h3 class="text-sm font-bold text-white uppercase tracking-wider">Waste Cost Trend (30 Days)</h3>
-                        <p class="text-[11px] text-gray-500 mt-0.5">Daily financial impact of abnormal loss</p>
+                        <h3 class="text-sm font-bold text-white uppercase tracking-wider"><?= __('waste_cost_trend', 'Waste Cost Trend (30 Days)') ?></h3>
+                        <p class="text-[11px] text-gray-500 mt-0.5"><?= __('waste_cost_trend_desc', 'Daily financial impact of abnormal loss') ?></p>
                     </div>
                     <div class="p-4 h-[300px] relative w-full">
                         <canvas id="costTrendChart"></canvas>
@@ -230,18 +230,18 @@ try {
 
         <!-- Supplier Scorecard Section -->
         <div class="mt-8 pt-8 border-t border-[#1f2937]">
-            <h2 class="text-xl font-bold text-white mb-6 uppercase tracking-wide">Supplier Scorecard</h2>
+            <h2 class="text-xl font-bold text-white mb-6 uppercase tracking-wide"><?= __('supplier_scorecard', 'Supplier Scorecard') ?></h2>
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
                 <!-- Scorecard Table -->
                 <div class="lg:col-span-2 bg-[#0f1722] rounded-lg border border-[#1f2937] flex flex-col min-w-0 max-h-[400px]">
                     <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center px-4 py-3 border-b border-[#1f2937] bg-[#0b121c] shrink-0 gap-3">
-                        <h3 class="text-sm font-bold text-white uppercase tracking-wider"><?= __('supplier_scorecard', 'Bảng Xếp Hạng') ?></h3>
+                        <h3 class="text-sm font-bold text-white uppercase tracking-wider"><?= __('supplier_scorecard', 'Supplier Scorecard') ?></h3>
                         <div class="flex gap-2 w-full sm:w-auto">
                             <select id="scorecardStatusFilter" onchange="filterAndSortScorecard()" class="bg-[#1f2937] text-xs text-gray-300 border border-[#374151] rounded px-2 py-1.5 outline-none w-full sm:w-auto focus:border-blue-500 transition-colors">
                                 <option value="all"><?= __('all_statuses', 'Tất cả trạng thái') ?></option>
                                 <option value="Warning"><?= __('warning', 'Cảnh báo') ?></option>
                                 <option value="Monitor"><?= __('monitor', 'Cần theo dõi') ?></option>
-                                <option value="Good">Good</option>
+                                <option value="Good"><?= __('good_status', 'Tốt') ?></option>
                                 <option value="Insufficient Data"><?= __('insufficient_data', 'Chưa đủ dữ liệu') ?></option>
                             </select>
                             <select id="scorecardSort" onchange="filterAndSortScorecard()" class="bg-[#1f2937] text-xs text-gray-300 border border-[#374151] rounded px-2 py-1.5 outline-none w-full sm:w-auto focus:border-blue-500 transition-colors">
@@ -417,7 +417,7 @@ try {
                 data: {
                     labels: supLabels,
                     datasets: [{
-                        label: 'Tỷ lệ hao hụt (%)',
+                        label: '<?= __('waste_rate', 'Tỷ lệ hao hụt') ?> (%)',
                         data: supWastePct,
                         backgroundColor: supColors,
                         borderRadius: 4,
@@ -442,7 +442,7 @@ try {
                         x: {
                             grid: { color: '#1f2937' },
                             ticks: { color: '#9ca3af' },
-                            title: { display: true, text: 'Tỷ lệ hao hụt (%)', color: '#6b7280', font: { size: 10 } }
+                            title: { display: true, text: '<?= __('waste_rate', 'Tỷ lệ hao hụt') ?> (%)', color: '#6b7280', font: { size: 10 } }
                         },
                         y: {
                             grid: { display: false },
@@ -452,7 +452,7 @@ try {
                 }
             });
         } else if (document.getElementById('supplierChart')) {
-            document.getElementById('supplierChart').parentElement.innerHTML = '<div class="text-gray-600 text-sm italic h-full flex items-center">Chưa có dữ liệu hao hụt để hiển thị</div>';
+            document.getElementById('supplierChart').parentElement.innerHTML = '<div class="text-gray-600 text-sm italic h-full flex items-center"><?= __('no_waste_data_available', 'Chưa có dữ liệu hao hụt để hiển thị') ?></div>';
         }
 
         // JS logic for Filtering and Sorting the Scorecard Table
@@ -499,7 +499,7 @@ try {
                     labels: costByProductData.map(d => d.product_name.split(' - ')[0]),
                     datasets: [
                         {
-                            label: 'Abnormal Cost (VNĐ)',
+                            label: '<?= __('abnormal_cost_label', 'Abnormal Cost') ?> (<?= ($lang === 'en') ? 'VND' : 'VNĐ' ?>)',
                             data: costByProductData.map(d => d.abnormal_cost),
                             backgroundColor: costByProductData.map(d => {
                                 const cost = parseFloat(d.abnormal_cost) || 0;
@@ -510,7 +510,7 @@ try {
                             borderRadius: 4
                         },
                         {
-                            label: 'Natural Cost (VNĐ)',
+                            label: '<?= __('natural_cost_label', 'Natural Cost') ?> (<?= ($lang === 'en') ? 'VND' : 'VNĐ' ?>)',
                             data: costByProductData.map(d => d.natural_cost),
                             backgroundColor: '#4b5563',
                             borderRadius: 4
@@ -540,7 +540,7 @@ try {
                             callbacks: {
                                 // Hiển thị lại tên đầy đủ khi di chuột vào (hover)
                                 title: function(context) { return costByProductData[context[0].dataIndex].product_name; },
-                                label: function(context) { return ' ' + context.dataset.label + ': ' + Number(context.raw).toLocaleString() + ' đ'; }
+                                label: function(context) { return ' ' + context.dataset.label + ': ' + Number(context.raw).toLocaleString() + ' <?= ($lang === 'en') ? 'VND' : 'đ' ?>'; }
                             }
                         }
                     }
@@ -558,7 +558,7 @@ try {
                     labels: costTrendData.map(d => d.report_date),
                     datasets: [
                         {
-                            label: 'Abnormal Cost (VNĐ)',
+                            label: '<?= __('abnormal_cost_label', 'Abnormal Cost') ?> (<?= ($lang === 'en') ? 'VND' : 'VNĐ' ?>)',
                             data: costTrendData.map(d => d.daily_abnormal_cost),
                             borderColor: '#10b981',
                             backgroundColor: 'rgba(255, 255, 255, 0.08)',
@@ -582,7 +582,7 @@ try {
                             backgroundColor: '#1f2937', titleColor: '#fff', bodyColor: '#d1d5db',
                             borderColor: '#374151', borderWidth: 1, padding: 10,
                             callbacks: {
-                                label: function(context) { return ' ' + context.dataset.label + ': ' + Number(context.raw).toLocaleString() + ' đ'; }
+                                label: function(context) { return ' ' + context.dataset.label + ': ' + Number(context.raw).toLocaleString() + ' <?= ($lang === 'en') ? 'VND' : 'đ' ?>'; }
                             }
                         }
                     }

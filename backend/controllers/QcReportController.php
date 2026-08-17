@@ -50,6 +50,9 @@ class QcReportController {
             }
             if (!empty($supplierScorecard)) {
                 foreach ($supplierScorecard as &$s) {
+                    if (isset($s['supplier_name'])) {
+                        $s['supplier_name'] = translate_supplier_name($s['supplier_name']);
+                    }
                     if (isset($s['SUP_supplier_name'])) {
                         $s['SUP_supplier_name'] = translate_supplier_name($s['SUP_supplier_name']);
                     }
@@ -57,6 +60,9 @@ class QcReportController {
             }
             if (!empty($costByProduct)) {
                 foreach ($costByProduct as &$p) {
+                    if (isset($p['product_name'])) {
+                        $p['product_name'] = translate_product_name($p['product_name']);
+                    }
                     if (isset($p['PRD_product_name'])) {
                         $p['PRD_product_name'] = translate_product_name($p['PRD_product_name']);
                     }

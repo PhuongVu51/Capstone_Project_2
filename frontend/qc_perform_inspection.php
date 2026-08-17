@@ -99,7 +99,7 @@ if (empty($reasons_from_db)) {
                             </div>
                             <div class="flex justify-between border-b border-[#1f2937]/50 pb-2">
                                 <span class="text-gray-500"><?= __('supplier_colon') ?></span>
-                                <span class="text-gray-300 font-medium"><?= htmlspecialchars($batch['SUP_supplier_name']) ?></span>
+                                <span class="text-gray-300 font-medium"><?= htmlspecialchars(t_supplier($batch['SUP_supplier_name'])) ?></span>
                             </div>
                             <div class="flex justify-between border-b border-[#1f2937]/50 pb-2">
                                 <span class="text-gray-500"><?= __('origin_colon') ?></span>

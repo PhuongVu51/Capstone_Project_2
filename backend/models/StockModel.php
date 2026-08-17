@@ -227,7 +227,13 @@ class StockModel extends BaseModel {
                 ORDER BY s.SUP_supplier_name ASC";
         $stmt = $this->pdo->prepare($sql);
         $stmt->execute([':product_id' => $productId]);
-        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        if ($lang === 'en' && !empty($rows)) {
+            foreach ($rows as &$r) {
+                $r['SUP_supplier_name'] = translate_supplier_name($r['SUP_supplier_name']);
+            }
+        }
+        return $rows;
     }
 
     // Nhập kho (Stock in) an toàn chống SQL Injection với Transaction

@@ -164,7 +164,7 @@ class QcReportModel extends BaseModel {
             $trendValue = $currentPct - $prevPct;
 
             $processed[] = [
-                'supplier_name' => $row['SUP_supplier_name'],
+                'supplier_name' => ($lang === 'en') ? translate_supplier_name($row['SUP_supplier_name']) : $row['SUP_supplier_name'],
                 'total_supplied' => $totalSupplied,
                 'waste_pct' => $wastePct,
                 'waste_cost' => $wasteCost,
