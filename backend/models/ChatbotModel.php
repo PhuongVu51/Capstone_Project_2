@@ -8,10 +8,21 @@ class ChatbotModel extends BaseModel
     private $geminiApiKey;
     private $groqApiKey;
     private $openRouterApiKey;
-    private $provider = 'gemini'; // 'groq', 'gemini', 'openrouter'
-    private $workingModel = null;
+    private $provider = 'groq';
+    private $workingGeminiModel = null;
+    private $workingGroqModel = null;
     private $workingApiVersion = 'v1beta';
     private $lastError = null;
+
+    private $groqCandidateModels = [
+        'llama-3.3-70b-versatile',
+        'llama-3.1-70b-versatile',
+        'llama-3.1-8b-instant',
+        'llama3-70b-8192',
+        'llama3-8b-8192',
+        'mixtral-8x7b-32768',
+        'gemma2-9b-it'
+    ];
 
     public function __construct($pdoInstance = null)
     {
@@ -206,7 +217,7 @@ Rules:
      */
     private function callAiApi($systemPrompt, $userPrompt, $isJsonMode = false)
     {
-        // 1. Nếu có Groq Key -> Dùng Groq API (Siêu nhanh, 100% Free Llama-3.3-70b)
+        // 1. Nếu có Groq Key -> Dùng Groq API (Siêu nhanh, 100% Free Llama)
         if (!empty($this->groqApiKey)) {
             $res = $this->callGroqApi($systemPrompt, $userPrompt, $isJsonMode);
             if ($res !== null) return $res;
@@ -227,54 +238,67 @@ Rules:
     }
 
     /**
-     * Gọi Groq API (Llama 3.3 70B - Tốc độ cực nhanh, Miễn phí 100%)
+     * Gọi Groq API (Tự động thử các dòng Model Llama/Mixtral/Gemma miễn phí khả dụng)
      */
     private function callGroqApi($systemPrompt, $userPrompt, $isJsonMode = false)
     {
         $url = 'https://api.groq.com/openai/v1/chat/completions';
 
-        $payload = [
-            'model' => 'llama-3.3-70b-versatile',
-            'messages' => [
-                ['role' => 'system', 'content' => $systemPrompt],
-                ['role' => 'user', 'content' => $userPrompt]
-            ],
-            'temperature' => 0.2
-        ];
-
-        if ($isJsonMode) {
-            $payload['response_format'] = ['type' => 'json_object'];
+        $modelList = $this->groqCandidateModels;
+        if ($this->workingGroqModel) {
+            array_unshift($modelList, $this->workingGroqModel);
+            $modelList = array_unique($modelList);
         }
 
-        $ch = curl_init($url);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($ch, CURLOPT_POST, true);
-        curl_setopt($ch, CURLOPT_HTTPHEADER, [
-            'Content-Type: application/json',
-            'Authorization: Bearer ' . $this->groqApiKey
-        ]);
-        curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($payload));
-        curl_setopt($ch, CURLOPT_TIMEOUT, 15);
-        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+        foreach ($modelList as $model) {
+            $payload = [
+                'model' => $model,
+                'messages' => [
+                    ['role' => 'system', 'content' => $systemPrompt],
+                    ['role' => 'user', 'content' => $userPrompt]
+                ],
+                'temperature' => 0.2
+            ];
 
-        $response = curl_exec($ch);
-        $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-        $curlErr = curl_error($ch);
-        curl_close($ch);
+            if ($isJsonMode) {
+                $payload['response_format'] = ['type' => 'json_object'];
+            }
 
-        if ($curlErr) {
-            $this->lastError = "Groq cURL Error: " . $curlErr;
-            return null;
+            $ch = curl_init($url);
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+            curl_setopt($ch, CURLOPT_POST, true);
+            curl_setopt($ch, CURLOPT_HTTPHEADER, [
+                'Content-Type: application/json',
+                'Authorization: Bearer ' . $this->groqApiKey
+            ]);
+            curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($payload));
+            curl_setopt($ch, CURLOPT_TIMEOUT, 15);
+            curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+
+            $response = curl_exec($ch);
+            $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+            $curlErr = curl_error($ch);
+            curl_close($ch);
+
+            if ($curlErr) {
+                $this->lastError = "Groq cURL Error: " . $curlErr;
+                continue;
+            }
+
+            if ($httpCode === 200 && $response) {
+                $data = json_decode($response, true);
+                $content = $data['choices'][0]['message']['content'] ?? null;
+                if ($content !== null) {
+                    $this->workingGroqModel = $model; // Ghi nhớ model chạy thành công
+                    return $content;
+                }
+            }
+
+            $errData = json_decode($response, true);
+            $errMsg = $errData['error']['message'] ?? "HTTP Status $httpCode";
+            $this->lastError = "Groq API Error ($model): " . $errMsg;
         }
 
-        if ($httpCode === 200 && $response) {
-            $data = json_decode($response, true);
-            return $data['choices'][0]['message']['content'] ?? null;
-        }
-
-        $errData = json_decode($response, true);
-        $errMsg = $errData['error']['message'] ?? "HTTP Status $httpCode";
-        $this->lastError = "Groq API Error: " . $errMsg;
         return null;
     }
 
