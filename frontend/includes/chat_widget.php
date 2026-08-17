@@ -315,9 +315,10 @@ document.addEventListener('DOMContentLoaded', function() {
             sendBtn.disabled = true;
             showLoadingIndicator();
 
-            // Call API
-            fetch('../backend/api/chatbot.php', {
+            // Call API via local frontend proxy to bypass free hosting 403 subfolder blocks
+            fetch('api_chatbot.php', {
                 method: 'POST',
+
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ message: userMsg })
             })
