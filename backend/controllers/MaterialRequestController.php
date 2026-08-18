@@ -3,8 +3,8 @@
 require_once __DIR__ . '/../includes/auth.php';
 require_once __DIR__ . '/../models/MaterialRequestModel.php';
 
-// Chỉ Kho và Giám đốc mới được duyệt
-require_role(['Warehouse_Staff', 'Director'], '../../frontend/login.php');
+// Cấp quyền cho Warehouse, Director và PM (PM chỉ được xem)
+require_role(['Warehouse_Staff', 'Director', 'Production_Manager'], '../../frontend/login.php');
 
 class MaterialRequestController {
     private $reqModel;
@@ -21,6 +21,12 @@ class MaterialRequestController {
 
     // Xử lý khi Form Approve/Reject gửi lên
     public function handleAction() {
+        // Ngăn PM tự ý duyệt/từ chối qua API
+        if ($_SESSION['role'] === 'Production_Manager') {
+            header("Location: ../../frontend/403.php");
+            exit;
+        }
+
         if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action_type'], $_POST['request_id'])) {
             $requestId = (int)$_POST['request_id'];
             $action = $_POST['action_type']; // Nhận 'Approve' hoặc 'Reject'

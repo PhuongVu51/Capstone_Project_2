@@ -169,7 +169,7 @@ class NotificationModel extends BaseModel {
                 'message' => "Yêu cầu " . (float)$req['REQ_quantity'] . "kg " . htmlspecialchars($req['REQ_material_id']) . " (" . $statusText . ").",
                 'time_desc' => ($lang === 'en') ? 'Recent request' : 'Vừa yêu cầu',
                 'timestamp' => $req['created_at'],
-                'link' => 'production_dashboard.php' // Link to where PM manages requests
+                'link' => 'manage_requests.php' // Link to where PM views requests
             ];
         }
         return $alerts;
