@@ -82,7 +82,7 @@ if (!function_exists('__')) {
         <div id="notification-dropdown" class="hidden absolute right-0 mt-2 w-80 sm:w-96 bg-[#0f1722] border border-[#1f2937] rounded-xl shadow-2xl overflow-hidden transform opacity-0 scale-95 transition-all duration-200 origin-top-right">
             <div class="p-4 border-b border-[#1f2937] flex justify-between items-center bg-[#07121a]">
                 <h3 class="text-sm font-bold text-white uppercase tracking-wider"><?= __('notifications', 'Thông báo') ?></h3>
-                <button id="mark-all-read-btn" class="hidden text-xs text-[#10b981] hover:text-[#059669] transition-colors"><?= __('mark_all_read', 'Đánh dấu đã đọc') ?></button>
+                <button id="mark-all-read-btn" class="hidden text-xs text-[#10b981] hover:text-[#059669] transition-colors"><?= __('mark_all_read', 'Đánh dấu đã đọc tất cả') ?></button>
             </div>
 
             <!-- Filter Bar -->
@@ -90,8 +90,8 @@ if (!function_exists('__')) {
                 <button class="notif-filter-btn px-3 py-1.5 rounded-full bg-[#10b981] text-white font-medium whitespace-nowrap transition-colors" data-filter="all"><?= __('all', 'Tất cả') ?></button>
                 <button class="notif-filter-btn px-3 py-1.5 rounded-full bg-[#1f2937] text-gray-400 hover:text-white transition-colors whitespace-nowrap" data-filter="fefo">FEFO</button>
                 <button class="notif-filter-btn px-3 py-1.5 rounded-full bg-[#1f2937] text-gray-400 hover:text-white transition-colors whitespace-nowrap" data-filter="qc">QC</button>
-                <button class="notif-filter-btn px-3 py-1.5 rounded-full bg-[#1f2937] text-gray-400 hover:text-white transition-colors whitespace-nowrap" data-filter="stock"><?= __('inventory', 'Hàng tồn') ?></button>
-                <button class="notif-filter-btn px-3 py-1.5 rounded-full bg-[#1f2937] text-gray-400 hover:text-white transition-colors whitespace-nowrap" data-filter="request"><?= __('materials', 'Vật tư') ?></button>
+                <button class="notif-filter-btn px-3 py-1.5 rounded-full bg-[#1f2937] text-gray-400 hover:text-white transition-colors whitespace-nowrap" data-filter="stock"><?= ($lang === 'en') ? 'Inventory' : 'Kho hàng' ?></button>
+                <button class="notif-filter-btn px-3 py-1.5 rounded-full bg-[#1f2937] text-gray-400 hover:text-white transition-colors whitespace-nowrap" data-filter="request"><?= ($lang === 'en') ? 'Materials' : 'Vật tư' ?></button>
             </div>
             
             <div id="notification-list-container" class="max-h-[60vh] overflow-y-auto">
@@ -332,13 +332,13 @@ document.addEventListener('DOMContentLoaded', function() {
     };
 
     function fetchNotifications() {
-        fetch('../backend/api/notifications.php?t=' + new Date().getTime())
+        const lang = '<?= $lang ?>';
+        fetch('../backend/api/notifications.php?lang=' + encodeURIComponent(lang) + '&t=' + new Date().getTime())
             .then(response => response.json())
             .then(data => {
                 if (data.status === 'success') {
                     currentNotifs = data.data || [];
                     renderNotifications();
-
                 }
             })
             .catch(error => console.error('Error fetching notifications:', error));

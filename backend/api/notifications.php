@@ -16,15 +16,16 @@ if (!isset($_SESSION['user_id']) || !isset($_SESSION['role'])) {
     exit;
 }
 
-// Giải phóng session lock ngay lập tức để không làm lag các trang khác (như trang login) 
-// nếu db_connect.php bị chậm hoặc treo.
+$role = $_SESSION['role'];
+$lang = $_GET['lang'] ?? $_SESSION['lang'] ?? 'vi';
+$_SESSION['lang'] = $lang;
+
 session_write_close();
 
 require_once __DIR__ . '/../models/NotificationModel.php';
 
 try {
-    $notificationModel = new NotificationModel();
-    $role = $_SESSION['role'];
+    $notificationModel = new NotificationModel($lang);
     
     // Fetch notifications
     $notifications = $notificationModel->getAlertsByRole($role);
@@ -32,13 +33,14 @@ try {
     
     echo json_encode([
         'status' => 'success',
+        'lang' => $lang,
         'count' => $count,
         'data' => $notifications
     ]);
 } catch (Exception $e) {
     echo json_encode([
         'status' => 'error',
-        'message' => 'Internal server error',
+        'message' => 'Internal server error: ' . $e->getMessage(),
         'count' => 0,
         'data' => []
     ]);
