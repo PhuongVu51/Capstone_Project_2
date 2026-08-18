@@ -13,6 +13,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $exp_date       = $_POST['exp_date'] ?? '';
     $qc_status      = $_POST['qc_status'] ?? 'Pending_QC';
 
+    if (strtotime($mfg_date) > strtotime(date('Y-m-d'))) {
+        die("Lỗi: Ngày sản xuất (Manufacture Date) không được nằm trong tương lai.");
+    }
+    
+    if (strtotime($exp_date) < strtotime(date('Y-m-d'))) {
+        die("Lỗi: Hạn sử dụng (Expiry Date) không được nằm trong quá khứ.");
+    }
+
     // Đổi 'Pending' từ form thành 'Pending_QC' để biểu diễn đúng logic
     if ($qc_status === 'Pending') {
         $qc_status = 'Pending_QC';
