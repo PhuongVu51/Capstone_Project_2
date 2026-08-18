@@ -1,7 +1,7 @@
 <?php
 // Đường dẫn: frontend/manage_requests.php
 require_once '../backend/includes/auth.php';
-require_role(['Warehouse_Staff', 'Director'], 'login.php');
+require_role(['Warehouse_Staff', 'Director', 'Production_Manager'], 'login.php');
 require_once '../backend/controllers/MaterialRequestController.php';
 
 $controller = new MaterialRequestController();
@@ -89,11 +89,15 @@ unset($_SESSION['success_msg'], $_SESSION['error_msg']);
                                     </td>
                                     <td class="p-4 text-right">
                                         <?php if ($req['REQ_status'] === 'Pending'): ?>
-                                            <form action="../backend/controllers/MaterialRequestController.php?action=process" method="POST" class="inline-flex gap-2">
-                                                <input type="hidden" name="request_id" value="<?= $req['REQ_id'] ?>">
-                                                <button type="submit" name="action_type" value="Approve" class="px-3 py-1 bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold rounded transition">Approve</button>
-                                                <button type="submit" name="action_type" value="Reject" class="px-3 py-1 border border-red-500/50 hover:bg-red-500/20 text-red-400 text-xs font-bold rounded transition">Reject</button>
-                                            </form>
+                                            <?php if ($_SESSION['role'] !== 'Production_Manager'): ?>
+                                                <form action="../backend/controllers/MaterialRequestController.php?action=process" method="POST" class="inline-flex gap-2">
+                                                    <input type="hidden" name="request_id" value="<?= $req['REQ_id'] ?>">
+                                                    <button type="submit" name="action_type" value="Approve" class="px-3 py-1 bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold rounded transition">Approve</button>
+                                                    <button type="submit" name="action_type" value="Reject" class="px-3 py-1 border border-red-500/50 hover:bg-red-500/20 text-red-400 text-xs font-bold rounded transition">Reject</button>
+                                                </form>
+                                            <?php else: ?>
+                                                <span class="text-xs text-yellow-500 italic">Waiting for Approval</span>
+                                            <?php endif; ?>
                                         <?php else: ?>
                                             <span class="text-xs text-gray-500 italic">Processed</span>
                                         <?php endif; ?>

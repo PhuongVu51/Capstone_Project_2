@@ -6,6 +6,7 @@ if (session_status() === PHP_SESSION_NONE) {
 $current_page = basename($_SERVER['PHP_SELF'] ?? '');
 $full_name = $_SESSION['full_name'] ?? 'Guest User';
 $role = $_SESSION['role'] ?? 'Warehouse_Staff'; // Mặc định nếu không có role
+$lang = $_SESSION['lang'] ?? 'vi'; // Khởi tạo $lang nếu chưa có
 
 // 1. CẤU HÌNH LABEL & MÀU SẮC THEO ROLE
 $role_label = match ($role) {
@@ -65,7 +66,7 @@ if (!function_exists('__')) {
 ?>
 
 <!-- NOTIFICATION BELL (Shared across all pages) -->
-<div class="fixed top-4 right-4 md:right-8 z-50">
+<div class="fixed top-4 right-4 md:right-8 z-[100]" style="z-index: 99999;">
     <div class="relative">
         <!-- Bell Button -->
         <button id="notification-bell-btn" class="relative p-2 text-gray-400 hover:text-white bg-[#0f1722]/80 backdrop-blur-sm hover:bg-[#1f2937] rounded-full border border-[#1f2937] transition-all shadow-lg focus:outline-none">

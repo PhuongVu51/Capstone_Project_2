@@ -217,7 +217,7 @@ class NotificationModel extends BaseModel {
                 'message' => $message,
                 'time_desc' => $timeDesc,
                 'timestamp' => $req['created_at'],
-                'link' => 'manage_requests.php'
+                'link' => 'manage_requests.php' // Link to where PM manages requests
             ];
         }
         return $alerts;
