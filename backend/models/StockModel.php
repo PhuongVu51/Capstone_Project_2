@@ -65,15 +65,13 @@ class StockModel extends BaseModel {
 
         $searchClean = trim($search);
         $searchLower = mb_strtolower($searchClean);
-        $escaped = preg_quote($searchLower, '/');
 
         $params[':search_like'] = '%' . $searchLower . '%';
-        $params[':search_regex'] = '[[:<:]]' . $escaped . '[[:>:]]';
 
         return "(
             LOWER(b.BCH_batch_id) COLLATE utf8mb4_bin LIKE :search_like
-            OR LOWER(p.PRD_product_name) COLLATE utf8mb4_bin REGEXP :search_regex
-            OR LOWER(COALESCE(p.PRD_product_name_en, '')) COLLATE utf8mb4_bin REGEXP :search_regex
+            OR LOWER(p.PRD_product_name) COLLATE utf8mb4_bin LIKE :search_like
+            OR LOWER(COALESCE(p.PRD_product_name_en, '')) COLLATE utf8mb4_bin LIKE :search_like
         )";
     }
 

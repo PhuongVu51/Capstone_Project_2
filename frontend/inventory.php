@@ -60,18 +60,15 @@ try {
         <?php endif; ?>
 
         <section class="bg-[#07121a] border border-[#102027] rounded-lg p-4 mb-6">
-            <form method="GET" class="flex flex-col md:flex-row gap-3">
-                <input type="text" name="search" value="<?php echo htmlspecialchars($search); ?>" placeholder="<?= __('search_placeholder') ?>" class="flex-1 rounded border border-[#203434] bg-[#06121a] px-3 py-2 text-sm text-gray-200 focus:outline-none focus:border-[#10b981]" />
-                <select name="status" class="appearance-none bg-[#0a1118] border border-[#374151] rounded-xl pl-11 pr-10 py-2.5 text-sm text-gray-300 focus:outline-none focus:border-[#10b981] focus:ring-1 focus:ring-[#10b981] transition-all">
+            <form id="filterForm" method="GET" class="flex flex-col md:flex-row gap-3" onsubmit="return false;">
+                <input type="text" id="searchInput" name="search" value="<?php echo htmlspecialchars($search); ?>" placeholder="<?= __('search_placeholder') ?>" class="flex-1 rounded border border-[#203434] bg-[#06121a] px-3 py-2 text-sm text-gray-200 focus:outline-none focus:border-[#10b981]" />
+                <select id="statusSelect" name="status" class="appearance-none bg-[#0a1118] border border-[#374151] rounded-xl pl-11 pr-10 py-2.5 text-sm text-gray-300 focus:outline-none focus:border-[#10b981] focus:ring-1 focus:ring-[#10b981] transition-all">
                     <option value=""><?= __('filter_status') ?></option>
                     <option value="In Stock" <?php echo $statusFilter === 'In Stock' ? 'selected' : ''; ?>><?= __('in_stock') ?></option>
                     <option value="Low Stock" <?php echo $statusFilter === 'Low Stock' ? 'selected' : ''; ?>><?= __('low_stock') ?></option>
                     <option value="Out of Stock" <?php echo $statusFilter === 'Out of Stock' ? 'selected' : ''; ?>><?= __('out_of_stock') ?></option>
                 </select>
-                <button type="submit" class="rounded bg-[#10b981] px-4 py-2 text-sm font-semibold text-gray-900">Filter</button>
-                <?php if ($search !== '' || $statusFilter !== ''): ?>
-                    <a href="inventory.php" class="rounded border border-[#203434] px-4 py-2 text-sm text-gray-300">Clear</a>
-                <?php endif; ?>
+                <button type="button" id="clearBtn" onclick="window.location.href='inventory.php'" class="rounded border border-[#203434] px-4 py-2 text-sm text-gray-300 <?= ($search !== '' || $statusFilter !== '') ? '' : 'hidden' ?>">Clear</button>
             </form>
         </section>
 
@@ -143,7 +140,7 @@ try {
                             <th class="px-6 py-4 text-right text-xs font-semibold text-gray-400 uppercase tracking-wider"><?= __('actions') ?></th>
                         </tr>
                     </thead>
-                    <tbody>
+                    <tbody id="inventoryTableBody">
                         <?php if (empty($inventoryItems)): ?>
                             <tr>
                                 <td colspan="8" class="px-4 py-10 text-center text-gray-500">No inventory records found.</td>
@@ -207,19 +204,84 @@ try {
             </div>
         </section>
 
-        <div class="flex flex-col md:flex-row justify-between items-center gap-3 mt-6 text-sm text-gray-400">
+        <div id="paginationContainer" class="flex flex-col md:flex-row justify-between items-center gap-3 mt-6 text-sm text-gray-400">
             <p>Showing <?php echo count($inventoryItems); ?> of <?php echo $totalRecords; ?> records.</p>
             <div class="flex items-center gap-2">
                 <?php if ($page > 1): ?>
-                    <a href="inventory.php?search=<?php echo urlencode($search); ?>&status=<?php echo urlencode($statusFilter); ?>&page=<?php echo max(1, $page - 1); ?>" class="rounded border border-[#203434] px-3 py-2">Prev</a>
+                    <a href="javascript:void(0)" onclick="loadPage(<?php echo max(1, $page - 1); ?>)" class="rounded border border-[#203434] px-3 py-2">Prev</a>
                 <?php endif; ?>
                 <span class="px-3 py-2 rounded bg-[#07121a] border border-[#203434]">Page <?php echo $page; ?> / <?php echo $totalPages; ?></span>
                 <?php if ($page < $totalPages): ?>
-                    <a href="inventory.php?search=<?php echo urlencode($search); ?>&status=<?php echo urlencode($statusFilter); ?>&page=<?php echo min($totalPages, $page + 1); ?>" class="rounded border border-[#203434] px-3 py-2">Next</a>
+                    <a href="javascript:void(0)" onclick="loadPage(<?php echo min($totalPages, $page + 1); ?>)" class="rounded border border-[#203434] px-3 py-2">Next</a>
                 <?php endif; ?>
             </div>
         </div>
     </main>
+
+    <script>
+        let searchTimeout;
+
+        function fetchInventoryData(page = 1) {
+            const searchVal = document.getElementById('searchInput').value;
+            const statusVal = document.getElementById('statusSelect').value;
+            
+            // Build the URL with query parameters
+            const url = new URL(window.location.origin + window.location.pathname);
+            if (searchVal) url.searchParams.set('search', searchVal);
+            if (statusVal) url.searchParams.set('status', statusVal);
+            if (page > 1) url.searchParams.set('page', page);
+
+            // Update the URL in the browser without reloading
+            window.history.pushState({}, '', url);
+
+            // Toggle clear button visibility
+            const clearBtn = document.getElementById('clearBtn');
+            if (searchVal || statusVal) {
+                clearBtn.classList.remove('hidden');
+            } else {
+                clearBtn.classList.add('hidden');
+            }
+
+            // Fetch the updated HTML
+            fetch(url)
+                .then(response => response.text())
+                .then(html => {
+                    const parser = new DOMParser();
+                    const doc = parser.parseFromString(html, 'text/html');
+                    
+                    // Replace table body
+                    const newTbody = doc.getElementById('inventoryTableBody');
+                    if (newTbody) {
+                        document.getElementById('inventoryTableBody').innerHTML = newTbody.innerHTML;
+                    }
+                    
+                    // Replace pagination container
+                    const newPagination = doc.getElementById('paginationContainer');
+                    if (newPagination) {
+                        document.getElementById('paginationContainer').innerHTML = newPagination.innerHTML;
+                    }
+                })
+                .catch(error => console.error('Error fetching inventory data:', error));
+        }
+
+        // Search input event listener with debounce
+        document.getElementById('searchInput').addEventListener('input', function() {
+            clearTimeout(searchTimeout);
+            searchTimeout = setTimeout(() => {
+                fetchInventoryData(1);
+            }, 300); // 300ms debounce
+        });
+
+        // Status select event listener
+        document.getElementById('statusSelect').addEventListener('change', function() {
+            fetchInventoryData(1);
+        });
+
+        // Pagination click handler
+        function loadPage(page) {
+            fetchInventoryData(page);
+        }
+    </script>
 
     <?php if ($selectedBatch): ?>
     <script>

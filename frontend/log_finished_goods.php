@@ -62,7 +62,7 @@ $suggested_batch_id = 'FG-' . date('Ymd') . '-' . strtoupper(substr(uniqid(), -4
                         </div>
                         <div>
                             <label class="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2"><?= __('manufacture_date_label') ?></label>
-                            <input type="date" name="mfg_date" value="<?= date('Y-m-d') ?>" required class="w-full bg-[#0a1118] border border-[#374151] text-white rounded p-3 focus:outline-none focus:border-[#10b981] transition-colors">
+                            <input type="date" name="mfg_date" value="<?= date('Y-m-d') ?>" max="<?= date('Y-m-d') ?>" required class="w-full bg-[#0a1118] border border-[#374151] text-white rounded p-3 focus:outline-none focus:border-[#10b981] transition-colors">
                         </div>
                     </div>
 
@@ -87,7 +87,7 @@ $suggested_batch_id = 'FG-' . date('Ymd') . '-' . strtoupper(substr(uniqid(), -4
                         </div>
                         <div>
                             <label class="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2"><?= __('expiry_date_fefo_label') ?></label>
-                            <input type="date" name="exp_date" required class="w-full bg-[#0a1118] border border-[#374151] text-red-300 rounded p-3 focus:outline-none focus:border-[#10b981] transition-colors">
+                            <input type="date" name="exp_date" min="<?= date('Y-m-d') ?>" required class="w-full bg-[#0a1118] border border-[#374151] text-red-300 rounded p-3 focus:outline-none focus:border-[#10b981] transition-colors">
                         </div>
                     </div>
 

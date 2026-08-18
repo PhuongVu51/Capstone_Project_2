@@ -71,7 +71,7 @@ try {
                         </div>
                         <div>
                             <label class="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2"><?= __('needed_by_date') ?></label>
-                            <input type="date" name="needed_date" required class="w-full bg-[#0a1118] border border-[#374151] text-white rounded p-3 focus:outline-none focus:border-[#3b82f6] transition-colors">
+                            <input type="date" name="needed_date" min="<?= date('Y-m-d') ?>" required class="w-full bg-[#0a1118] border border-[#374151] text-white rounded p-3 focus:outline-none focus:border-[#3b82f6] transition-colors">
                         </div>
                     </div>
 

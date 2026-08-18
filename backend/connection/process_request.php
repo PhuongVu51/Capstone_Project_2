@@ -13,6 +13,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $notes       = $_POST['notes'] ?? '';
     $requested_by = $_SESSION['user_id'] ?? 1; // Lấy ID người đang đăng nhập
 
+    if (strtotime($needed_date) < strtotime(date('Y-m-d'))) {
+        die("Lỗi: Ngày cần vật tư (Needed By Date) không được nằm trong quá khứ.");
+    }
+
     try {
         // 2. Viết câu lệnh INSERT (LƯU Ý: Thay đổi tên bảng và tên cột cho khớp với CSDL thật của bạn)
         $sql = "INSERT INTO MATERIAL_REQUESTS (REQ_material_id, REQ_quantity, REQ_needed_date, REQ_priority, REQ_notes, REQ_status, REQ_requested_by) 
