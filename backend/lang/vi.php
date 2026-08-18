@@ -643,5 +643,21 @@ return [
     'loading_suppliers' => 'Đang tải nhà cung cấp...',
     'realtime_date_error_title' => 'Lỗi Không Hợp Thời Gian Thực!',
     'understand_and_repick_date' => 'Đã hiểu & Chọn lại ngày',
+
+    // Finished Goods Declaration
+    'fg_declaration_title' => 'Khai báo Thành phẩm',
+    'log_new_production_batch' => 'Ghi nhận Lô Sản xuất Mới',
+    'log_new_production_batch_desc' => 'Đăng ký thành phẩm vừa sản xuất vào hệ thống quản lý tồn kho.',
+    'batch_id_label' => 'Mã Lô (Batch ID)',
+    'batch_id_auto_hint' => 'Tự động tạo mã. Bạn có thể chỉnh sửa nếu cần.',
+    'manufacture_date_label' => 'Ngày sản xuất',
+    'finished_product_label' => 'Thành phẩm',
+    'select_finished_product' => '-- Chọn Thành phẩm --',
+    'yield_quantity_label' => 'Sản lượng đạt (kg / đơn vị)',
+    'expiry_date_fefo_label' => 'Hạn sử dụng (Quy chuẩn FEFO)',
+    'initial_qc_status_label' => 'Trạng thái QC ban đầu',
+    'qc_status_pending_opt' => 'Chờ kiểm định QC (Đưa vào hàng đợi QC)',
+    'qc_status_passed_opt' => 'Đã duyệt trước / Thông quan nhanh',
+    'log_batch_to_inventory_btn' => 'Nhập Lô Hàng Vào Kho',
 ];
 

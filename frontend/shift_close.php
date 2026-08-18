@@ -36,7 +36,7 @@ function shift_display_name($shift)
     if (!$shift) {
         return '';
     }
-    return $shift['SHF_shift_date'] . ' - ' . $shift['SHF_shift_type'];
+    return $shift['SHF_shift_date'] . ' - ' . translate_shift_name($shift['SHF_shift_type']);
 }
 
 function shift_format_dt($value)

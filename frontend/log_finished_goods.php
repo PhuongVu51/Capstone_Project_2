@@ -24,7 +24,7 @@ $suggested_batch_id = 'FG-' . date('Ymd') . '-' . strtoupper(substr(uniqid(), -4
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Log Finished Goods | ProSync Industrial</title>
+    <title><?= __('fg_declaration_title') ?> | F&amp;G FOOD</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="assets/css/searchable_select.css">
     <script src="assets/js/searchable_select.js"></script>
@@ -41,14 +41,14 @@ $suggested_batch_id = 'FG-' . date('Ymd') . '-' . strtoupper(substr(uniqid(), -4
     <!-- MAIN CONTENT -->
     <main class="flex-1 flex flex-col min-w-0 md:ml-64">
         <header class="h-16 border-b border-[#1f2937] bg-[#0a1118] flex items-center px-8 sticky top-0 z-10">
-            <h1 class="text-xl font-bold text-white">Finished Goods Declaration</h1>
+            <h1 class="text-xl font-bold text-white"><?= __('fg_declaration_title') ?></h1>
         </header>
 
         <div class="p-8 overflow-y-auto flex justify-center">
             <div class="bg-[#0f1722] rounded-lg border border-[#1f2937] w-full max-w-2xl p-8 shadow-xl">
                 <div class="mb-6">
-                    <h2 class="text-2xl font-bold text-[#10b981]">Log New Production Batch</h2>
-                    <p class="text-sm text-gray-500 mt-1">Register newly manufactured goods into the system inventory.</p>
+                    <h2 class="text-2xl font-bold text-[#10b981]"><?= __('log_new_production_batch') ?></h2>
+                    <p class="text-sm text-gray-500 mt-1"><?= __('log_new_production_batch_desc') ?></p>
                 </div>
 
                 <form action="../backend/connection/process_finished_goods.php" method="POST" class="space-y-6">
@@ -56,24 +56,24 @@ $suggested_batch_id = 'FG-' . date('Ymd') . '-' . strtoupper(substr(uniqid(), -4
                     <!-- Batch ID & Ngày sản xuất -->
                     <div class="grid grid-cols-2 gap-6">
                         <div>
-                            <label class="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Batch ID</label>
+                            <label class="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2"><?= __('batch_id_label') ?></label>
                             <input type="text" name="batch_id" value="<?= $suggested_batch_id ?>" required class="w-full bg-[#0a1118] border border-[#374151] text-[#10b981] font-mono font-bold rounded p-3 focus:outline-none focus:border-[#10b981] transition-colors">
-                            <p class="text-[10px] text-gray-500 mt-1">Auto-generated. You can modify if needed.</p>
+                            <p class="text-[10px] text-gray-500 mt-1"><?= __('batch_id_auto_hint') ?></p>
                         </div>
                         <div>
-                            <label class="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Manufacture Date</label>
+                            <label class="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2"><?= __('manufacture_date_label') ?></label>
                             <input type="date" name="mfg_date" value="<?= date('Y-m-d') ?>" required class="w-full bg-[#0a1118] border border-[#374151] text-white rounded p-3 focus:outline-none focus:border-[#10b981] transition-colors">
                         </div>
                     </div>
 
                     <!-- Thành phẩm -->
                     <div>
-                        <label class="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Finished Product</label>
+                        <label class="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2"><?= __('finished_product_label') ?></label>
                         <select id="fg-product-select" name="product_id" required class="w-full bg-[#0a1118] border border-[#374151] text-white rounded p-3 focus:outline-none focus:border-[#10b981] transition-colors">
-                            <option value="">-- Select Product --</option>
+                            <option value=""><?= __('select_finished_product') ?></option>
                             <?php foreach ($finished_goods as $product): ?>
                                 <option value="<?= htmlspecialchars($product['PRD_product_id']) ?>">
-                                    <?= htmlspecialchars($product['PRD_product_name']) ?>
+                                    <?= htmlspecialchars(t_product($product['PRD_product_name'])) ?>
                                 </option>
                             <?php endforeach; ?>
                         </select>
@@ -82,28 +82,28 @@ $suggested_batch_id = 'FG-' . date('Ymd') . '-' . strtoupper(substr(uniqid(), -4
                     <!-- Số lượng & Hạn sử dụng -->
                     <div class="grid grid-cols-2 gap-6">
                         <div>
-                            <label class="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Yield Quantity (kg/units)</label>
+                            <label class="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2"><?= __('yield_quantity_label') ?></label>
                             <input type="number" step="0.01" name="yield_quantity" required class="w-full bg-[#0a1118] border border-[#374151] text-white font-mono text-lg rounded p-3 focus:outline-none focus:border-[#10b981] transition-colors" placeholder="0.00">
                         </div>
                         <div>
-                            <label class="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Expiry Date (FEFO Base)</label>
+                            <label class="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2"><?= __('expiry_date_fefo_label') ?></label>
                             <input type="date" name="exp_date" required class="w-full bg-[#0a1118] border border-[#374151] text-red-300 rounded p-3 focus:outline-none focus:border-[#10b981] transition-colors">
                         </div>
                     </div>
 
                     <!-- QC Status -->
                     <div>
-                        <label class="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Initial QC Status</label>
+                        <label class="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2"><?= __('initial_qc_status_label') ?></label>
                         <select name="qc_status" class="w-full bg-[#0a1118] border border-[#374151] text-white rounded p-3 focus:outline-none focus:border-[#10b981] transition-colors">
-                            <option value="Pending" selected>Pending QC Inspection (Sent to QC Queue)</option>
-                            <option value="Passed">Pre-approved / Fast Track</option>
+                            <option value="Pending" selected><?= __('qc_status_pending_opt') ?></option>
+                            <option value="Passed"><?= __('qc_status_passed_opt') ?></option>
                         </select>
                     </div>
 
                     <!-- Nút Submit -->
                     <div class="flex gap-4 pt-4 border-t border-[#1f2937]">
-                        <button type="button" onclick="history.back()" class="px-6 py-3 border border-[#374151] text-gray-300 rounded hover:bg-[#1f2937] transition-colors font-bold text-sm">Cancel</button>
-                        <button type="submit" class="flex-1 bg-[#10b981] text-gray-900 rounded hover:bg-[#059669] transition-colors font-bold text-sm shadow-[0_0_15px_rgba(16,185,129,0.3)]">Log Batch to Inventory</button>
+                        <button type="button" onclick="history.back()" class="px-6 py-3 border border-[#374151] text-gray-300 rounded hover:bg-[#1f2937] transition-colors font-bold text-sm"><?= __('cancel') ?></button>
+                        <button type="submit" class="flex-1 bg-[#10b981] text-gray-900 rounded hover:bg-[#059669] transition-colors font-bold text-sm shadow-[0_0_15px_rgba(16,185,129,0.3)]"><?= __('log_batch_to_inventory_btn') ?></button>
                     </div>
                 </form>
             </div>
@@ -113,7 +113,7 @@ $suggested_batch_id = 'FG-' . date('Ymd') . '-' . strtoupper(substr(uniqid(), -4
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             new SearchableSelect('#fg-product-select', {
-                placeholder: '-- Select Product --'
+                placeholder: '<?= __('select_finished_product') ?>'
             });
         });
     </script>

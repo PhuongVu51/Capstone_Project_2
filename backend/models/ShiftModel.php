@@ -5,7 +5,7 @@ require_once __DIR__ . '/../core/BaseModel.php';
 class ShiftModel extends BaseModel
 {
     /**
-     * Tự động lấy hoặc tạo ca làm việc mới dựa trên THỜI GIAN THỰC
+     * Tự động lấy hoặc tạo ca làm việc mới dựa trên THỜI GIAN THỰC (Real-time)
      */
     public function getRealTimeShift()
     {
@@ -27,24 +27,34 @@ class ShiftModel extends BaseModel
             }
         }
 
-        // 3. Tìm ca đang MỞ (Open) trùng ngày và khung giờ hiện tại
-        $stmt = $this->pdo->prepare("SELECT * FROM SHIFTS WHERE SHF_shift_date = ? AND SHF_shift_type = ? AND SHF_status = 'Open' ORDER BY SHF_shift_id DESC LIMIT 1");
+        // 3. Tự động đóng (Auto-close) tất cả các ca Open cũ không thuộc ca thời gian thực hiện tại
+        $autoCloseStmt = $this->pdo->prepare("
+            UPDATE SHIFTS 
+            SET SHF_status = 'Closed', 
+                SHF_closed_at = NOW() 
+            WHERE SHF_status = 'Open' 
+              AND (SHF_shift_date != ? OR SHF_shift_type != ?)
+        ");
+        $autoCloseStmt->execute([$currentDate, $shiftType]);
+
+        // 4. Tìm ca trùng ngày và khung giờ hiện tại
+        $stmt = $this->pdo->prepare("SELECT * FROM SHIFTS WHERE SHF_shift_date = ? AND SHF_shift_type = ? ORDER BY SHF_shift_id DESC LIMIT 1");
         $stmt->execute([$currentDate, $shiftType]);
         $shift = $stmt->fetch(PDO::FETCH_ASSOC);
 
         if ($shift) {
+            // Nếu ca đã tồn tại nhưng đang bị Closed, tự động mở lại trạng thái Open cho phiên làm việc hiện tại
+            if ($shift['SHF_status'] !== 'Open') {
+                $reopenStmt = $this->pdo->prepare("UPDATE SHIFTS SET SHF_status = 'Open', SHF_closed_at = NULL, SHF_closed_by = NULL WHERE SHF_shift_id = ?");
+                $reopenStmt->execute([$shift['SHF_shift_id']]);
+                $shift['SHF_status'] = 'Open';
+                $shift['SHF_closed_at'] = null;
+                $shift['SHF_closed_by'] = null;
+            }
             return $shift;
         }
 
-        // 4. Nếu không có ca Open đúng khung giờ, tìm bất kỳ ca Open nào khác trong CSDL
-        $fallbackStmt = $this->pdo->query("SELECT * FROM SHIFTS WHERE SHF_status = 'Open' ORDER BY SHF_shift_date DESC, SHF_shift_id DESC LIMIT 1");
-        $fallbackShift = $fallbackStmt->fetch(PDO::FETCH_ASSOC);
-
-        if ($fallbackShift) {
-            return $fallbackShift;
-        }
-
-        // 5. AUTO-CREATE: Nếu tất cả các ca đều đã đóng (hoặc chưa từng tạo), tự động tạo Ca MỚI đang Open cho thời gian thực
+        // 5. Tự động tạo Ca MỚI đang Open cho ngày & thời gian thực tế
         $insertStmt = $this->pdo->prepare("
             INSERT INTO SHIFTS (SHF_shift_date, SHF_shift_type, SHF_worker_count, SHF_status) 
             VALUES (?, ?, 0, 'Open')

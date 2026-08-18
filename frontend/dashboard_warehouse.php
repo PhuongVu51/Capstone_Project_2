@@ -62,7 +62,7 @@ try {
                         <p class="text-sm text-gray-400 mt-1">
                             <?= __('shift_closed_at') ?> 
                             <span class="font-mono text-white"><?= date('H:i d/m/Y', strtotime($closedShift['SHF_closed_at'])) ?></span>
-                            - <?= htmlspecialchars($closedShift['SHF_shift_type']) ?>
+                            - <?= htmlspecialchars(translate_shift_name($closedShift['SHF_shift_type'])) ?>
                         </p>
                     </div>
                     <div class="flex gap-4">

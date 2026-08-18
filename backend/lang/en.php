@@ -643,5 +643,21 @@ return [
     'loading_suppliers' => 'Loading suppliers...',
     'realtime_date_error_title' => 'Real-Time Validation Error!',
     'understand_and_repick_date' => 'Understood & Re-select Date',
+
+    // Finished Goods Declaration
+    'fg_declaration_title' => 'Finished Goods Declaration',
+    'log_new_production_batch' => 'Log New Production Batch',
+    'log_new_production_batch_desc' => 'Register newly manufactured goods into the system inventory.',
+    'batch_id_label' => 'Batch ID',
+    'batch_id_auto_hint' => 'Auto-generated. You can modify if needed.',
+    'manufacture_date_label' => 'Manufacture Date',
+    'finished_product_label' => 'Finished Product',
+    'select_finished_product' => '-- Select Product --',
+    'yield_quantity_label' => 'Yield Quantity (kg/units)',
+    'expiry_date_fefo_label' => 'Expiry Date (FEFO Base)',
+    'initial_qc_status_label' => 'Initial QC Status',
+    'qc_status_pending_opt' => 'Pending QC Inspection (Sent to QC Queue)',
+    'qc_status_passed_opt' => 'Pre-approved / Fast Track',
+    'log_batch_to_inventory_btn' => 'Log Batch to Inventory',
 ];
 

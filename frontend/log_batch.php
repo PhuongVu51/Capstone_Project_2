@@ -2,13 +2,20 @@
 require_once '../backend/includes/auth.php';
 require_role(['Warehouse_Staff']);
 require_once '../backend/connection/db_connect.php';
+require_once '../backend/models/ShiftModel.php';
 
 try {
     $lang = $_SESSION['lang'] ?? 'vi';
     $productNameCol = ($lang === 'en') ? 'COALESCE(PRD_product_name_en, PRD_product_name)' : 'PRD_product_name';
     $zoneNameCol = ($lang === 'en') ? 'COALESCE(STZ_zone_name_en, STZ_zone_name)' : 'STZ_zone_name';
     $products = $pdo->query("SELECT PRD_product_id, $productNameCol AS PRD_product_name, PRD_shelf_life_days FROM PRODUCTS")->fetchAll();
-    $shifts = $pdo->query("SELECT SHF_shift_id, SHF_shift_date, SHF_shift_type FROM SHIFTS WHERE SHF_status = 'Open'")->fetchAll();
+    
+    // Tự động đảm bảo ca Real-Time hôm nay được mở và lấy thông tin ca hiện tại
+    $shiftModel = new ShiftModel();
+    $currentRealTimeShift = $shiftModel->getRealTimeShift();
+    $currentShiftId = $currentRealTimeShift ? (int)$currentRealTimeShift['SHF_shift_id'] : 0;
+    
+    $shifts = $pdo->query("SELECT SHF_shift_id, SHF_shift_date, SHF_shift_type FROM SHIFTS WHERE SHF_status = 'Open' ORDER BY SHF_shift_date DESC, SHF_shift_id DESC")->fetchAll();
     $zones = $pdo->query("SELECT STZ_zone_id, $zoneNameCol AS STZ_zone_name FROM STORAGE_ZONES")->fetchAll();
 } catch (PDOException $e) {
     die("Lỗi cơ sở dữ liệu: " . $e->getMessage());
@@ -99,12 +106,22 @@ try {
 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div>
-                        <label class="block text-sm font-semibold text-gray-300 mb-2"><?= __('shift') ?></label>
-                        <select id="shift-select" name="shift_id" class="w-full bg-[#0b1722] border border-[#374151] text-white rounded-lg p-2.5 focus:border-[#10b981] focus:ring-1 focus:ring-[#10b981] focus:outline-none transition-colors">
+                        <label class="block text-sm font-semibold text-gray-300 mb-2">
+                            <?= __('shift') ?>
+                            <span class="text-xs font-normal text-[#10b981] ml-2">● <?= ($lang === 'en') ? 'Real-Time Shift' : 'Ca thời gian thực' ?></span>
+                        </label>
+                        <select id="shift-select" name="shift_id" required class="w-full bg-[#0b1722] border border-[#374151] text-white rounded-lg p-2.5 focus:border-[#10b981] focus:ring-1 focus:ring-[#10b981] focus:outline-none transition-colors">
                             <option value=""><?= __('select_shift') ?></option>
                             <?php foreach($shifts as $sh): ?>
-                                <option value="<?= $sh['SHF_shift_id'] ?>">
-                                    <?= htmlspecialchars($sh['SHF_shift_date'] . ' - ' . translate_shift_name($sh['SHF_shift_type'])) ?>
+                                <?php 
+                                    $isCurrent = ($sh['SHF_shift_id'] == $currentShiftId);
+                                    $label = htmlspecialchars($sh['SHF_shift_date'] . ' - ' . translate_shift_name($sh['SHF_shift_type']));
+                                    if ($isCurrent) {
+                                        $label .= ' ' . (($lang === 'en') ? '(Current Shift)' : '(Ca hiện tại)');
+                                    }
+                                ?>
+                                <option value="<?= $sh['SHF_shift_id'] ?>" <?= $isCurrent ? 'selected' : '' ?>>
+                                    <?= $label ?>
                                 </option>
                             <?php endforeach; ?>
                         </select>
@@ -226,6 +243,10 @@ try {
             }
 
             function autoFillShift() {
+                if (shiftSelect.value) {
+                    if (searchableShift) searchableShift.updateInputValueFromSelect();
+                    return;
+                }
                 var today = new Date();
                 var dateString = today.getFullYear() + '-' + String(today.getMonth() + 1).padStart(2, '0') + '-' + String(today.getDate()).padStart(2, '0');
                 var shiftType = getShiftTypeByTime(today);
@@ -241,8 +262,10 @@ try {
 
                 if (matchedOption) {
                     shiftSelect.value = matchedOption.value;
-                    if (searchableShift) searchableShift.updateInputValueFromSelect();
+                } else if (shiftSelect.options.length > 1) {
+                    shiftSelect.selectedIndex = 1;
                 }
+                if (searchableShift) searchableShift.updateInputValueFromSelect();
             }
 
             function autoFillExpiryDate(productId) {

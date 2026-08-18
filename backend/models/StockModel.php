@@ -19,34 +19,10 @@ class StockModel extends BaseModel {
     }
 
     private function getCurrentOpenShiftId() {
-        $stmt = $this->pdo->prepare(
-            "SELECT SHF_shift_id
-             FROM SHIFTS
-             WHERE SHF_status = 'Open'
-               AND SHF_shift_date = CURDATE()
-               AND SHF_shift_type = :shift_type
-             ORDER BY SHF_shift_id DESC
-             LIMIT 1"
-        );
-        $stmt->execute([':shift_type' => $this->getCurrentShiftType()]);
-        $shiftId = $stmt->fetchColumn();
-
-        if ($shiftId) {
-            return (int) $shiftId;
-        }
-
-        $stmt = $this->pdo->query(
-            "SELECT SHF_shift_id
-             FROM SHIFTS
-             WHERE SHF_status = 'Open'
-             ORDER BY SHF_shift_date DESC,
-                      FIELD(SHF_shift_type, 'Overtime', 'Afternoon', 'Morning'),
-                      SHF_shift_id DESC
-             LIMIT 1"
-        );
-        $shiftId = $stmt->fetchColumn();
-
-        return $shiftId ? (int) $shiftId : null;
+        require_once __DIR__ . '/ShiftModel.php';
+        $shiftModel = new ShiftModel();
+        $shift = $shiftModel->getRealTimeShift();
+        return $shift ? (int) $shift['SHF_shift_id'] : null;
     }
 
     public function getProductShelfLife($productId) {
