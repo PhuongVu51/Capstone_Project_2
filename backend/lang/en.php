@@ -65,6 +65,7 @@ return [
     'total_at_risk' => 'Total at risk',
     'batches' => 'Batches',
     'value_at_stake' => 'Value at stake',
+    'risk_quantity' => 'Risk quantity',
     'expiration_velocity' => 'Expiration Velocity',
     'batches_expiring_per_shift' => 'Batches expiring per shift',
     'storage_zones_affected' => 'Storage Zones Affected',
@@ -85,6 +86,7 @@ return [
     'cancel' => 'CANCEL',
     'allocate_now' => 'ALLOCATE NOW',
     'search_placeholder' => 'Search batch or product...',
+    'no_search_results' => 'No matching results found.',
 
     // Production Analytics
     'production_analytics_title' => 'Production Analytics',

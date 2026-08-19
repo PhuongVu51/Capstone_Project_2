@@ -27,6 +27,58 @@ try {
     ";
     $stmt = $pdo->query($sql);
     $expiringBatches = $stmt->fetchAll();
+
+    $velocitySql = "
+        SELECT
+            s.SHF_shift_date,
+            s.SHF_shift_type,
+            COUNT(b.BCH_batch_id) AS expiring_batch_count
+        FROM BATCHES b
+        JOIN SHIFTS s ON b.BCH_shift_id = s.SHF_shift_id
+        WHERE b.BCH_available_stock_kg > 0
+          AND b.BCH_expiry_date <= DATE_ADD(NOW(), INTERVAL 48 HOUR)
+        GROUP BY s.SHF_shift_id, s.SHF_shift_date, s.SHF_shift_type
+        ORDER BY s.SHF_shift_date DESC, s.SHF_shift_id DESC
+        LIMIT 6
+    ";
+    $velocityStmt = $pdo->query($velocitySql);
+    $expirationVelocity = array_reverse($velocityStmt->fetchAll());
+    $maxVelocity = !empty($expirationVelocity)
+        ? max(array_column($expirationVelocity, 'expiring_batch_count'))
+        : 0;
+
+    $zoneSql = "
+        SELECT
+            $zoneNameCol AS STZ_zone_name,
+            z.STZ_max_capacity_kg,
+                        COALESCE((
+                                SELECT SUM(b2.BCH_available_stock_kg)
+                                FROM BATCHES b2
+                                WHERE b2.BCH_zone_id = z.STZ_zone_id
+                                    AND b2.BCH_available_stock_kg > 0
+                        ), 0) AS actual_load_kg,
+            COUNT(b.BCH_batch_id) AS expiring_batch_count,
+            COALESCE(SUM(b.BCH_available_stock_kg), 0) AS expiring_stock_kg
+        FROM STORAGE_ZONES z
+        JOIN BATCHES b ON b.BCH_zone_id = z.STZ_zone_id
+            AND b.BCH_available_stock_kg > 0
+            AND b.BCH_expiry_date <= DATE_ADD(NOW(), INTERVAL 48 HOUR)
+        GROUP BY z.STZ_zone_id, z.STZ_zone_name, z.STZ_zone_name_en,
+                 z.STZ_max_capacity_kg
+        ORDER BY expiring_batch_count DESC, expiring_stock_kg DESC
+        LIMIT 3
+    ";
+    $zoneStmt = $pdo->query($zoneSql);
+    $affectedZones = $zoneStmt->fetchAll();
+
+    $totalAvailableStock = (float) $pdo->query(
+        "SELECT COALESCE(SUM(BCH_available_stock_kg), 0) FROM BATCHES WHERE BCH_available_stock_kg > 0"
+    )->fetchColumn();
+    $totalExpiringStock = array_sum(array_column($expiringBatches, 'BCH_available_stock_kg'));
+    $wasteRiskPercentage = $totalAvailableStock > 0
+        ? min(100, (int) round(($totalExpiringStock / $totalAvailableStock) * 100))
+        : 0;
+
     if ($lang === 'en' && !empty($expiringBatches)) {
         foreach ($expiringBatches as &$batch) {
             $batch['PRD_product_name'] = translate_product_name($batch['PRD_product_name']);
@@ -37,8 +89,17 @@ try {
     // Tính toán chỉ số KPIs
     $totalRiskBatches = count($expiringBatches);
     $valueAtStake = 0;
+    $totalRiskWeight = 0;
+    $hasRiskPricing = !empty($expiringBatches);
     foreach($expiringBatches as $batch) {
-        $valueAtStake += ($batch['BCH_available_stock_kg'] * $batch['PRD_unit_price']);
+        $stockWeight = (float) $batch['BCH_available_stock_kg'];
+        $unitPrice = (float) $batch['PRD_unit_price'];
+        $totalRiskWeight += $stockWeight;
+        if ($unitPrice <= 0) {
+            $hasRiskPricing = false;
+            continue;
+        }
+        $valueAtStake += $stockWeight * $unitPrice;
     }
 } catch (PDOException $e) {
     die("Lỗi truy vấn CSDL: " . $e->getMessage());
@@ -71,7 +132,7 @@ try {
         <header class="h-16 border-b border-[#1f2937] bg-[#0a1118] flex items-center justify-between px-8 sticky top-0 z-10">
             <div class="flex-1 max-w-xl">
                 <div class="relative">
-                    <input type="text" placeholder="<?= __('search_placeholder') ?>" class="w-full bg-[#0f1722] border border-[#1f2937] text-sm text-gray-300 rounded py-2 pl-10 pr-4 focus:outline-none focus:border-[#10b981] transition-colors">
+                    <input type="text" id="fefo-search" placeholder="<?= __('search_placeholder') ?>" class="w-full bg-[#0f1722] border border-[#1f2937] text-sm text-gray-300 rounded py-2 pl-10 pr-4 focus:outline-none focus:border-[#10b981] transition-colors">
                     <svg class="w-4 h-4 absolute left-3 top-2.5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
                 </div>
             </div>
@@ -124,8 +185,8 @@ try {
                         <h3 class="text-2xl font-bold text-white"><?= $totalRiskBatches ?> <?= __('batches') ?></h3>
                     </div>
                     <div class="bg-[#0f1722] p-4 rounded-lg min-w-[140px] text-center border border-[#1f2937]">
-                        <p class="text-[10px] text-gray-500 uppercase font-bold tracking-wider mb-1"><?= __('value_at_stake') ?></p>
-                        <h3 class="text-2xl font-bold text-[#10b981]">$<?= number_format($valueAtStake, 2) ?></h3>
+                        <p class="text-[10px] text-gray-500 uppercase font-bold tracking-wider mb-1"><?= $hasRiskPricing ? __('value_at_stake') : __('risk_quantity') ?></p>
+                        <h3 class="text-2xl font-bold text-[#10b981]"><?= $hasRiskPricing ? '$' . number_format($valueAtStake, 2) : number_format($totalRiskWeight, 2) . ' kg' ?></h3>
                     </div>
                 </div>
             </div>
@@ -135,34 +196,57 @@ try {
                 <div class="bg-[#0f1722] p-5 rounded-lg border border-[#1f2937]">
                     <h3 class="text-[#10b981] font-bold text-sm mb-1"><?= __('expiration_velocity') ?></h3>
                     <p class="text-xs text-gray-500 mb-4"><?= __('batches_expiring_per_shift') ?></p>
-                    <div class="h-32 flex items-end justify-between gap-2 px-2">
-                        <div class="w-full bg-red-300 h-10 rounded-t"></div>
-                        <div class="w-full bg-red-400 h-20 rounded-t"></div>
-                        <div class="w-full bg-red-300 h-14 rounded-t"></div>
-                        <div class="w-full bg-red-400 h-28 rounded-t"></div>
-                        <div class="w-full bg-red-500/50 h-16 rounded-t"></div>
-                        <div class="w-full bg-red-400 h-24 rounded-t"></div>
+                    <div class="h-32 flex items-end gap-1 px-2 overflow-hidden">
+                        <?php if (empty($expirationVelocity)): ?>
+                            <div class="w-full self-center text-center text-xs text-gray-500 italic">
+                                <?= __('no_critical_batches') ?>
+                            </div>
+                        <?php else: ?>
+                            <?php foreach ($expirationVelocity as $velocity): ?>
+                                <?php
+                                    $count = (int) $velocity['expiring_batch_count'];
+                                    $barHeight = max(8, (int) round(($count / $maxVelocity) * 100));
+                                    $shiftLabel = date('m/d', strtotime($velocity['SHF_shift_date'])) . ' ' . translate_shift_name($velocity['SHF_shift_type']);
+                                ?>
+                                <div class="flex-1 min-w-0 h-full flex flex-col justify-end items-center gap-1" title="<?= htmlspecialchars($shiftLabel . ': ' . $count) ?>">
+                                    <span class="text-[10px] text-gray-300 font-mono"><?= $count ?></span>
+                                    <div class="w-full min-w-0 bg-red-400 rounded-t" style="height: <?= $barHeight ?>%"></div>
+                                    <span class="w-full min-w-0 text-[9px] text-gray-500 truncate text-center"><?= htmlspecialchars($shiftLabel) ?></span>
+                                </div>
+                            <?php endforeach; ?>
+                        <?php endif; ?>
                     </div>
                 </div>
                 <div class="lg:col-span-2 bg-[#0f1722] p-5 rounded-lg border border-[#1f2937] flex items-center justify-between">
                     <div class="flex-1 pr-8">
                         <h3 class="text-[#10b981] font-bold text-sm mb-6"><?= __('storage_zones_affected') ?></h3>
-                        <div class="mb-4">
-                            <div class="flex justify-between text-xs font-bold text-white mb-2"><span>Cold Storage Alpha</span><span>65% Capacity</span></div>
-                            <div class="w-full bg-[#0a1118] h-2 rounded-full overflow-hidden border border-[#1f2937]">
-                                <div class="bg-[#10b981] h-2" style="width: 65%"></div>
-                            </div>
-                        </div>
-                        <div>
-                            <div class="flex justify-between text-xs font-bold text-white mb-2"><span>Ambient Sector 4</span><span>22% Capacity</span></div>
-                            <div class="w-full bg-[#0a1118] h-2 rounded-full overflow-hidden border border-[#1f2937]">
-                                <div class="bg-[#374151] h-2" style="width: 22%"></div>
-                            </div>
-                        </div>
+                        <?php if (empty($affectedZones)): ?>
+                            <p class="text-xs text-gray-500 italic"><?= __('no_critical_batches') ?></p>
+                        <?php else: ?>
+                            <?php foreach ($affectedZones as $zoneIndex => $zone): ?>
+                                <?php
+                                    $zoneCapacity = (float) $zone['STZ_max_capacity_kg'];
+                                    $capacityPercentage = $zoneCapacity > 0
+                                        ? (int) round(((float) $zone['actual_load_kg'] / $zoneCapacity) * 100)
+                                        : 0;
+                                    $capacityBarWidth = min(100, $capacityPercentage);
+                                    $zoneLabel = t_zone($zone['STZ_zone_name']);
+                                ?>
+                                <div class="<?= $zoneIndex < count($affectedZones) - 1 ? 'mb-4' : '' ?>" title="<?= htmlspecialchars($zoneLabel . ': ' . $zone['expiring_batch_count'] . ' ' . __('batches')) ?>">
+                                    <div class="flex justify-between gap-3 text-xs font-bold text-white mb-2">
+                                        <span class="truncate"><?= htmlspecialchars($zoneLabel) ?></span>
+                                        <span class="shrink-0"><?= $capacityPercentage ?>% Capacity</span>
+                                    </div>
+                                    <div class="w-full bg-[#0a1118] h-2 rounded-full overflow-hidden border border-[#1f2937]">
+                                        <div class="<?= $capacityPercentage > 100 ? 'bg-red-500' : 'bg-[#10b981]' ?> h-2" style="width: <?= $capacityBarWidth ?>%"></div>
+                                    </div>
+                                </div>
+                            <?php endforeach; ?>
+                        <?php endif; ?>
                     </div>
                     <div class="w-40 h-40 bg-[#0a1118] rounded-xl border border-[#1f2937] flex items-center justify-center relative">
                         <div class="text-center z-10">
-                            <h2 class="text-3xl font-bold text-[#10b981]">75%</h2>
+                            <h2 class="text-3xl font-bold text-[#10b981]"><?= $wasteRiskPercentage ?>%</h2>
                             <p class="text-[10px] text-gray-500 uppercase tracking-widest mt-1"><?= __('waste_risk') ?></p>
                         </div>
                         <svg class="absolute inset-0 w-full h-full text-red-400/20" viewBox="0 0 100 100"><circle cx="50" cy="50" r="40" fill="none" stroke="currentColor" stroke-width="8" stroke-dasharray="60 180" stroke-linecap="round"/></svg>
@@ -191,12 +275,12 @@ try {
                                 <th class="p-4 font-bold text-center"><?= __('actions') ?></th>
                             </tr>
                         </thead>
-                        <tbody class="text-sm divide-y divide-[#1f2937]/50">
+                        <tbody id="fefo-batch-rows" class="text-sm divide-y divide-[#1f2937]/50">
                             <?php if (empty($expiringBatches)): ?>
                                 <tr><td colspan="6" class="p-8 text-center text-gray-500 italic"><?= __('no_critical_batches') ?></td></tr>
                             <?php else: ?>
                                 <?php foreach ($expiringBatches as $batch): ?>
-                                    <tr class="hover:bg-[#131c26] transition-colors border-l-2 border-transparent hover:border-red-500">
+                                    <tr data-search="<?= htmlspecialchars($batch['BCH_batch_id'] . ' ' . $batch['PRD_product_name'] . ' ' . $batch['STZ_zone_name'], ENT_QUOTES, 'UTF-8') ?>" class="hover:bg-[#131c26] transition-colors border-l-2 border-transparent hover:border-red-500">
                                         <td class="p-4">
                                             <span class="bg-[#10b981] text-gray-900 font-mono font-bold text-xs px-2 py-1 rounded inline-block max-w-[180px] truncate" title="<?= htmlspecialchars($batch['BCH_batch_id']) ?>">
                                                 <?= htmlspecialchars($batch['BCH_batch_id']) ?>
@@ -229,6 +313,9 @@ try {
                                     </tr>
                                 <?php endforeach; ?>
                             <?php endif; ?>
+                            <tr id="fefo-no-search-results" class="hidden">
+                                <td colspan="6" class="p-8 text-center text-gray-500 italic"><?= __('no_search_results') ?></td>
+                            </tr>
                         </tbody>
                     </table>
                 </div>
@@ -298,6 +385,28 @@ try {
     </script>
     <script>
         document.addEventListener('DOMContentLoaded', () => {
+            const searchInput = document.getElementById('fefo-search');
+            const batchRows = Array.from(document.querySelectorAll('#fefo-batch-rows tr[data-search]'));
+            const noSearchResults = document.getElementById('fefo-no-search-results');
+
+            const normalizeSearchText = (value) => value
+                .toLocaleLowerCase('vi-VN')
+                .normalize('NFD')
+                .replace(/[\u0300-\u036f]/g, '');
+
+            searchInput.addEventListener('input', () => {
+                const term = normalizeSearchText(searchInput.value.trim());
+                let visibleRows = 0;
+
+                batchRows.forEach((row) => {
+                    const matches = !term || normalizeSearchText(row.dataset.search).includes(term);
+                    row.classList.toggle('hidden', !matches);
+                    if (matches) visibleRows++;
+                });
+
+                noSearchResults.classList.toggle('hidden', !term || visibleRows > 0 || batchRows.length === 0);
+            });
+
             const citySelect = document.getElementById('weather-city');
             
             function fetchWeather(city) {

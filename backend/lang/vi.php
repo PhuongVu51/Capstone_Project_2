@@ -65,6 +65,7 @@ return [
     'total_at_risk' => 'Tổng rủi ro',
     'batches' => 'Lô hàng',
     'value_at_stake' => 'Giá trị rủi ro',
+    'risk_quantity' => 'Khối lượng rủi ro',
     'expiration_velocity' => 'Tốc độ Hết hạn',
     'batches_expiring_per_shift' => 'Số lô hết hạn mỗi ca',
     'storage_zones_affected' => 'Khu vực bị ảnh hưởng',
@@ -85,6 +86,7 @@ return [
     'cancel' => 'HỦY',
     'allocate_now' => 'CẤP PHÁT NGAY',
     'search_placeholder' => 'Tìm kiếm lô hàng hoặc sản phẩm...',
+    'no_search_results' => 'Không tìm thấy kết quả phù hợp.',
 
     // Production Analytics
     'production_analytics_title' => 'Phân tích Sản xuất',
